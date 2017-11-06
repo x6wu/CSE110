@@ -29,8 +29,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -57,7 +59,7 @@ public class DirectionGenerator {
 
     public void generate() {
         listener.onStart();
-        //TODO
+        new DownloadTask().execute(buildUrl());
     }
 
     private class DownloadTask extends AsyncTask<String, Void, String>{
@@ -66,8 +68,14 @@ public class DirectionGenerator {
         protected String doInBackground(String... strings) {
             try {
                 URL url = new URL(strings[0]);
-                InputStream in = url.openConnection().getInputStream();
-
+                InputStream inputStream = url.openConnection().getInputStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+                String inputLine;
+                StringBuffer buffer = new StringBuffer();
+                while((inputLine = in.readLine()) != null){
+                    buffer.append(inputLine + "\n");
+                }
+                return buffer.toString();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
