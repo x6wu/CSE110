@@ -2,24 +2,18 @@ package com.teamruse.rarerare.tritontravel;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
@@ -36,21 +30,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final String TAG = "Main_Activity";
-
-
-    private String origin = "";
-    private String dest = "";
-    private Marker mOrigin;
-    private Marker mDest;
-   // private TravelMode mode = TravelMode.TRANSIT;
+    public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    public static final String TAG = "Main_Activity";
+    private String mOrigin = "";
+    private String mDest = "";
+    private Marker mOriginMarker;
+    private Marker mDestMarker;
     private Button btnNavigation;
-    private GoogleMap map;
-    private GoogleApiClient googleApiClient;
-    private LocationRequest locationRequest;
+    private GoogleMap mMap;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
     private Location mLastKnownLocation;
-    private Marker currLocationMarker;
+    private Marker mLastKnownLocationMarker;
     private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng mDefaultLatLng = new LatLng(41.881832, -87.623177);
@@ -75,9 +66,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                map.addMarker(new MarkerOptions().position(place.getLatLng()));
-                origin = place.getAddress().toString();
-                Log.d("input", origin);
+                if(mOriginMarker != null){
+                    mOriginMarker.remove();
+                }
+                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+                mOrigin = place.getAddress().toString();
+                Log.d("input", mOrigin);
             }
 
             @Override
@@ -90,9 +84,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                map.addMarker(new MarkerOptions().position(place.getLatLng()));
-                dest = place.getAddress().toString();
-                Log.d("input", dest);
+                if(mDestMarker != null){
+                    mDestMarker.remove();
+                }
+                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+                mDest = place.getAddress().toString();
+                Log.d("input", mDest);
             }
 
             @Override
@@ -135,22 +132,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void updateLocationUI() {
-        if(map == null){
+        if(mMap == null){
             return;
         }
         try{
             if(mLocationPermissionGranted){
-                map.setMyLocationEnabled(true);
-                map.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
             }
             else{
-                map.setMyLocationEnabled(false);
-                map.getUiSettings().setMyLocationButtonEnabled(false);
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
-        }
-        catch (SecurityException e){
+        } catch (SecurityException e){
             Log.e("Exception %s", e.getMessage());
         }
     }
@@ -164,18 +160,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             mLastKnownLocation = task.getResult();
-                            map.moveCamera((CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), mDefaultZoom)));
+                            mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), mDefaultZoom)));
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
-                            map.moveCamera((CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, mDefaultZoom)));
-                            map.getUiSettings().setMyLocationButtonEnabled(false);
+                            mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, mDefaultZoom)));
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
                 });
             }
-        }
-        catch (SecurityException e){
+        } catch (SecurityException e){
             Log.e("Exception :%s", e.getMessage());
         }
     }
@@ -184,9 +179,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng ucsd = new LatLng(32.879409, -117.2389395);
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        map = googleMap;
+        mMap = googleMap;
         updateLocationUI();
         getDeviceLocation();
     }
