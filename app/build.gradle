@@ -4,6 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.teamruse.rarerare.tritontravel"
         minSdkVersion 21
         targetSdkVersion 25
@@ -31,5 +32,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:11.0.4'
     compile 'com.google.android.gms:play-services-places:11.0.4'
     compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.android.support:multidex:1.0.0'
+
     testCompile 'junit:junit:4.12'
 }
