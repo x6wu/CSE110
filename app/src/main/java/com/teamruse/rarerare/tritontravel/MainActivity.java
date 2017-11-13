@@ -9,7 +9,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -47,12 +49,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mDefaultLatLng = new LatLng(41.881832, -87.623177);
             //new LatLng(32.879409, -117.2389395);
     private int mDefaultZoom = 15;
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         btnNavigation = (Button)findViewById(R.id.search_button);
+        mDrawerList = (ListView)findViewById(R.id.navList);
+        addDrawerItems();
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -106,6 +114,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
+
+    private void addDrawerItems(){
+        String[] optionArray = {"Sign up/Log in", "History", "Peak Time", "Feedback", "FAQ"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, optionArray);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
 
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
