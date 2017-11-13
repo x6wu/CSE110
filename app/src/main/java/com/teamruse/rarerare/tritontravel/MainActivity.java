@@ -25,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -175,11 +176,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             mLastKnownLocation = task.getResult();
-                            mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), mDefaultZoom)));
+                            CameraPosition cameraPosition = new CameraPosition(
+                                    new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),
+                                    mDefaultZoom, mMap.getCameraPosition().tilt,
+                                    mMap.getCameraPosition().bearing);
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                            mMap.getUiSettings().setMyLocationButtonEnabled(true);
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
-                            mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, mDefaultZoom)));
+                            CameraPosition cameraPosition = new CameraPosition(
+                                    mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
+                                    mMap.getCameraPosition().bearing);
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
@@ -198,5 +207,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         updateLocationUI();
         getDeviceLocation();
+        updateLocationUI();
     }
 }
