@@ -176,12 +176,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
                             mLastKnownLocation = task.getResult();
-                            CameraPosition cameraPosition = new CameraPosition(
-                                    new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),
-                                    mDefaultZoom, mMap.getCameraPosition().tilt,
-                                    mMap.getCameraPosition().bearing);
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                            try {
+                                CameraPosition cameraPosition = new CameraPosition(
+                                        new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),
+                                        mDefaultZoom, mMap.getCameraPosition().tilt,
+                                        mMap.getCameraPosition().bearing);
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                            }catch (NullPointerException e){
+                                Log.d(TAG, "Current location is null. Using defaults.");
+                                Log.e(TAG, "Exception: %s", task.getException());
+                                CameraPosition cameraPosition = new CameraPosition(
+                                        mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
+                                        mMap.getCameraPosition().bearing);
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
