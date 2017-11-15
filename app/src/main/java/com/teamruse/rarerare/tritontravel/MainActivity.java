@@ -1,6 +1,7 @@
 package com.teamruse.rarerare.tritontravel;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -53,6 +54,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
 
+    //Shuyuan's update on map padding
+    //private int map_top_padding = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +72,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //initialize autocompleteFragment bars
         PlaceAutocompleteFragment autocompleteFragmentOrigin = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment_origin);
         PlaceAutocompleteFragment autocompleteFragmentDest = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment_dest);
 
+        //set autocompleteFragment backgrounds
+        autocompleteFragmentOrigin.getView().setBackgroundColor(Color.WHITE);
+        autocompleteFragmentDest.getView().setBackgroundColor(Color.WHITE);
+
+        /*
+        map_top_padding = autocompleteFragmentDest.getView().getHeight() +
+                autocompleteFragmentOrigin.getView().getHeight();
+        Log.i("padding", String.valueOf(map_top_padding));
+        */
+        //set onPlaceSelectedListener
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -155,10 +172,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             if(mLocationPermissionGranted){
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+                mMap.getUiSettings().setZoomGesturesEnabled(true);
             }
             else{
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+                mMap.getUiSettings().setZoomGesturesEnabled(true);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
@@ -183,6 +204,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                         mMap.getCameraPosition().bearing);
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
                                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
                             }catch (NullPointerException e){
                                 Log.d(TAG, "Current location is null. Using defaults.");
                                 Log.e(TAG, "Exception: %s", task.getException());
@@ -218,5 +240,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         updateLocationUI();
         getDeviceLocation();
         updateLocationUI();
+
+        mMap.setPadding(0,350,0,0);
     }
 }
