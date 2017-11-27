@@ -33,7 +33,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, DirectionGeneratorListener {
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final String TAG = "Main_Activity";
     private String mOrigin = "";
@@ -68,6 +71,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         addDrawerItems();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -128,10 +132,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 //TODO: navigation button callback
+                sendRequest();
             }
         });
 
     }
+
+    private void sendRequest(){
+        new DirectionGenerator(this, mOrigin, mDest).generate();
+
+    }
+
 
     private void addDrawerItems(){
         String[] optionArray = {"Sign up/Log in", "History", "Peak Time", "Feedback", "FAQ"};
@@ -242,5 +253,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         updateLocationUI();
 
         mMap.setPadding(0,350,0,0);
+    }
+
+    @Override
+    public void onGenerateStart() {
+        //TODO
+    }
+
+    @Override
+    public void onGenerateSuccess(List<Path> paths) {
+
     }
 }

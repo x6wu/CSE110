@@ -6,14 +6,28 @@ package com.teamruse.rarerare.tritontravel;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.vision.barcode.Barcode;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.BUS;
+import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
+//based on the tutorial from
+//https://github.com/hiepxuan2008/GoogleMapDirectionSimple/blob/master/app/src/main/java/Modules/DirectionFinder.java
 public class DirectionGenerator {
     private String origin;
     private String dest;
@@ -21,13 +35,13 @@ public class DirectionGenerator {
     private static final String ApiUrl = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String ApiKey = "AIzaSyDL3mGK2R6RvVHzHqhz7f2623iv6gGfU9w";
 
-    public DirectionGenerator(DirectionGeneratorListener listener, String origin, String dest){
+    public DirectionGenerator(DirectionGeneratorListener listener, String origin, String dest) {
         this.listener = listener;
         this.origin = origin;
         this.dest = dest;
     }
 
-    public String buildUrl(){
+    public String buildUrl() {
         String originUrl = origin.replaceAll(" ", "+");
         String destUrl = dest.replaceAll(" ", "+");
         return ApiUrl + "origin=" + originUrl + "&destination="
@@ -35,11 +49,11 @@ public class DirectionGenerator {
     }
 
     public void generate() {
-        listener.onStart();
+        listener.onGenerateStart();
         new DownloadTask().execute(buildUrl());
     }
 
-    private class DownloadTask extends AsyncTask<String, Void, String>{
+    private class DownloadTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... strings) {
@@ -49,7 +63,7 @@ public class DirectionGenerator {
                 BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
                 String inputLine;
                 StringBuffer buffer = new StringBuffer();
-                while((inputLine = in.readLine()) != null){
+                while ((inputLine = in.readLine()) != null) {
                     buffer.append(inputLine + "\n");
                 }
                 Log.d("JSON", buffer.toString());
@@ -61,6 +75,125 @@ public class DirectionGenerator {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(String response) {
+            try {
+                parseJson(response);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
+    private void parseJson(String data) throws JSONException {
+        SegmentFactory segmentFactory = new SegmentFactory();
+        if (data == null) {
+            return;
+        }
+        List<Path> paths = new ArrayList<Path>();
+        JSONObject jsonObject = new JSONObject(data);
+        //json array that contains all routs
+        JSONArray jsonArray = jsonObject.getJSONArray("routes");
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            //retrieve each route
+            JSONObject jsonRoute = jsonArray.getJSONObject(i);
+            JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
+            JSONObject jsonLeg = jsonLegs.getJSONObject(0);
+            JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
+            JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
+            JSONObject jsonDepartureTime = jsonLeg.getJSONObject("departure_time");
+            JSONObject jsonArrivalTime = jsonLeg.getJSONObject("arrival_time");
+            JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
+            JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
+            JSONArray jsonStepsArray = jsonLeg.getJSONArray("steps");
+            LatLng startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
+            LatLng endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
+            String duration = jsonDuration.getString("text");
+            String distance = jsonDistance.getString("text");
+            Path newPath = new Path(startLocation, endLocation, duration, distance);
+            newPath.setArrivalTime(jsonArrivalTime.getString("text"));
+            newPath.setDepartureTime(jsonDepartureTime.getString("text"));
+            for (int j = 0; j < jsonStepsArray.length(); ++j) {
+                //retrieve each step
+                JSONObject jsonStep = jsonStepsArray.getJSONObject(i);
+                JSONObject jsonStepDistance = jsonStep.getJSONObject("distance");
+                JSONObject jsonStepDuration = jsonStep.getJSONObject("duration");
+                JSONObject jsonStepStartLocation = jsonStep.getJSONObject("start_location");
+                JSONObject jsonStepEndLocation = jsonStep.getJSONObject("end_location");
+                LatLng stepStartLocation = new LatLng(jsonStepStartLocation.getDouble("lat"),
+                        jsonStepStartLocation.getDouble("lng"));
+                LatLng stepEndLocation = new LatLng(jsonStepEndLocation.getDouble("lat"),
+                        jsonStepEndLocation.getDouble("lng"));
+                String stepDuration = jsonStepDuration.getString("text");
+                String stepDistance = jsonStepDistance.getString("text");
+                SegmentFactory.TravelMode travelMode;
+                if (jsonStep.getString("travel_mode").equals("WALKING")) {
+                    travelMode = WALKING;
+                } else {
+                    travelMode = BUS;
+                }
+                PathSegment newSegment = segmentFactory.getSegment(travelMode, startLocation,
+                        endLocation, duration, distance);
+                //TODO: store encoded polylines
+                if (travelMode == BUS) {
+                    JSONObject jsonTransitDetails = jsonStep.getJSONObject("transit_details");
+                    JSONObject jsonArrivalStop = jsonTransitDetails.getJSONObject("arrival_stop");
+                    JSONObject jsonDepartureStop = jsonTransitDetails.getJSONObject("departure_stop");
+                    JSONObject jsonTransitDepartureTime = jsonTransitDetails.getJSONObject("departure_time");
+                    JSONObject jsonTransitArrivalTime = jsonTransitDetails.getJSONObject("arrival_time");
+                    JSONObject jsonTransitLine = jsonTransitDetails.getJSONObject("line");
+                    String headsign = jsonTransitDetails.getString("headsign");
+                    int numStops = jsonTransitDetails.getInt("num_stops");
+                    ((BusSegment) newSegment).setDepartureTime(jsonTransitDepartureTime.getString("text"));
+                    ((BusSegment) newSegment).setArrivalTime(jsonTransitArrivalTime.getString("text"));
+                    ((BusSegment) newSegment).setStartStop(jsonDepartureStop.getString("name"));
+                    ((BusSegment) newSegment).setEndStop(jsonArrivalStop.getString("name"));
+                    ((BusSegment) newSegment).setBusHeadsign(headsign);
+                    ((BusSegment) newSegment).setNumStops(numStops);
+                    ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("name"));
+                }
+                newPath.getPathSegments().add(newSegment);
+            }
+            paths.add(newPath);
+        }
+
+        listener.onGenerateSuccess(paths);
+    }
+
+    //based on
+    // http://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java
+    private List<LatLng> decodePolyline(String encoded) {
+        List<LatLng> poly = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+            LatLng p = new LatLng((((double) lng / 1E5) * 1E6), (((double) lng / 1E5) * 1E6));
+            poly.add(p);
+        }
+        return poly;
+    }
 }
+
+
+
+
+
