@@ -33,7 +33,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, DirectionGeneratorListener {
@@ -64,7 +63,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
 
         btnNavigation = (Button)findViewById(R.id.search_button);
         mDrawerList = (ListView)findViewById(R.id.navList);
