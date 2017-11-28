@@ -1,6 +1,6 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -46,7 +46,7 @@ public class signup extends Fragment {
 
 
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.signup_frag, new Home())
+                    getFragmentManager().beginTransaction().replace(R.id.signup_frag, MapFragment.getInstance())
                             .commit();
 
                     break;
@@ -88,7 +88,7 @@ public class signup extends Fragment {
         //check data base
 
         else {
-            getFragmentManager().beginTransaction().replace(R.id.signup_frag, new Home())
+            getFragmentManager().beginTransaction().replace(R.id.signup_frag, MapFragment.getInstance())
                     .commit();
         }
 

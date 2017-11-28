@@ -1,7 +1,7 @@
 package com.teamruse.rarerare.tritontravel;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
@@ -43,7 +43,7 @@ public class History extends Fragment {
             switch (v.getId()) {
                 case R.id.back:
                     //startActivity(new Intent(login.this, signup.class));
-                    getFragmentManager().beginTransaction().replace(R.id.history_frag, new Home())
+                    getFragmentManager().beginTransaction().replace(R.id.history_frag, MapFragment.getInstance())
                             .commit();
                     break;
 

@@ -1,12 +1,13 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,23 @@ public class Feedback extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.feed_frag, new Home()).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.feed_frag, MapFragment.getInstance()).commit();
                     break;
 
                 case R.id.send_fb:
-                    send_click(myView);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        send_click(myView);
+                    } else {
+                        // 1. Instantiate an AlertDialog.Builder with its constructor
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                        // 2. Chain together various setter methods to set the dialog characteristics
+                        builder.setMessage("This feature requires API lv.23.")
+                                .setTitle("API level is too low!");
+
+                        // 3. Get the AlertDialog from create()
+                        AlertDialog dialog = builder.create();
+                    }
                     break;
             }
         }

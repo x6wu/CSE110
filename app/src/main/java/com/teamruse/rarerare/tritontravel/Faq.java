@@ -1,6 +1,6 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -38,7 +38,7 @@ public class Faq extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.faq_frag, new Home())
+                    getFragmentManager().beginTransaction().replace(R.id.faq_frag, MapFragment.getInstance())
                             .commit();
                     break;
 

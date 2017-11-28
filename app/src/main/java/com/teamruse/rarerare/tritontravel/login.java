@@ -2,7 +2,7 @@ package com.teamruse.rarerare.tritontravel;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
@@ -50,7 +50,7 @@ public class login extends Fragment {
                         break;
 
                     case R.id.back:
-                        getFragmentManager().beginTransaction().replace(R.id.login_view, new Home())
+                        getFragmentManager().beginTransaction().replace(R.id.login_view, MapFragment.getInstance())
                                 .commit();
 
                         break;
@@ -85,7 +85,7 @@ public class login extends Fragment {
         //data base check
 
         else {
-            getFragmentManager().beginTransaction().replace(R.id.login_view, new Home())
+            getFragmentManager().beginTransaction().replace(R.id.login_view, MapFragment.getInstance())
                     .commit();
         }
 

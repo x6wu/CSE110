@@ -1,7 +1,7 @@
 package com.teamruse.rarerare.tritontravel;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
@@ -77,7 +77,7 @@ public class Peaktime extends Fragment {
             if (v.getId() == R.id.back) {
 
                 //startActivity(new Intent(login.this, signup.class));
-                getFragmentManager().beginTransaction().replace(R.id.peak_frag, new Home())
+                getFragmentManager().beginTransaction().replace(R.id.peak_frag, MapFragment.getInstance())
                         .commit();
 
             }
