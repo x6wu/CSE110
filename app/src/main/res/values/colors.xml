@@ -3,6 +3,6 @@
     <color name="colorPrimary">#FECC00</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FECC00</color>
-    <color name="dark_blue">#064264</color>
+    <color name="blue">#064264</color>
     <color name="yellow">#FECC00</color>
 </resources>

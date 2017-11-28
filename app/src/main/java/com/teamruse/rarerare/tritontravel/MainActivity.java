@@ -1,266 +1,115 @@
 package com.teamruse.rarerare.tritontravel;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Location;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-import java.util.List;
-
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback, DirectionGeneratorListener {
-    public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public static final String TAG = "Main_Activity";
-    private String mOrigin = "";
-    private String mDest = "";
-    private Marker mOriginMarker;
-    private Marker mDestMarker;
-    private Button btnNavigation;
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
-    private Location mLastKnownLocation;
-    private Marker mLastKnownLocationMarker;
-    private boolean mLocationPermissionGranted;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-    private LatLng mDefaultLatLng = new LatLng(41.881832, -87.623177);
-            //new LatLng(32.879409, -117.2389395);
-    private int mDefaultZoom = 15;
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-
-    //Shuyuan's update on map padding
-    //private int map_top_padding = 0;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 
+public class MainActivity extends AppCompatActivity
+        implements MapFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
-
-        btnNavigation = (Button)findViewById(R.id.search_button);
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        addDrawerItems();
-
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
-        //initialize autocompleteFragment bars
-        PlaceAutocompleteFragment autocompleteFragmentOrigin = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment_origin);
-        PlaceAutocompleteFragment autocompleteFragmentDest = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment_dest);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-        //set autocompleteFragment backgrounds
-        autocompleteFragmentOrigin.getView().setBackgroundColor(Color.WHITE);
-        autocompleteFragmentDest.getView().setBackgroundColor(Color.WHITE);
-
-        /*
-        map_top_padding = autocompleteFragmentDest.getView().getHeight() +
-                autocompleteFragmentOrigin.getView().getHeight();
-        Log.i("padding", String.valueOf(map_top_padding));
-        */
-        //set onPlaceSelectedListener
-        autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                if(mOriginMarker != null){
-                    mOriginMarker.remove();
-                }
-                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
-                mOrigin = place.getAddress().toString();
-                Log.d("input", mOrigin);
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.i("selector", "An error occurred: " + status);
-            }
-        });
-
-        autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                if(mDestMarker != null){
-                    mDestMarker.remove();
-                }
-                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
-                mDest = place.getAddress().toString();
-                Log.d("input", mDest);
-            }
-
-            @Override
-            public void onError(Status status) {
-                //TODO
-            }
-        });
-
-        btnNavigation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO: navigation button callback
-                sendRequest();
-            }
-        });
-
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void sendRequest(){
-        new DirectionGenerator(this, mOrigin, mDest).generate();
-
-    }
-
-
-    private void addDrawerItems(){
-        String[] optionArray = {"Sign up/Log in", "History", "Peak Time", "Feedback", "FAQ"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, optionArray);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-
-    private void getLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
         } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            super.onBackPressed();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults){
-        mLocationPermissionGranted = false;
-        switch(requestCode){
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:{
-                if(grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-        updateLocationUI();
-    }
-
-    private void updateLocationUI() {
-        if(mMap == null){
-            return;
-        }
-        try{
-            if(mLocationPermissionGranted){
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                mMap.getUiSettings().setZoomGesturesEnabled(true);
-            }
-            else{
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                mMap.getUiSettings().setZoomGesturesEnabled(true);
-                mLastKnownLocation = null;
-                getLocationPermission();
-            }
-        } catch (SecurityException e){
-            Log.e("Exception %s", e.getMessage());
-        }
-    }
-
-    private void getDeviceLocation(){
-        try {
-            if (mLocationPermissionGranted) {
-                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            mLastKnownLocation = task.getResult();
-                            try {
-                                CameraPosition cameraPosition = new CameraPosition(
-                                        new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),
-                                        mDefaultZoom, mMap.getCameraPosition().tilt,
-                                        mMap.getCameraPosition().bearing);
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-                            }catch (NullPointerException e){
-                                Log.d(TAG, "Current location is null. Using defaults.");
-                                Log.e(TAG, "Exception: %s", task.getException());
-                                CameraPosition cameraPosition = new CameraPosition(
-                                        mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
-                                        mMap.getCameraPosition().bearing);
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                            }
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                            CameraPosition cameraPosition = new CameraPosition(
-                                    mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
-                                    mMap.getCameraPosition().bearing);
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
-                    }
-                });
-            }
-        } catch (SecurityException e){
-            Log.e("Exception :%s", e.getMessage());
-        }
-    }
-
-
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap = googleMap;
-        updateLocationUI();
-        getDeviceLocation();
-        updateLocationUI();
-
-        mMap.setPadding(0,350,0,0);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
-    public void onGenerateStart() {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+
+        if (id == R.id.login) {
+            // Handle the camera action
+            //fragmentManager.beginTransaction().replace(R.id.content_frame, new login())
+            //        .commit();
+            fragmentManager.beginTransaction().replace(R.id.home, new login())
+                    .commit();
+        } else if (id == R.id.history) {
+            // Handle the camera action
+            fragmentManager.beginTransaction().replace(R.id.home, new History())
+                    .commit();
+
+        } else if (id == R.id.pt) {
+            fragmentManager.beginTransaction().replace(R.id.home, new Peaktime())
+                    .commit();
+
+        } else if (id == R.id.fb) {
+            fragmentManager.beginTransaction().replace(R.id.home, new Feedback())
+                    .commit();
+
+        } else if (id == R.id.faq) {
+            fragmentManager.beginTransaction().replace(R.id.home, new Faq())
+                    .commit();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
         //TODO
-    }
-
-    @Override
-    public void onGenerateSuccess(List<Path> paths) {
-
     }
 }
