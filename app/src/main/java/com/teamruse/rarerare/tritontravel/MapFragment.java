@@ -169,6 +169,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_frag_origin);
         SupportPlaceAutocompleteFragment autocompleteFragmentDest = (SupportPlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_frag_dest);
+        autocompleteFragmentOrigin.setHint("From");
+        autocompleteFragmentDest.setHint("To");
 
         //set onPlaceSelectedListener
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -313,6 +315,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
             Log.e(TAG,"Exception :"+e.getMessage());
         }
     }
+
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
