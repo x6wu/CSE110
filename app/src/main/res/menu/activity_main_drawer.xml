@@ -10,10 +10,7 @@
             android:id="@+id/history"
             android:icon="@drawable/history"
             android:title="History" />
-        <item
-            android:id="@+id/pt"
-            android:icon="@drawable/peak"
-            android:title="Peak Time" />
+
         <item
             android:id="@+id/fb"
             android:icon="@drawable/feedback"

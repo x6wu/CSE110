@@ -90,11 +90,7 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.home, new History())
                     .commit();
 
-        } else if (id == R.id.pt) {
-            fragmentManager.beginTransaction().replace(R.id.home, new Peaktime())
-                    .commit();
-
-        } else if (id == R.id.fb) {
+        }  else if (id == R.id.fb) {
             fragmentManager.beginTransaction().replace(R.id.home, new Feedback())
                     .commit();
 

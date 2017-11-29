@@ -68,17 +68,17 @@ public class signup extends Fragment {
 
         if (name.getText().toString().equals("") ) {
 
-            name.setError("Requested field");
+            name.setError("Required");
         }
 
         else if  (msg.getText().toString().equals("") ) {
 
-            msg.setError("Requested field");
+            msg.setError("Required");
         }
 
         else if (psw.getText().toString().equals("") ) {
 
-            psw.setError("Requested field");
+            psw.setError("Required");
         }
 
         else if (!isEmailValid(msg.getText().toString())) {

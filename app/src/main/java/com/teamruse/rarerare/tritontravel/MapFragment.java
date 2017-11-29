@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,10 +34,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONArray;
 
 import java.util.List;
 
@@ -76,6 +80,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     private LatLng mDefaultLatLng = new LatLng(32.880088,  -117.234003);
     //new LatLng(32.879409, -117.2389395);
     private int mDefaultZoom = 15;
+    private LatLngBounds.Builder builder;
+    private LatLngBounds bounds;
 
     View mapView;
 
@@ -177,13 +183,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                builder = new LatLngBounds.Builder();
+                if(mDestMarker != null)
+                    builder.include(mDestMarker.getPosition());
+
                 if(mOriginMarker != null){
                     mOriginMarker.remove();
                 }
+
+
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 mOrigin = place.getAddress().toString();
                 Log.i(TAG, "origin seleted"+mOrigin);
+
+
+                builder.include(mOriginMarker.getPosition());
+                bounds = builder.build();
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(mDefaultZoom));
+
+                int padding = 100; // offset from edges of the map in pixels
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                mMap.animateCamera(cu);
+
+
             }
 
             @Override
@@ -196,12 +221,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                builder = new LatLngBounds.Builder();
+                if(mOriginMarker != null)
+                    builder.include(mOriginMarker.getPosition());
+
                 if(mDestMarker != null){
                     mDestMarker.remove();
                 }
+
+
+
                 mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
                 mDest = place.getAddress().toString();
                 Log.i(TAG, "destination seleted"+mDest);
+
+
+                builder.include(mDestMarker.getPosition());
+
+                bounds = builder.build();
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(mDefaultZoom));
+
+                int padding = 100; // offset from edges of the map in pixels
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                mMap.animateCamera(cu);
+
+
+
             }
 
             @Override
@@ -222,6 +269,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 sendRequest();
             }
         });
+
 
 
     }

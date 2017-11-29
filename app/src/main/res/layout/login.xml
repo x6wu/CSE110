@@ -115,9 +115,10 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/signup"
+            android:background="@color/blue"
             android:fontFamily="Hiragino Sans"
             android:selectAllOnFocus="false"
+
             android:text="Sign up"
             android:textAllCaps="false"
             android:textColor="#FECC00"
@@ -127,7 +128,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login"
-            app:layout_constraintVertical_bias="0.189" />
+            app:layout_constraintVertical_bias="0.189"
+            style="?android:attr/borderlessButtonStyle"/>
 
         <Button
             android:id="@+id/back"
