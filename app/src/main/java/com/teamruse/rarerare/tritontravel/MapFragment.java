@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.app.Activity;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -51,10 +52,8 @@ import java.util.List;
  * Activities that contain this fragment must implement the
  * {@link MapFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, DirectionGeneratorListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
     // TODO:parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -80,70 +79,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
 
     private OnFragmentInteractionListener mListener;
 
-    /*
-    // Container Activity must implement this interface
-    public interface OnMapFragmentSelectedListener {
-        public void onMapSelected(int arg);
-    }
 
-    public void onMapSelected(int arg){}
-    */
 
     public MapFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MapFragment.
-     */
 
-    // TODO: Rename and change types and number of parameters if needed
-    public static MapFragment newInstance(String param1, String param2) {
-        //Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        //fragment.setArguments(args);
-        return new MapFragment();
-    }
 
-    //lazy initiation of singleton pattern for MapFragment
-    //doesn't work, performance is exactly the same as new MapFragment().
-    //TODO: try onSaveInstanceState() below to fix the problem of new instance of MapFragment everytime
-    private static volatile MapFragment instance = null;
-
-    public static MapFragment getInstance() {
-        if (instance == null) {
-            synchronized (MapFragment.class) {
-                if (instance == null) {
-                    instance = new MapFragment();
-                }
-            }
-        }
-        return instance;
-    }
-
-    /*
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //outState.putInt("curChoice", mCurCheckPosition);
     }
-    */
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mOrigin = getArguments().getString(ARG_PARAM1);
-            mDest = getArguments().getString(ARG_PARAM2);
-        }
-        */
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
     }
@@ -178,8 +132,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                     mOriginMarker.remove();
                 }
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
-                mOrigin = place.getAddress().toString();
-                Log.i(TAG, "origin seleted"+mOrigin);
+                //mOrigin = place.getAddress().toString();
+                mOrigin = place.getId();
+                Log.i(TAG, "origin seleted: "+mOrigin);
             }
 
             @Override
@@ -196,13 +151,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                     mDestMarker.remove();
                 }
                 mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
-                mDest = place.getAddress().toString();
-                Log.i(TAG, "destination seleted"+mDest);
+                //mDest = place.getAddress().toString();
+                mDest = place.getId();
+                Log.i(TAG, "destination seleted: "+mDest);
             }
 
             @Override
             public void onError(Status status) {
-                //TODO
+                //TODO:handle Error
+                Log.e(TAG, status.getStatusMessage());
             }
         });
 
@@ -214,8 +171,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         btnNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: navigation button callback
-                sendRequest();
+                //navigation button callback to onFragmentInteraction
+                //MainActivity will handle the sendRequest() part
+                if(mListener != null) {
+                    mListener.onNavRequest(mOrigin, mDest);
+                }
             }
         });
 
@@ -326,25 +286,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     }
 
     @Override
-    public void onGenerateStart() {
-        //TODO
-    }
-
-    @Override
-    public void onGenerateSuccess(List<Path> paths) {
-        //TODO
-    }
-
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
@@ -359,14 +300,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        Log.i(TAG, "onDetach");
     }
 
     //click listener to navigation button
+    //now moved in to MainActivity
+    /*
     private void sendRequest(){
         new DirectionGenerator(this, mOrigin, mDest).generate();
-        Log.i(TAG, "sendRequest() called, no error thrown.");
+        Log.i(TAG, "sendRequest() called");
+        Log.i(TAG, "mOrigin:"+mOrigin+" mDest:"+mDest);
     }
-
+    */
 
     /**
      * This interface must be implemented by activities that contain this
@@ -380,6 +325,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
      */
     public interface OnFragmentInteractionListener {
         // TODO: implement this interface in case we need to communicate with the activity
-        void onFragmentInteraction(Uri uri);
+        void onNavRequest(String origin, String dest);
     }
 }

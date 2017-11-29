@@ -41,7 +41,7 @@ public class Feedback extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.feed_frag, MapFragment.getInstance()).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.feed_frag, new Faq()).commit();
                     break;
 
                 case R.id.send_fb:

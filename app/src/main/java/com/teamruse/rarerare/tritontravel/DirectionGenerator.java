@@ -35,6 +35,8 @@ public class DirectionGenerator {
     private static final String ApiUrl = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String ApiKey = "AIzaSyDL3mGK2R6RvVHzHqhz7f2623iv6gGfU9w";
 
+    private static final String TAG = "Direction_Generator";
+
     public DirectionGenerator(DirectionGeneratorListener listener, String origin, String dest) {
         this.listener = listener;
         this.origin = origin;
@@ -42,10 +44,16 @@ public class DirectionGenerator {
     }
 
     public String buildUrl() {
+        /*
         String originUrl = origin.replaceAll(" ", "+");
         String destUrl = dest.replaceAll(" ", "+");
         return ApiUrl + "origin=" + originUrl + "&destination="
                 + destUrl + "&mode=transit&key=" + ApiKey;
+        */
+        String URL = ApiUrl + "origin=place_id:"+origin+"&destination=place_id"
+                + dest + "&mode=transit&key=" + ApiKey;
+        Log.i(TAG, "Request URL:"+URL);
+        return URL;
     }
 
     public void generate() {

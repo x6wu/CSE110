@@ -50,7 +50,7 @@ public class login extends Fragment {
                         break;
 
                     case R.id.back:
-                        getFragmentManager().beginTransaction().replace(R.id.login_view, MapFragment.getInstance())
+                        getFragmentManager().beginTransaction().replace(R.id.login_view, new MapFragment())
                                 .commit();
 
                         break;
@@ -85,7 +85,7 @@ public class login extends Fragment {
         //data base check
 
         else {
-            getFragmentManager().beginTransaction().replace(R.id.login_view, MapFragment.getInstance())
+            getFragmentManager().beginTransaction().replace(R.id.login_view, new MapFragment())
                     .commit();
         }
 

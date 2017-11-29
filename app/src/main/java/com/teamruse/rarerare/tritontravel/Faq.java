@@ -38,7 +38,7 @@ public class Faq extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.faq_frag, MapFragment.getInstance())
+                    getFragmentManager().beginTransaction().replace(R.id.faq_frag, new MapFragment())
                             .commit();
                     break;
 
