@@ -133,8 +133,8 @@
 
         <Button
             android:id="@+id/back"
-            android:layout_width="51dp"
-            android:layout_height="80dp"
+            android:layout_width="51px"
+            android:layout_height="80px"
             android:background="@drawable/back"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -146,6 +146,7 @@
             android:layout_marginBottom="8dp"
             app:layout_constraintHorizontal_bias="0.079"
             app:layout_constraintVertical_bias="0.057" />
+
 
         <Button
             android:id="@+id/forget"
