@@ -14,7 +14,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#064264"
-    tools:context="com.teamruse.rarerare.tritontravel.forget"
+    tools:context="com.teamruse.rarerare.tritontravel.MainActivity"
     tools:layout_editor_absoluteY="25dp"
     tools:layout_editor_absoluteX="0dp"
     >

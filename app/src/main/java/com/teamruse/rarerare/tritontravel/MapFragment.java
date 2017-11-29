@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.app.Activity;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -62,10 +63,11 @@ import java.util.List;
  * Activities that contain this fragment must implement the
  * {@link MapFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, DirectionGeneratorListener {
+
+public class MapFragment extends Fragment implements OnMapReadyCallback,
+                                                     GoogleMap.OnMyLocationButtonClickListener {
+
     // TODO:parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -97,71 +99,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
 
     private OnFragmentInteractionListener mListener;
 
-    private LatLng currLatLng;
-    /*
-    // Container Activity must implement this interface
-    public interface OnMapFragmentSelectedListener {
-        public void onMapSelected(int arg);
-    }
 
-    public void onMapSelected(int arg){}
-    */
+    private LatLng currLatLng;
+
 
     public MapFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MapFragment.
-     */
 
-    // TODO: Rename and change types and number of parameters if needed
-    public static MapFragment newInstance(String param1, String param2) {
-        //Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        //fragment.setArguments(args);
-        return new MapFragment();
-    }
 
-    //lazy initiation of singleton pattern for MapFragment
-    //doesn't work, performance is exactly the same as new MapFragment().
-    //TODO: try onSaveInstanceState() below to fix the problem of new instance of MapFragment everytime
-    private static volatile MapFragment instance = null;
-
-    public static MapFragment getInstance() {
-        if (instance == null) {
-            synchronized (MapFragment.class) {
-                if (instance == null) {
-                    instance = new MapFragment();
-                }
-            }
-        }
-        return instance;
-    }
-
-    /*
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //outState.putInt("curChoice", mCurCheckPosition);
     }
-    */
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mOrigin = getArguments().getString(ARG_PARAM1);
-            mDest = getArguments().getString(ARG_PARAM2);
-        }
-        */
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
     }
@@ -209,12 +167,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                     mOriginMarker.remove();
                 }
 
-
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                mOrigin = place.getAddress().toString();
-                Log.i(TAG, "origin seleted"+mOrigin);
-
+                //mOrigin = place.getAddress().toString();
+                mOrigin = place.getId();
+                Log.i(TAG, "origin seleted: " + place.getAddress().toString());
+                Log.i(TAG, "\tId: " + mOrigin);
 
                 builder.include(mOriginMarker.getPosition());
                 bounds = builder.build();
@@ -273,10 +231,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
 
 
 
-                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
-                mDest = place.getAddress().toString();
-                Log.i(TAG, "destination seleted"+mDest);
+                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
+                //mDest = place.getAddress().toString();
+                mDest = place.getId();
+                Log.i(TAG, "destination seleted: " + place.getAddress().toString());
+                Log.i(TAG, "\tId: " + mDest);
 
                 builder.include(mDestMarker.getPosition());
 
@@ -301,7 +262,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
 
             @Override
             public void onError(Status status) {
-                //TODO
+                //TODO:handle Error
+                Log.e(TAG, status.getStatusMessage());
             }
         });
 
@@ -328,59 +290,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
             @Override
             public void onClick(View view) {
                 //TODO: navigation button callback
-                sendRequest();
+                //sendRequest();
 
 
 
 
+                //navigation button callback to onFragmentInteraction
+                //MainActivity will handle the sendRequest() part
+                if(mListener != null) {
+                    mListener.onNavRequest(mOrigin, mDest);
+                }
             }
         });
 
-        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
-
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-        }
-
-        /*
-         * Ruoyu Xu
-         * Set text in origin textbox to current location
-         */
-        Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
-        placeResult.addOnCompleteListener(
-                new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
-                    @Override
-                    public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
-                        try{
-                            PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
-                            Log.d(TAG, "got likely places");
-                            Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
-                            autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
-
-                            mOrigin=mostLikelyPlace.getAddress().toString();
-                            Log.i(TAG, "origin seleted" + mOrigin);
-                            likelyPlaces.release();
-                        }catch (Exception e){
-                            Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
-
-                        }
-
-                    }
-                }
-        );
-
-
-
-
-
-
+        fillInOriginSearchBox();
     }
 
 
@@ -488,25 +411,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         updateLocationUI();
 
         mMap.setPadding(0,350,0,0);
-    }
-
-    @Override
-    public void onGenerateStart() {
-        //TODO
-    }
-
-    @Override
-    public void onGenerateSuccess(List<Path> paths) {
-        //TODO
-    }
-
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        mMap.setOnMyLocationButtonClickListener(this);
     }
 
     @Override
@@ -524,15 +429,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        Log.i(TAG, "onDetach");
     }
 
     //click listener to navigation button
+    //now moved in to MainActivity
+    /*
     private void sendRequest(){
         new DirectionGenerator(this, mOrigin, mDest).generate();
-        Log.i(TAG, "sendRequest() called, no error thrown.");
-
+        Log.i(TAG, "sendRequest() called");
+        Log.i(TAG, "mOrigin:"+mOrigin+" mDest:"+mDest);
     }
-
+    */
 
     /**
      * This interface must be implemented by activities that contain this
@@ -546,7 +454,55 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
      */
     public interface OnFragmentInteractionListener {
         // TODO: implement this interface in case we need to communicate with the activity
-        void onFragmentInteraction(Uri uri);
+        void onNavRequest(String origin, String dest);
+    }
+    @Override
+    public boolean onMyLocationButtonClick() {
+
+        fillInOriginSearchBox();
+        return false;
+    }
+
+    private void fillInOriginSearchBox(){
+        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+        }
+
+        /*
+         * Ruoyu Xu
+         * Set text in origin textbox to current location
+         */
+        Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
+        placeResult.addOnCompleteListener(
+                new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
+                        try{
+                            PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+                            Log.d(TAG, "got likely places");
+                            Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
+                            autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
+
+                            mOrigin=mostLikelyPlace.getAddress().toString();
+                            Log.i(TAG, "origin seleted" + mOrigin);
+                            likelyPlaces.release();
+                        }catch (Exception e){
+                            Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
+
+                        }
+
+                    }
+                }
+        );
     }
 
 

@@ -43,7 +43,7 @@ public class History extends Fragment {
             switch (v.getId()) {
                 case R.id.back:
                     //startActivity(new Intent(login.this, signup.class));
-                    getFragmentManager().beginTransaction().replace(R.id.history_frag, MapFragment.getInstance())
+                    getFragmentManager().beginTransaction().replace(R.id.history_frag, new MapFragment())
                             .commit();
                     break;
 

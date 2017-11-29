@@ -46,7 +46,7 @@ public class signup extends Fragment {
 
 
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.signup_frag, MapFragment.getInstance())
+                    getFragmentManager().beginTransaction().replace(R.id.signup_frag, new MapFragment())
                             .commit();
 
                     break;
@@ -88,7 +88,7 @@ public class signup extends Fragment {
         //check data base
 
         else {
-            getFragmentManager().beginTransaction().replace(R.id.signup_frag, MapFragment.getInstance())
+            getFragmentManager().beginTransaction().replace(R.id.signup_frag, new MapFragment())
                     .commit();
         }
 
