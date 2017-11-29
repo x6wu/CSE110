@@ -24,6 +24,11 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.PlacesOptions;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,6 +71,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     private Marker mDestMarker;
     private Button btnNavigation;
     private GoogleMap mMap;
+
+    private SupportPlaceAutocompleteFragment autocompleteFragmentOrigin;
+    private SupportPlaceAutocompleteFragment autocompleteFragmentDest;
+
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mLastKnownLocation;
@@ -80,6 +89,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
 
     private OnFragmentInteractionListener mListener;
 
+    private LatLng currLatLng;
     /*
     // Container Activity must implement this interface
     public interface OnMapFragmentSelectedListener {
@@ -165,23 +175,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         mapFragment.getMapAsync(this);
 
         //initialize autocompleteFragment bars
-        SupportPlaceAutocompleteFragment autocompleteFragmentOrigin = (SupportPlaceAutocompleteFragment)
+        autocompleteFragmentOrigin = (SupportPlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_frag_origin);
-        SupportPlaceAutocompleteFragment autocompleteFragmentDest = (SupportPlaceAutocompleteFragment)
+        autocompleteFragmentDest = (SupportPlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_frag_dest);
         autocompleteFragmentOrigin.setHint("From");
         autocompleteFragmentDest.setHint("To");
 
         //set onPlaceSelectedListener
+
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                if(mOriginMarker != null){
+
+                if (mOriginMarker != null) {
                     mOriginMarker.remove();
                 }
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
                 mOrigin = place.getAddress().toString();
-                Log.i(TAG, "origin seleted"+mOrigin);
+                Log.i(TAG, "origin seleted" + mOrigin);
             }
 
             @Override
@@ -194,12 +206,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                if(mDestMarker != null){
+                if (mDestMarker != null) {
                     mDestMarker.remove();
                 }
                 mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
                 mDest = place.getAddress().toString();
-                Log.i(TAG, "destination seleted"+mDest);
+                Log.i(TAG, "destination seleted" + mDest);
             }
 
             @Override
@@ -212,7 +224,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         autocompleteFragmentOrigin.getView().setBackgroundColor(Color.WHITE);
         autocompleteFragmentDest.getView().setBackgroundColor(Color.WHITE);
 
-        btnNavigation = (Button)mapView.findViewById(R.id.search_button);
+        btnNavigation = (Button) mapView.findViewById(R.id.search_button);
         btnNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -220,6 +232,49 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 sendRequest();
             }
         });
+
+        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+        }
+
+        /*
+         * Ruoyu Xu
+         * Set text in origin textbox to current location
+         */
+        Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
+        placeResult.addOnCompleteListener(
+                new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
+                        try{
+                            PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+                            Log.d(TAG, "got likely places");
+                            Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
+                            autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
+
+                            mOrigin=mostLikelyPlace.getAddress().toString();
+                            Log.i(TAG, "origin seleted" + mOrigin);
+                            likelyPlaces.release();
+                        }catch (Exception e){
+                            Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
+
+                        }
+
+                    }
+                }
+        );
+
+
+
 
 
     }
@@ -283,8 +338,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                         if (task.isSuccessful()) {
                             mLastKnownLocation = task.getResult();
                             try {
+                                currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
                                 CameraPosition cameraPosition = new CameraPosition(
-                                        new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),
+                                        currLatLng,
                                         mDefaultZoom, mMap.getCameraPosition().tilt,
                                         mMap.getCameraPosition().bearing);
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
