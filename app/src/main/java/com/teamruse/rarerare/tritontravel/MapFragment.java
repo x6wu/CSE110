@@ -30,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -72,7 +73,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     private Marker mLastKnownLocationMarker;
     private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private LatLng mDefaultLatLng = new LatLng(41.881832, -87.623177);
+    private LatLng mDefaultLatLng = new LatLng(32.880088,  -117.234003);
     //new LatLng(32.879409, -117.2389395);
     private int mDefaultZoom = 15;
 
@@ -179,7 +180,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 if(mOriginMarker != null){
                     mOriginMarker.remove();
                 }
-                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 mOrigin = place.getAddress().toString();
                 Log.i(TAG, "origin seleted"+mOrigin);
             }
@@ -370,6 +372,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     private void sendRequest(){
         new DirectionGenerator(this, mOrigin, mDest).generate();
         Log.i(TAG, "sendRequest() called, no error thrown.");
+
     }
 
 
