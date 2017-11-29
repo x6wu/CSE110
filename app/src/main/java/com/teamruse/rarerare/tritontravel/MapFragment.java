@@ -25,18 +25,28 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.PlacesOptions;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONArray;
 
 import java.util.List;
 
@@ -53,7 +63,10 @@ import java.util.List;
  * {@link MapFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+
+public class MapFragment extends Fragment implements OnMapReadyCallback,
+                                                     GoogleMap.OnMyLocationButtonClickListener {
+
     // TODO:parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -65,20 +78,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Marker mDestMarker;
     private Button btnNavigation;
     private GoogleMap mMap;
+
+    private SupportPlaceAutocompleteFragment autocompleteFragmentOrigin;
+    private SupportPlaceAutocompleteFragment autocompleteFragmentDest;
+
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mLastKnownLocation;
     private Marker mLastKnownLocationMarker;
     private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private LatLng mDefaultLatLng = new LatLng(41.881832, -87.623177);
+    private LatLng mDefaultLatLng = new LatLng(32.880088,  -117.234003);
     //new LatLng(32.879409, -117.2389395);
     private int mDefaultZoom = 15;
+    private LatLngBounds.Builder builder;
+    private LatLngBounds bounds;
 
     View mapView;
 
     private OnFragmentInteractionListener mListener;
 
+
+    private LatLng currLatLng;
 
 
     public MapFragment() {
@@ -119,22 +140,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         //initialize autocompleteFragment bars
-        SupportPlaceAutocompleteFragment autocompleteFragmentOrigin = (SupportPlaceAutocompleteFragment)
+        autocompleteFragmentOrigin = (SupportPlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_frag_origin);
-        SupportPlaceAutocompleteFragment autocompleteFragmentDest = (SupportPlaceAutocompleteFragment)
+        autocompleteFragmentDest = (SupportPlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_frag_dest);
+        autocompleteFragmentOrigin.setHint("From");
+        autocompleteFragmentDest.setHint("To");
 
         //set onPlaceSelectedListener
+
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+
+                builder = new LatLngBounds.Builder();
+                if(mDestMarker != null)
+                    builder.include(mDestMarker.getPosition());
+
                 if(mOriginMarker != null){
+
+                }
+
+                if (mOriginMarker != null) {
                     mOriginMarker.remove();
                 }
-                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+
+                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 //mOrigin = place.getAddress().toString();
                 mOrigin = place.getId();
-                Log.i(TAG, "origin seleted: "+mOrigin);
+                Log.i(TAG, "origin seleted: " + place.getAddress().toString());
+                Log.i(TAG, "\tId: " + mOrigin);
+
+                builder.include(mOriginMarker.getPosition());
+                bounds = builder.build();
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(mDefaultZoom));
+
+                int padding = 100; // offset from edges of the map in pixels
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                mMap.animateCamera(cu);
             }
 
             @Override
@@ -147,13 +193,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                builder = new LatLngBounds.Builder();
+                if(mOriginMarker != null)
+                    builder.include(mOriginMarker.getPosition());
+
                 if(mDestMarker != null){
+
+                }
+                if (mDestMarker != null) {
                     mDestMarker.remove();
                 }
-                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+
+
+
+                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
                 //mDest = place.getAddress().toString();
                 mDest = place.getId();
-                Log.i(TAG, "destination seleted: "+mDest);
+                Log.i(TAG, "destination seleted: " + place.getAddress().toString());
+                Log.i(TAG, "\tId: " + mDest);
+
+                builder.include(mDestMarker.getPosition());
+
+                bounds = builder.build();
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(mDefaultZoom));
+
+                int padding = 100; // offset from edges of the map in pixels
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                mMap.animateCamera(cu);
             }
 
             @Override
@@ -167,7 +237,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragmentOrigin.getView().setBackgroundColor(Color.WHITE);
         autocompleteFragmentDest.getView().setBackgroundColor(Color.WHITE);
 
-        btnNavigation = (Button)mapView.findViewById(R.id.search_button);
+        btnNavigation = (Button) mapView.findViewById(R.id.search_button);
         btnNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -179,7 +249,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-
+        fillInOriginSearchBox();
     }
 
 
@@ -241,8 +311,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         if (task.isSuccessful()) {
                             mLastKnownLocation = task.getResult();
                             try {
+                                currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
                                 CameraPosition cameraPosition = new CameraPosition(
-                                        new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),
+                                        currLatLng,
                                         mDefaultZoom, mMap.getCameraPosition().tilt,
                                         mMap.getCameraPosition().bearing);
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
@@ -274,6 +345,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -283,6 +357,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         updateLocationUI();
 
         mMap.setPadding(0,350,0,0);
+        mMap.setOnMyLocationButtonClickListener(this);
     }
 
     @Override
@@ -326,5 +401,53 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public interface OnFragmentInteractionListener {
         // TODO: implement this interface in case we need to communicate with the activity
         void onNavRequest(String origin, String dest);
+    }
+    @Override
+    public boolean onMyLocationButtonClick() {
+
+        fillInOriginSearchBox();
+        return false;
+    }
+
+    private void fillInOriginSearchBox(){
+        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+        }
+
+        /*
+         * Ruoyu Xu
+         * Set text in origin textbox to current location
+         */
+        Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
+        placeResult.addOnCompleteListener(
+                new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
+                        try{
+                            PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+                            Log.d(TAG, "got likely places");
+                            Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
+                            autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
+
+                            mOrigin=mostLikelyPlace.getAddress().toString();
+                            Log.i(TAG, "origin seleted" + mOrigin);
+                            likelyPlaces.release();
+                        }catch (Exception e){
+                            Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
+
+                        }
+
+                    }
+                }
+        );
     }
 }

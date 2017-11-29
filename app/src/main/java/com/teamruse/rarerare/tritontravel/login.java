@@ -70,11 +70,11 @@ public class login extends Fragment {
         EditText psw = (EditText) myView.findViewById(R.id.password);
 
         if (msg.getText().toString().equals("")) {
-            msg.setError("Requested field");
+            msg.setError("Required");
         }
 
         else if (psw.getText().toString().equals("")) {
-            psw.setError("Requested field");
+            psw.setError("Required");
         }
 
 

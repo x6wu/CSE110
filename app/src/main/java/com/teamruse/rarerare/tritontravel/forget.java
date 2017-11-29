@@ -57,7 +57,7 @@ public class forget extends Fragment {
 
         EditText msg = (EditText) myView.findViewById(R.id.email);
         if (msg.getText().toString().equals("")) {
-            msg.setError("Requested field");
+            msg.setError("Required");
         }
         else if (!isEmailValid(msg.getText().toString())) {
             msg.setError("Invalid email");
