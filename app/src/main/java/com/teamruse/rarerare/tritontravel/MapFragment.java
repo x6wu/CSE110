@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,10 +43,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import org.json.JSONArray;
 
 import java.util.List;
 
@@ -191,6 +192,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
 
         //set onPlaceSelectedListener
 
+
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -218,15 +220,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 bounds = builder.build();
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(mDefaultZoom));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-                int padding = 100; // offset from edges of the map in pixels
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                mMap.animateCamera(cu);
+                if (mDestMarker!= null) {
+
+                    int padding = 300; // offset from edges of the map in pixels
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    mMap.animateCamera(cu);
+                }
 
 
                 Log.i(TAG, "origin seleted" + mOrigin);
+
             }
+
 
             @Override
             public void onError(Status status) {
@@ -234,6 +241,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 Log.i(TAG, "onError(). An error occurred: " + status);
             }
         });
+
+        autocompleteFragmentOrigin.getView().findViewById(R.id.place_autocomplete_clear_button)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // example : way to access view from PlaceAutoCompleteFragment
+                        // ((EditText) autocompleteFragment.getView()
+                        // .findViewById(R.id.place_autocomplete_search_input)).setText("");
+                        autocompleteFragmentOrigin.setText("");
+                        view.setVisibility(View.GONE);
+
+                        if (mOriginMarker != null)
+                            mOriginMarker.remove();
+                    }
+                });
 
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -261,22 +283,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
                 bounds = builder.build();
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(mDefaultZoom));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-                int padding = 100; // offset from edges of the map in pixels
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                mMap.animateCamera(cu);
+                if (mOriginMarker != null) {
 
+                    int padding = 300; // offset from edges of the map in pixels
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    mMap.animateCamera(cu);
+                }
 
 
                 Log.i(TAG, "destination seleted" + mDest);
+
+
             }
+
 
             @Override
             public void onError(Status status) {
                 //TODO
             }
         });
+
+        autocompleteFragmentDest.getView().findViewById(R.id.place_autocomplete_clear_button)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // example : way to access view from PlaceAutoCompleteFragment
+                        // ((EditText) autocompleteFragment.getView()
+                        // .findViewById(R.id.place_autocomplete_search_input)).setText("");
+                        autocompleteFragmentDest.setText("");
+                        view.setVisibility(View.GONE);
+                        if (mDestMarker != null)
+                            mDestMarker.remove();
+                    }
+                });
 
         //set autocompleteFragment backgrounds
         autocompleteFragmentOrigin.getView().setBackgroundColor(Color.WHITE);
@@ -288,6 +329,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
             public void onClick(View view) {
                 //TODO: navigation button callback
                 sendRequest();
+
+
+
+
             }
         });
 
@@ -503,4 +548,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         // TODO: implement this interface in case we need to communicate with the activity
         void onFragmentInteraction(Uri uri);
     }
+
+
+
+
+
+
+
+
+
+
+
 }
