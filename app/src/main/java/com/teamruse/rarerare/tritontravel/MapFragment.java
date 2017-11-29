@@ -64,7 +64,7 @@ import java.util.List;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, DirectionGeneratorListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, DirectionGeneratorListener,GoogleMap.OnMyLocationButtonClickListener {
     // TODO:parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -291,51 +291,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
             }
         });
 
-        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
-
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-        }
-
-        /*
-         * Ruoyu Xu
-         * Set text in origin textbox to current location
-         */
-        Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
-        placeResult.addOnCompleteListener(
-                new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
-                    @Override
-                    public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
-                        try{
-                            PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
-                            Log.d(TAG, "got likely places");
-                            Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
-                            autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
-
-                            mOrigin=mostLikelyPlace.getAddress().toString();
-                            Log.i(TAG, "origin seleted" + mOrigin);
-                            likelyPlaces.release();
-                        }catch (Exception e){
-                            Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
-
-                        }
-
-                    }
-                }
-        );
-
-
-
-
-
-
+        fillInOriginSearchBox();
     }
 
 
@@ -443,6 +399,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
         updateLocationUI();
 
         mMap.setPadding(0,350,0,0);
+        mMap.setOnMyLocationButtonClickListener(this);
     }
 
     @Override
@@ -502,5 +459,52 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Directi
     public interface OnFragmentInteractionListener {
         // TODO: implement this interface in case we need to communicate with the activity
         void onFragmentInteraction(Uri uri);
+    }
+    @Override
+    public boolean onMyLocationButtonClick() {
+
+        fillInOriginSearchBox();
+        return false;
+    }
+    private void fillInOriginSearchBox(){
+        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+        }
+
+        /*
+         * Ruoyu Xu
+         * Set text in origin textbox to current location
+         */
+        Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
+        placeResult.addOnCompleteListener(
+                new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
+                        try{
+                            PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+                            Log.d(TAG, "got likely places");
+                            Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
+                            autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
+
+                            mOrigin=mostLikelyPlace.getAddress().toString();
+                            Log.i(TAG, "origin seleted" + mOrigin);
+                            likelyPlaces.release();
+                        }catch (Exception e){
+                            Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
+
+                        }
+
+                    }
+                }
+        );
     }
 }
