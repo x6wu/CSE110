@@ -51,7 +51,7 @@ public class Faq extends Fragment {
 
     public void defineButtons(View view) {
         view.findViewById(R.id.back).setOnClickListener(buttonClickListener);
-        view.findViewById(R.id.ask).setOnClickListener(buttonClickListener);
+        //view.findViewById(R.id.ask).setOnClickListener(buttonClickListener);
     }
 
     @Override
@@ -170,10 +170,10 @@ public class Faq extends Fragment {
                             .commit();
                     break;
 
-                case R.id.ask:
+                /*case R.id.ask:
                     getFragmentManager().beginTransaction().replace(R.id.faq_frag, new Feedback())
                             .commit();
-                    break;
+                    break;*/
             }
         }
 
