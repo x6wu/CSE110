@@ -23,6 +23,8 @@ public class login extends Fragment {
     View myView;
     SignInButton googleButton;
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

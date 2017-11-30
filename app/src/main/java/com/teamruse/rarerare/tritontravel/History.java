@@ -11,8 +11,14 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /**
  * Created by JingJing on 11/13/17.
@@ -22,18 +28,55 @@ import android.widget.Toast;
 public class History extends Fragment {
 
     View myView;
+    public static ArrayList<StopHistory> stopsList;
+    private ArrayList<StopHistory> listStops;
+
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+
         myView = inflater.inflate(R.layout.history, container, false);
         defineButtons(myView);
+        if ( History.stopsList == null) {
+            History.stopsList = new ArrayList<>();
+        }
+
+       listStops = stopsList;
+        TextView noHis = (TextView) myView.findViewById(R.id.noHistory);
+
+        if (stopsList.isEmpty()) {
+            noHis.setText("No history");
+        }
+        else {
+            noHis.setText("");
+        }
+
+                //getStopHistory();
+        ListView lv = (ListView)myView.findViewById(R.id.stopListView);
+        lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
+
+       lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+           @Override
+           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               getFragmentManager().beginTransaction().replace(R.id.history_frag, new MapFragment())
+                       .commit();
+
+
+           }
+       });
+
+
         return myView;
     }
+
+
 
     public void defineButtons(View view) {
         view.findViewById(R.id.back).setOnClickListener(buttonClickListener);
         view.findViewById(R.id.clear).setOnClickListener(buttonClickListener);
+        //view.findViewById(R.id.delete).setOnClickListener(buttonClickListener);
     }
 
     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
@@ -51,17 +94,24 @@ public class History extends Fragment {
                     //startActivity(new Intent(login.this, signup.class));
                     clearHist();
                     break;
+
             }
         }
 
     };
 
     public void clearHist() {
+
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert.setMessage("Clear all history?");
         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                stopsList.clear();
+               listStops = stopsList;
+                ListView lv = (ListView)myView.findViewById(R.id.stopListView);
+                lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
+
                 Toast.makeText(getContext(),"Cleared", Toast.LENGTH_SHORT).show();
             }
         });

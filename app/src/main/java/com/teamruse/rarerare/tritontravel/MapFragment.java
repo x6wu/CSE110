@@ -7,10 +7,12 @@ import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.app.Activity;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -49,6 +51,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -151,6 +157,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         //set onPlaceSelectedListener
 
 
+
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -216,6 +223,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 });
 
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onPlaceSelected(Place place) {
                 builder = new LatLngBounds.Builder();
@@ -229,6 +237,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     mDestMarker.remove();
                 }
 
+                if ( History.stopsList == null) {
+                    History.stopsList = new ArrayList<>();
+                }
+
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
+                Date date = new Date();
+                History.stopsList.add(0, new StopHistory(place.getName().toString(), dateFormat.format(date)));
+
+
 
 
                 mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
@@ -236,6 +253,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 //mDest = place.getAddress().toString();
                 mDest = place.getId();
+
                 Log.i(TAG, "destination seleted: " + place.getAddress().toString());
                 Log.i(TAG, "\tId: " + mDest);
 
@@ -255,6 +273,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
                 Log.i(TAG, "destination seleted" + mDest);
+
+
 
 
             }

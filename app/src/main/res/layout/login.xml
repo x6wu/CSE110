@@ -39,10 +39,10 @@
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/login"
-            app:colorScheme="dark"
             android:layout_width="160dp"
             android:layout_height="56dp"
-            android:layout_marginBottom="240dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="84dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
 
@@ -50,11 +50,10 @@
             android:selectAllOnFocus="false"
             android:text="@string/common_signin_button_text_long"
             android:textAllCaps="false"
-            android:layout_centerHorizontal="true"
             android:textColor="#064264"
             android:textSize="18sp"
+            app:colorScheme="dark"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.529"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 
