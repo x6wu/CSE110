@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "902499584199",
+    "firebase_url": "https://tritontravel-db.firebaseio.com",
+    "project_id": "tritontravel-db",
+    "storage_bucket": "tritontravel-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902499584199:android:e197f5102f622f72",
+        "android_client_info": {
+          "package_name": "com.teamruse.rarerare.tritontravel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902499584199-2l5ljcr6d7or6dre24ol4tnfitvit0gp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teamruse.rarerare.tritontravel",
+            "certificate_hash": "3e0e4bdc55e25aaf131183851fa7f0c7403727a9"
+          }
+        },
+        {
+          "client_id": "902499584199-64m4i0fguu2mec2mvae47jq1pjc9a6it.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUFVApXXyg17UdAGKI5VYQJHEFU6IdzlE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902499584199-64m4i0fguu2mec2mvae47jq1pjc9a6it.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
