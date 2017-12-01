@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -21,6 +20,7 @@ public class Faq extends Fragment {
     ExpandableListView lv;
     private String[] groups;
     private String[][] children;
+    private Fragment currFrag=this;
 
     //public LineupFragment() {}
 
@@ -166,8 +166,7 @@ public class Faq extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.faq_frag, new MapFragment())
-                            .commit();
+                    ((MainActivity)getActivity()).switchFrag(R.id.back);
                     break;
 
                 /*case R.id.ask:

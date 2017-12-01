@@ -526,8 +526,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 }
         );
     }
+    @Override
+    public void onPause(){
+        super.onPause();
 
+        Log.d(TAG, "onPause called");
+    }
+    @Override
+    public void onStop(){
+        super.onStop();
+        Log.d(TAG, "onStop called");
+    }
+    @Override
+    public void onDestroy() {
 
+        super.onDestroy();
+        Log.d(TAG, "onDestroy called");
+    }
 
 
 

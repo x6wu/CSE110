@@ -1,25 +1,18 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -35,22 +28,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 
 //import java.util.concurrent.Executor;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class login extends Fragment {
     View myView;
     SignInButton googleButton;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-    private static final String TAG = "GoogleActivity";
+    private static final String TAG = "Login_Fragment";
     private static final int RC_SIGN_IN = 9001;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+    private Fragment thisFrag=this;
 
 
 
@@ -146,8 +138,7 @@ public class login extends Fragment {
             @Override
             public void onClick(View v){
                 if (v.getId() == R.id.back) {
-                    getFragmentManager().beginTransaction().replace(R.id.login_view, new MapFragment())
-                            .commit();
+                    ((MainActivity)getActivity()).switchFrag(R.id.back);
                 }
 
                 else if (v.getId() == R.id.login) {
@@ -158,6 +149,17 @@ public class login extends Fragment {
 
         }
     };
+    public void onResume(){
+        super.onResume();
+        Log.d(TAG, "resume login frag");
+    }
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+        Log.d(TAG, "onDestroy called");
+    }
+
 
 
 

@@ -21,6 +21,7 @@ import android.widget.Toast;
 public class Feedback extends Fragment {
 
     View myView;
+    private Fragment currFrag=this;
 
     @Nullable
     @Override
@@ -41,7 +42,7 @@ public class Feedback extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    getFragmentManager().beginTransaction().replace(R.id.feed_frag, new Faq()).commit();
+                    ((MainActivity)getActivity()).switchFrag(R.id.back);
                     break;
 
                 case R.id.send_fb:

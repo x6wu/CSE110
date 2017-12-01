@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +29,7 @@ public class History extends Fragment {
     View myView;
     public static ArrayList<StopHistory> stopsList;
     private ArrayList<StopHistory> listStops;
-
+    private Fragment currFrag=this;
 
 
     @Nullable
@@ -86,8 +85,7 @@ public class History extends Fragment {
             switch (v.getId()) {
                 case R.id.back:
                     //startActivity(new Intent(login.this, signup.class));
-                    getFragmentManager().beginTransaction().replace(R.id.history_frag, new MapFragment())
-                            .commit();
+                    ((MainActivity)getActivity()).switchFrag(R.id.back);
                     break;
 
                 case R.id.clear:

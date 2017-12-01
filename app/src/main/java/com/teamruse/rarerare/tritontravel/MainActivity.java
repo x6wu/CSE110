@@ -1,8 +1,8 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.NavigationView;
@@ -13,21 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.List;
 
@@ -38,6 +23,9 @@ public class MainActivity extends AppCompatActivity
                    DirectionGeneratorListener {
 
     private static String TAG = "Main_Activity";
+
+    private MapFragment mMapFragment;
+    private String currFragTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +44,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.fragment_container, new MapFragment())
-                .commit();
+        mMapFragment=new MapFragment();
+
+        /*manager.beginTransaction().replace(R.id.fragment_container, mMapFragment)
+                .commit();*/
+        manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
+        currFragTag="map";
     }
 
     @Override
@@ -97,7 +89,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        /*FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.login) {
             // Handle the camera action
@@ -113,7 +105,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.pt) {
             fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
                     .commit();
-        */
+        *//*
         } else if (id == R.id.fb) {
             fragmentManager.beginTransaction().replace(R.id.fragment_container, new Feedback())
                     .commit();
@@ -124,7 +116,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawer(GravityCompat.START);*/
+        switchFrag(id);
         return true;
     }
 
@@ -137,6 +130,7 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "mOrigin:" + origin + " mDest:" + dest);
     }
 
+
     @Override
     public void onGenerateStart() {
         //TODO
@@ -145,6 +139,119 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onGenerateSuccess(List<Path> paths) {
         //TODO
+    }
+
+
+    protected void switchFrag(int id){
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (id == R.id.login) {
+            if (currFragTag=="login"){
+                drawer.closeDrawer(GravityCompat.START);
+                return;
+            }
+            if(fragmentManager.findFragmentByTag("login") != null) {
+                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("login")).commit();
+            } else {
+                fragmentManager.beginTransaction().add(R.id.fragment_container, new login(), "login").commit();
+            }
+            if(currFrag != null){
+                fragmentManager.beginTransaction().hide(currFrag).commit();
+
+                if (currFragTag!="map"){
+                    Log.d(TAG, "remove "+currFragTag);
+                    fragmentManager.beginTransaction().remove(currFrag).commit();
+                }
+            }
+            currFragTag="login";
+        } else if (id == R.id.history) {
+            if (currFragTag=="history"){
+                drawer.closeDrawer(GravityCompat.START);
+                return;
+            }
+            if(fragmentManager.findFragmentByTag("history") != null) {
+                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("history")).commit();
+            } else {
+                fragmentManager.beginTransaction().add(R.id.fragment_container, new History(), "history").commit();
+            }
+            if (currFrag==null){
+                Log.d(TAG, "curr null");
+            }
+            if(currFrag != null){
+                fragmentManager.beginTransaction().hide(currFrag).commit();
+                Log.d(TAG, "hide curr");
+                if (currFragTag=="map"){
+                    Log.d(TAG, "curr tag is map");
+                }
+                if (currFragTag!="map"){
+                    Log.d(TAG, "remove "+currFragTag);
+                    fragmentManager.beginTransaction().remove(currFrag).commit();
+                }
+            }
+            currFragTag="history";
+        /*
+        } else if (id == R.id.pt) {
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
+                    .commit();
+        */
+        } else if (id == R.id.fb) {
+            if (currFragTag=="fb"){
+                drawer.closeDrawer(GravityCompat.START);
+                return;
+            }
+            if(fragmentManager.findFragmentByTag("fb") != null) {
+                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("fb")).commit();
+            } else {
+                fragmentManager.beginTransaction().add(R.id.fragment_container, new Feedback(), "fb").commit();
+            }
+            if(currFrag != null){
+                fragmentManager.beginTransaction().hide(currFrag).commit();
+                if (currFrag!=mMapFragment){
+                    fragmentManager.beginTransaction().remove(currFrag).commit();
+                }
+            }
+            currFragTag="fb";
+        } else if (id == R.id.faq) {
+            if (currFragTag=="faq"){
+                drawer.closeDrawer(GravityCompat.START);
+                return;
+            }
+            if(fragmentManager.findFragmentByTag("faq") != null) {
+                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("faq")).commit();
+            } else {
+                fragmentManager.beginTransaction().add(R.id.fragment_container, new Faq(), "faq").commit();
+            }
+            if(currFrag != null){
+                fragmentManager.beginTransaction().hide(currFrag).commit();
+                if (currFrag!=mMapFragment){
+                    fragmentManager.beginTransaction().remove(currFrag).commit();
+                }
+            }
+            currFragTag="faq";
+        } else if(id==R.id.back){
+
+            if (mMapFragment==null){
+                mMapFragment=new MapFragment();
+                Log.d(TAG, "new MapFragment");
+                fragmentManager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
+            }
+            Log.d(TAG, "replace to map frag");
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, mMapFragment).commit();
+            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
+            currFragTag="map";
+
+        }
+
+
+        drawer.closeDrawer(GravityCompat.START);
+    }
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+        Log.d(TAG, "onDestroy called");
     }
 
 }
