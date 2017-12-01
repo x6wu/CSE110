@@ -61,6 +61,7 @@ public class ListViewStopAdapter extends BaseAdapter {
                 holder = new ViewHolder();
                 holder.txtname = (TextView) convertView.findViewById(R.id.stopname);
                 holder.txttime = (TextView) convertView.findViewById(R.id.time);
+
                 holder.delete = (ImageButton) convertView.findViewById(R.id.delete) ;
                 holder.delete.setOnClickListener(new View.OnClickListener() {
 
@@ -79,7 +80,7 @@ public class ListViewStopAdapter extends BaseAdapter {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
+            holder.placeId=listContact.get(position).getPlaceId();
             holder.txtname.setText(listContact.get(position).getStopName());
             holder.txttime.setText(listContact.get(position).getStopTime());
 
@@ -88,6 +89,7 @@ public class ListViewStopAdapter extends BaseAdapter {
 
         static class ViewHolder{
             TextView txtname, txttime;
+            String placeId;
             ImageButton delete;
         }
     }
