@@ -30,11 +30,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        if (signedIn())
+            setContentView(R.layout.activity_main_signed_in);
+
+        else
+            setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        DrawerLayout drawer;
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (signedIn())
+           drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+
+        else
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -54,7 +65,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer;
+        if (signedIn())
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+        else
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -141,12 +156,25 @@ public class MainActivity extends AppCompatActivity
         //TODO
     }
 
+    //TODO
+    //check if the user is signed in
+    public boolean signedIn(){
+
+        return true;
+    }
+
 
     protected void switchFrag(int id){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        DrawerLayout drawer;
+        if (signedIn())
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+        else
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (id == R.id.login) {
             if (currFragTag=="login"){
                 drawer.closeDrawer(GravityCompat.START);
@@ -191,12 +219,30 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             currFragTag="history";
-        /*
-        } else if (id == R.id.pt) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
-                    .commit();
-        */
-        } else if (id == R.id.fb) {
+
+        } else if (id == R.id.saved) {
+            if (currFragTag=="saved"){
+                drawer.closeDrawer(GravityCompat.START);
+                return;
+            }
+            if(fragmentManager.findFragmentByTag("saved") != null) {
+                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("saved")).commit();
+            } else {
+                fragmentManager.beginTransaction().add(R.id.fragment_container, new Saved(), "saved").commit();
+            }
+            if(currFrag != null){
+                fragmentManager.beginTransaction().hide(currFrag).commit();
+                if (currFrag!=mMapFragment){
+                    fragmentManager.beginTransaction().remove(currFrag).commit();
+                }
+            }
+            currFragTag="saved";
+        }
+
+
+
+
+        else if (id == R.id.fb) {
             if (currFragTag=="fb"){
                 drawer.closeDrawer(GravityCompat.START);
                 return;
