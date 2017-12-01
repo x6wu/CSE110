@@ -29,7 +29,7 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
     public static final String COL_NAME_TIME = "time";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
-                    COL_NAME_ID + " INTEGER PRIMARY KEY," +
+                    COL_NAME_ID + " INTEGER PRIMARY KEY AUTO_INCREMENT," +
                     COL_NAME_NAME + " TEXT," +
                     COL_NAME_PLACE_ID + " TEXT," +
                     COL_NAME_TIME + " TEXT)";
@@ -80,9 +80,13 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
         ArrayList<StopHistory> histList=new ArrayList<StopHistory>();
         while(cur.moveToNext()) {
             cur.getColumnIndexOrThrow(COL_NAME_NAME);
+
             StopHistory sh=new StopHistory(cur.getString(cur.getColumnIndexOrThrow(COL_NAME_NAME)),
                     cur.getString(cur.getColumnIndexOrThrow(COL_NAME_TIME)),
                     cur.getString(cur.getColumnIndexOrThrow(COL_NAME_PLACE_ID)));
+            sh.setId(cur.getInt(cur.getColumnIndexOrThrow(COL_NAME_ID)));
+            Log.d(TAG,"id"+cur.getInt(cur.getColumnIndexOrThrow(COL_NAME_ID))+"name"
+                            +cur.getString(cur.getColumnIndexOrThrow(COL_NAME_NAME)));
             histList.add(sh);
         }
         return histList;
@@ -91,5 +95,13 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
     protected void deleteTable(){
         SQLiteDatabase db=getWritableDatabase();
         db.delete(TABLE_NAME, null,null);
+    }
+    protected void deleteItem(long id){
+        String selection = COL_NAME_ID + "=?";
+    // Specify arguments in placeholder order.
+        Log.d(TAG, "id to delete"+id);
+        String[] selectionArgs = { String.valueOf(id) };
+        SQLiteDatabase db=getWritableDatabase();
+        db.delete(TABLE_NAME, selection,selectionArgs);
     }
 }

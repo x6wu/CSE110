@@ -32,6 +32,8 @@ public class History extends Fragment {
     private Fragment currFrag=this;
 
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -41,7 +43,8 @@ public class History extends Fragment {
         /*if ( History.stopsList == null) {
             History.stopsList = new ArrayList<>();
         }*/
-        stopsList=(new StopHistoryBaseHelper(getActivity().getApplicationContext())).getStopHistoryList();
+
+        stopsList= new StopHistoryBaseHelper(getContext()).getStopHistoryList();
         listStops = stopsList;
         TextView noHis = (TextView) myView.findViewById(R.id.noHistory);
 
@@ -135,5 +138,6 @@ public class History extends Fragment {
         }
 
     }
+
 
 }
