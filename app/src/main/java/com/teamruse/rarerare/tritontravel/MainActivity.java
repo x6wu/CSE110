@@ -149,91 +149,41 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     protected void switchFrag(int id){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (id == R.id.login) {
-            if (currFragTag=="login"){
-                drawer.closeDrawer(GravityCompat.START);
-                return;
-            }
-            if(fragmentManager.findFragmentByTag("login") != null) {
-                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("login")).commit();
-            } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_container, new login(), "login").commit();
-            }
-            if(currFrag != null){
-                fragmentManager.beginTransaction().hide(currFrag).commit();
-
-                if (currFragTag!="map"){
-                    Log.d(TAG, "remove "+currFragTag);
-                    fragmentManager.beginTransaction().remove(currFrag).commit();
-                }
-            }
-            currFragTag="login";
-        } else if (id == R.id.history) {
-            if (currFragTag=="history"){
-                drawer.closeDrawer(GravityCompat.START);
-                return;
-            }
-            if(fragmentManager.findFragmentByTag("history") != null) {
-                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("history")).commit();
-            } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_container, new History(), "history").commit();
-            }
-            if (currFrag==null){
-                Log.d(TAG, "curr null");
-            }
-            if(currFrag != null){
-                fragmentManager.beginTransaction().hide(currFrag).commit();
-                Log.d(TAG, "hide curr");
-                if (currFragTag=="map"){
-                    Log.d(TAG, "curr tag is map");
-                }
-                if (currFragTag!="map"){
-                    Log.d(TAG, "remove "+currFragTag);
-                    fragmentManager.beginTransaction().remove(currFrag).commit();
-                }
-            }
-            currFragTag="history";
-        } else if (id == R.id.fb) {
-            if (currFragTag=="fb"){
-                drawer.closeDrawer(GravityCompat.START);
-                return;
-            }
-            if(fragmentManager.findFragmentByTag("fb") != null) {
-                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("fb")).commit();
-            } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_container, new Feedback(), "fb").commit();
-            }
-            if(currFrag != null){
-                fragmentManager.beginTransaction().hide(currFrag).commit();
-                if (currFrag!=mMapFragment){
-                    fragmentManager.beginTransaction().remove(currFrag).commit();
-                }
-            }
-            currFragTag="fb";
-        } else if (id == R.id.faq) {
-            if (currFragTag=="faq"){
-                drawer.closeDrawer(GravityCompat.START);
-                return;
-            }
-            if(fragmentManager.findFragmentByTag("faq") != null) {
-                fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("faq")).commit();
-            } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_container, new Faq(), "faq").commit();
-            }
-            if(currFrag != null){
-                fragmentManager.beginTransaction().hide(currFrag).commit();
-                if (currFrag!=mMapFragment){
-                    fragmentManager.beginTransaction().remove(currFrag).commit();
-                }
-            }
-            currFragTag="faq";
-        } else if(id==R.id.back){
-
+        String destFragTag="";
+        Class destFragClass=null;
+        switch (id){
+            case R.id.login:
+                destFragTag="login";
+                destFragClass=login.class;
+                break;
+            case R.id.history:
+                destFragTag="history";
+                destFragClass=History.class;
+                break;
+            case R.id.fb:
+                destFragTag="fb";
+                destFragClass=Feedback.class;
+                break;
+            case R.id.faq:
+                destFragTag="faq";
+                destFragClass=Faq.class;
+                break;
+            case R.id.back:
+                destFragTag="map";
+                destFragClass=MapFragment.class;
+                break;
+        }
+        if (currFragTag.equals(destFragTag)){
+            drawer.closeDrawer(GravityCompat.START);
+            return;
+        }
+        if (destFragTag.equals("map")){
             if (mMapFragment==null){
                 mMapFragment=new MapFragment();
                 Log.d(TAG, "new MapFragment");
@@ -243,10 +193,27 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.fragment_container, mMapFragment).commit();
             fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
             currFragTag="map";
-
+        }else if(fragmentManager.findFragmentByTag(destFragTag) != null) {
+            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag(destFragTag)).commit();
+        } else {
+            try {
+                fragmentManager.beginTransaction().add(R.id.fragment_container
+                        , (Fragment)destFragClass.newInstance(), destFragTag).commit();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
+        if(currFrag != null){
+            fragmentManager.beginTransaction().hide(currFrag).commit();
 
-
+            if (currFragTag!="map"){
+                Log.d(TAG, "remove "+currFragTag);
+                fragmentManager.beginTransaction().remove(currFrag).commit();
+            }
+        }
+        currFragTag=destFragTag;
         drawer.closeDrawer(GravityCompat.START);
     }
     @Override
