@@ -29,7 +29,7 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
     public static final String COL_NAME_TIME = "time";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
-                    COL_NAME_ID + " INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                    COL_NAME_ID + " INTEGER PRIMARY KEY," +
                     COL_NAME_NAME + " TEXT," +
                     COL_NAME_PLACE_ID + " TEXT," +
                     COL_NAME_TIME + " TEXT)";
