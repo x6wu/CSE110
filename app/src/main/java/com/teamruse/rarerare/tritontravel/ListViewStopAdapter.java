@@ -28,10 +28,11 @@ public class ListViewStopAdapter extends BaseAdapter {
         private static ArrayList<StopHistory> listContact;
 
         private LayoutInflater mInflater;
-
-        public ListViewStopAdapter(Context photosFragment, ArrayList<StopHistory> results){
+        private Context mContext;
+        public ListViewStopAdapter(Context context, ArrayList<StopHistory> results){
             listContact = results;
-            mInflater = LayoutInflater.from(photosFragment);
+            mInflater = LayoutInflater.from(context);
+            this.mContext=context;
         }
 
         @Override
@@ -61,13 +62,16 @@ public class ListViewStopAdapter extends BaseAdapter {
                 holder = new ViewHolder();
                 holder.txtname = (TextView) convertView.findViewById(R.id.stopname);
                 holder.txttime = (TextView) convertView.findViewById(R.id.time);
+
                 holder.delete = (ImageButton) convertView.findViewById(R.id.delete) ;
                 holder.delete.setOnClickListener(new View.OnClickListener() {
 
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onClick(View v) {
+                        deleteHist(listContact.get(position).getId());
                         History.stopsList.remove(position);
+
                         notifyDataSetChanged();
 
                         Toast.makeText(v.getContext(),"removed", Toast.LENGTH_SHORT).show();
@@ -79,16 +83,22 @@ public class ListViewStopAdapter extends BaseAdapter {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
+            holder.placeId=listContact.get(position).getPlaceId();
             holder.txtname.setText(listContact.get(position).getStopName());
             holder.txttime.setText(listContact.get(position).getStopTime());
-
+            holder.id=listContact.get(position).getId();
             return convertView;
         }
 
         static class ViewHolder{
             TextView txtname, txttime;
+            String placeId;
+            long id;
             ImageButton delete;
         }
-    }
+        protected void deleteHist(long id){
+            (new StopHistoryBaseHelper(mContext)).deleteItem(id);
+        }
+
+}
 

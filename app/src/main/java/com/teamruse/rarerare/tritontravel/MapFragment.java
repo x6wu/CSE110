@@ -107,6 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
     private LatLng currLatLng;
+    private Place destPlace;
 
 
     public MapFragment() {
@@ -243,7 +244,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
                 Date date = new Date();
-                History.stopsList.add(0, new StopHistory(place.getName().toString(), dateFormat.format(date)));
+
+                (new StopHistoryBaseHelper(getActivity().getApplicationContext()))
+                        .writeStopHistory( new StopHistory(place.getName().toString()
+                        , dateFormat.format(date), place.getId()));
 
 
 
@@ -326,6 +330,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
         fillInOriginSearchBox();
+        if(destPlace!=null){
+            fillInDestSearchBox(destPlace);
+        }
     }
 
 
@@ -514,7 +521,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
                             autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
 
-                            mOrigin=mostLikelyPlace.getAddress().toString();
+                            mOrigin=mostLikelyPlace.getId();
                             Log.i(TAG, "origin seleted" + mOrigin);
                             likelyPlaces.release();
                         }catch (Exception e){
@@ -544,7 +551,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Log.d(TAG, "onDestroy called");
     }
 
+    protected void setDestPlace(Place place){
+        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
 
+
+        /*
+         * Ruoyu Xu
+         * Set text in destination textbox
+         */
+
+        this.destPlace=place;
+        try {
+            fillInDestSearchBox(place);
+        }catch (Exception e){
+
+        }
+
+    }
+    private void fillInDestSearchBox(Place place){
+        mDest=place.getId();
+        autocompleteFragmentDest.setText(place.getAddress().toString());
+
+    }
 
 
 

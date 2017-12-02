@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //TODO
-    //check if the user is signed in
+    //check if user is signed in
     public boolean signedIn(){
 
         return true;
@@ -219,7 +219,11 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             currFragTag="history";
-
+        /*
+        } else if (id == R.id.pt) {
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
+                    .commit();
+        */
         } else if (id == R.id.saved) {
             if (currFragTag=="saved"){
                 drawer.closeDrawer(GravityCompat.START);
