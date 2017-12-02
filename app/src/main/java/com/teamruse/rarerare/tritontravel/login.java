@@ -52,7 +52,7 @@ public class login extends Fragment {
         myView = inflater.inflate(R.layout.login, container, false);
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("902499584199-64m4i0fguu2mec2mvae47jq1pjc9a6it.apps.googleusercontent.com")
+                .requestIdToken("745738811309-dssq9ki8f3sekq4d4s2s9e902pqbvhgm.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
         defineButtons(myView);
