@@ -14,6 +14,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 import java.util.List;
 
 
@@ -203,6 +209,10 @@ public class MainActivity extends AppCompatActivity
                 destFragTag="map";
                 destFragClass=MapFragment.class;
                 break;
+            case R.id.saved:
+                destFragTag="saved";
+                destFragClass=Saved.class;
+                break;
         }
         if (currFragTag.equals(destFragTag)){
             drawer.closeDrawer(GravityCompat.START);
@@ -246,6 +256,36 @@ public class MainActivity extends AppCompatActivity
 
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
+    }
+
+
+    protected void goToStop(String placeId){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (mMapFragment==null){
+            mMapFragment=new MapFragment();
+            Log.d(TAG, "new MapFragment");
+            fragmentManager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
+        }
+        Log.d(TAG, "replace to map frag");
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, mMapFragment).commit();
+        fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
+        (Places.getGeoDataClient(this,null)).getPlaceById(placeId)
+                .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            Place myPlace = places.get(0);
+                            mMapFragment.setDestPlace(myPlace);
+                            Log.i(TAG, "Place found: " + myPlace.getName());
+                            places.release();
+                        } else {
+                            Log.e(TAG, "Place not found.");
+                        }
+                    }
+                });
+        //mMapFragment.setDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
+        currFragTag="map";
     }
 
 }

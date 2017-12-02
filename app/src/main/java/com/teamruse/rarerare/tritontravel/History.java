@@ -32,17 +32,20 @@ public class History extends Fragment {
     private Fragment currFrag=this;
 
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         myView = inflater.inflate(R.layout.history, container, false);
         defineButtons(myView);
-        if ( History.stopsList == null) {
+        /*if ( History.stopsList == null) {
             History.stopsList = new ArrayList<>();
-        }
+        }*/
 
-       listStops = stopsList;
+        stopsList= new StopHistoryBaseHelper(getContext()).getStopHistoryList();
+        listStops = stopsList;
         TextView noHis = (TextView) myView.findViewById(R.id.noHistory);
 
         if (stopsList.isEmpty()) {
@@ -53,14 +56,15 @@ public class History extends Fragment {
         }
 
                 //getStopHistory();
-        ListView lv = (ListView)myView.findViewById(R.id.stopListView);
+
+        final ListView lv = (ListView)myView.findViewById(R.id.stopListView);
         lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
 
        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
            @Override
            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               getFragmentManager().beginTransaction().replace(R.id.history_frag, new MapFragment())
-                       .commit();
+               String placeId=((StopHistory)lv.getAdapter().getItem(position)).getPlaceId();
+               ((MainActivity)getActivity()).goToStop(placeId);
 
 
            }
@@ -105,6 +109,7 @@ public class History extends Fragment {
         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                (new StopHistoryBaseHelper(currFrag.getActivity())).deleteTable();
                 stopsList.clear();
                listStops = stopsList;
                 ListView lv = (ListView)myView.findViewById(R.id.stopListView);
@@ -133,5 +138,6 @@ public class History extends Fragment {
         }
 
     }
+
 
 }
