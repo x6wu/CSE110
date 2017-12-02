@@ -516,7 +516,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
                             autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
 
-                            mOrigin=mostLikelyPlace.getId();
+                            //mOrigin=mostLikelyPlace.getId();
+                            mOrigin = mostLikelyPlace.getAddress().toString();
                             Log.i(TAG, "origin seleted" + mOrigin);
                             likelyPlaces.release();
                         }catch (Exception e){
