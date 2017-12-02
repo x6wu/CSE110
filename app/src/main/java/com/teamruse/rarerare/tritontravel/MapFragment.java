@@ -569,8 +569,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     }
     private void fillInDestSearchBox(Place place){
+        builder = new LatLngBounds.Builder();
+        if(mOriginMarker != null)
+            builder.include(mOriginMarker.getPosition());
         mDest=place.getId();
         autocompleteFragmentDest.setText(place.getAddress().toString());
+        mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        //mDest = place.getAddress().toString();
+        mDest = place.getId();
+
+        Log.i(TAG, "destination seleted: " + place.getAddress().toString());
+        Log.i(TAG, "\tId: " + mDest);
+        builder.include(mDestMarker.getPosition());
+
+        bounds = builder.build();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+        if (mOriginMarker != null) {
+
+            int padding = 300; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+        }
+
+
+        Log.i(TAG, "destination seleted" + mDest);
 
     }
 
