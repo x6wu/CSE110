@@ -177,10 +177,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                //mOrigin = place.getAddress().toString();
-                mOrigin = place.getId();
-                Log.i(TAG, "origin seleted: " + place.getAddress().toString());
-                Log.i(TAG, "\tId: " + mOrigin);
+                mOrigin = place.getAddress().toString();
+                //mOrigin = place.getId();
+                Log.i(TAG, "origin seleted, Name: " + place.getName());
+                Log.i(TAG, "\t\tId: " + place.getId());
+                Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
 
                 builder.include(mOriginMarker.getPosition());
                 bounds = builder.build();
@@ -194,9 +195,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
                 }
-
-
-                Log.i(TAG, "origin seleted" + mOrigin);
 
             }
 
@@ -255,11 +253,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-                //mDest = place.getAddress().toString();
-                mDest = place.getId();
+                mDest = place.getAddress().toString();
+                //mDest = place.getId();
 
-                Log.i(TAG, "destination seleted: " + place.getAddress().toString());
-                Log.i(TAG, "\tId: " + mDest);
+                Log.i(TAG, "destination seleted, Name: " + place.getName());
+                Log.i(TAG, "\t\tId: " + place.getId());
+                Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
 
                 builder.include(mDestMarker.getPosition());
 
@@ -274,10 +273,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
                 }
-
-
-                Log.i(TAG, "destination seleted" + mDest);
-
 
 
 

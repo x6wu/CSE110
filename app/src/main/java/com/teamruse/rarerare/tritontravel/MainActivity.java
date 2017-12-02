@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
@@ -37,11 +36,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        if (signedIn())
+            setContentView(R.layout.activity_main_signed_in);
+
+        else
+            setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        DrawerLayout drawer;
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (signedIn())
+           drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+
+        else
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -61,7 +71,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer;
+        if (signedIn())
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+        else
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -148,13 +162,30 @@ public class MainActivity extends AppCompatActivity
         //TODO
     }
 
+    //TODO
+    //check if user is signed in
+    public boolean signedIn(){
+
+        return true;
+    }
+
 
 
     protected void switchFrag(int id){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+        DrawerLayout drawer;
+        if (signedIn())
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+        else
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+
+
         String destFragTag="";
         Class destFragClass=null;
         switch (id){
@@ -177,6 +208,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.back:
                 destFragTag="map";
                 destFragClass=MapFragment.class;
+                break;
+            case R.id.saved:
+                destFragTag="saved";
+                destFragClass=Saved.class;
                 break;
         }
         if (currFragTag.equals(destFragTag)){
@@ -222,6 +257,8 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
     }
+
+
     protected void goToStop(String placeId){
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (mMapFragment==null){
@@ -234,19 +271,19 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
         (Places.getGeoDataClient(this,null)).getPlaceById(placeId)
                 .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
-                if (task.isSuccessful()) {
-                    PlaceBufferResponse places = task.getResult();
-                    Place myPlace = places.get(0);
-                    mMapFragment.setDestPlace(myPlace);
-                    Log.i(TAG, "Place found: " + myPlace.getName());
-                    places.release();
-                } else {
-                    Log.e(TAG, "Place not found.");
-                }
-            }
-        });
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            Place myPlace = places.get(0);
+                            mMapFragment.setDestPlace(myPlace);
+                            Log.i(TAG, "Place found: " + myPlace.getName());
+                            places.release();
+                        } else {
+                            Log.e(TAG, "Place not found.");
+                        }
+                    }
+                });
         //mMapFragment.setDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
         currFragTag="map";
     }
