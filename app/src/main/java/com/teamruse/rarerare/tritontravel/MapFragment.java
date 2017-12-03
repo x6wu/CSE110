@@ -240,12 +240,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     History.stopsList = new ArrayList<>();
                 }
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
+                //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
                 Date date = new Date();
 
                 (new StopHistoryBaseHelper(getActivity().getApplicationContext()))
                         .writeStopHistory( new StopHistory(place.getName().toString()
-                        , dateFormat.format(date), place.getId()));
+                        , date.getTime(), place.getId()));
 
 
 
