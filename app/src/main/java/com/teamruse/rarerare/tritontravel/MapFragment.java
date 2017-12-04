@@ -112,8 +112,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLng currLatLng;
     private Place destPlace;
 
-    private LinearLayout routeBottomSheet;
-    private BottomSheetBehavior routeBottomSheetBehavior;
+    //private LinearLayout routeBottomSheet;
+    //private BottomSheetBehavior routeBottomSheetBehavior;
     private TextView routeText;
     private TextView originText;
     private TextView destText;
@@ -337,7 +337,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             fillInDestSearchBox(destPlace);
         }
 
-        routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
+        /*routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
         routeBottomSheetBehavior = BottomSheetBehavior.from(routeBottomSheet);
         routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         Button hideRouteButt=getView().findViewById(R.id.hide_route_bottom_sheet_butt);
@@ -351,7 +351,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         );
         routeText=getView().findViewById(R.id.basic_route_text);
         originText=getView().findViewById(R.id.basic_origin_text);
-        destText=getView().findViewById(R.id.basic_dest_text);
+        destText=getView().findViewById(R.id.basic_dest_text);*/
     }
 
 
@@ -626,7 +626,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
      * Display path information on a bottomSheet
      */
     protected void displayPath(Path path){
-        originText.setText(mOrigin);
+        /*originText.setText(mOrigin);
         destText.setText(mDest+"\n");
         String basicPathStr="";
         for (PathSegment seg:path.getPathSegments()){
@@ -638,7 +638,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }
         }
         routeText.setText(basicPathStr);
-        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);*/
 
     }
 
