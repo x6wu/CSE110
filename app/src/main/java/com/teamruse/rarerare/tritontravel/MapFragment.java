@@ -83,8 +83,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private String mDest = "";
     private Marker mOriginMarker;
     private Marker mDestMarker;
-    private Button btnNavigation;
-    private GoogleMap mMap;
+    //private Button btnNavigation;
+    //private GoogleMap mMap;
+
+    public Button btnNavigation;
+    public  GoogleMap map;
 
     private SupportPlaceAutocompleteFragment autocompleteFragmentOrigin;
     private SupportPlaceAutocompleteFragment autocompleteFragmentDest;
@@ -100,6 +103,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private int mDefaultZoom = 15;
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
+    private ArrayList<Polyline> mPolylines;
+
 
     View mapView;
 
@@ -128,6 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mPolylines = new ArrayList<>();
 
     }
 
@@ -175,7 +181,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     mOriginMarker.remove();
                 }
 
-                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                mOriginMarker = map.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 mOrigin = place.getAddress().toString();
                 //mOrigin = place.getId();
@@ -186,14 +192,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 builder.include(mOriginMarker.getPosition());
                 bounds = builder.build();
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                map.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
                 if (mDestMarker!= null) {
 
                     int padding = 300; // offset from edges of the map in pixels
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                    mMap.animateCamera(cu);
+                    map.animateCamera(cu);
                 }
 
             }
@@ -250,7 +256,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
 
-                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                mDestMarker = map.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
                 mDest = place.getAddress().toString();
@@ -264,14 +270,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 bounds = builder.build();
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                map.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
                 if (mOriginMarker != null) {
 
                     int padding = 300; // offset from edges of the map in pixels
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                    mMap.animateCamera(cu);
+                    map.animateCamera(cu);
                 }
 
 
@@ -356,21 +362,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void updateLocationUI() {
-        if(mMap == null){
+        if(map == null){
             return;
         }
         try{
             if(mLocationPermissionGranted){
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                mMap.getUiSettings().setZoomGesturesEnabled(true);
+                map.setMyLocationEnabled(true);
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                map.getUiSettings().setZoomControlsEnabled(true);
+                map.getUiSettings().setZoomGesturesEnabled(true);
             }
             else{
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                mMap.getUiSettings().setZoomGesturesEnabled(true);
+                map.setMyLocationEnabled(false);
+                map.getUiSettings().setMyLocationButtonEnabled(false);
+                map.getUiSettings().setZoomControlsEnabled(true);
+                map.getUiSettings().setZoomGesturesEnabled(true);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
@@ -392,28 +398,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                                 currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
                                 CameraPosition cameraPosition = new CameraPosition(
                                         currLatLng,
-                                        mDefaultZoom, mMap.getCameraPosition().tilt,
-                                        mMap.getCameraPosition().bearing);
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                                        mDefaultZoom, map.getCameraPosition().tilt,
+                                        map.getCameraPosition().bearing);
+                                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                                map.getUiSettings().setMyLocationButtonEnabled(true);
 
                             }catch (NullPointerException e){
                                 Log.d(TAG, "Current location is null. Using defaults.");
                                 Log.e(TAG, "Exception: %s", task.getException());
                                 CameraPosition cameraPosition = new CameraPosition(
-                                        mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
-                                        mMap.getCameraPosition().bearing);
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                                        mDefaultLatLng, mDefaultZoom, map.getCameraPosition().tilt,
+                                        map.getCameraPosition().bearing);
+                                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                                map.getUiSettings().setMyLocationButtonEnabled(false);
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
                             CameraPosition cameraPosition = new CameraPosition(
-                                    mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
-                                    mMap.getCameraPosition().bearing);
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                                    mDefaultLatLng, mDefaultZoom, map.getCameraPosition().tilt,
+                                    map.getCameraPosition().bearing);
+                            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                            map.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
                 });
@@ -429,13 +435,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap = googleMap;
+        map = googleMap;
         updateLocationUI();
         getDeviceLocation();
         updateLocationUI();
 
-        mMap.setPadding(0,350,0,0);
-        mMap.setOnMyLocationButtonClickListener(this);
+        map.setPadding(0,350,0,0);
+        map.setOnMyLocationButtonClickListener(this);
     }
 
     @Override
@@ -568,11 +574,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         autocompleteFragmentDest.setText(place.getAddress().toString());
 
     }
-
-
-
-
-
-
-
 }

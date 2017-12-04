@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,10 +18,17 @@ import android.view.MenuItem;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
 
 public class MainActivity extends AppCompatActivity
@@ -154,13 +162,32 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onGenerateStart() {
+        mMapFragment.btnNavigation.setEnabled(false);
         //TODO
     }
 
     @Override
     public void onGenerateSuccess(List<Path> paths) {
-        //TODO
+        mMapFragment.btnNavigation.setEnabled(true);
+        //ArrayList<Polyline> polylines = new ArrayList<>();
+        ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
+        for(int i = 0; i < recPathSegments.size(); ++i){
+            PathSegment currSegment = recPathSegments.get(i);
+            Log.d("travel mode", currSegment.getTravelMode().toString());
+            Log.d("polyline", currSegment.getEncodedPolyLine());
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .addAll(currSegment.getPolyLine())
+                    .color(ContextCompat.getColor(getApplicationContext(),R.color.blue));
+            //set polyline pattern to be dotted if travel mode is walking
+            if(currSegment.getTravelMode() == WALKING){
+                List<PatternItem> patternItemList = new ArrayList<>();
+                patternItemList.add(new Dot());
+                polylineOptions.pattern(patternItemList);
+            }
+            mMapFragment.map.addPolyline(polylineOptions);
+        }
     }
+
 
     //TODO
     //check if user is signed in
