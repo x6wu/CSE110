@@ -67,12 +67,37 @@ public class login extends Fragment {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    private void signOut() {
+        // Firebase sign out
+        mAuth.signOut();
+
+        // Google sign out
+        mGoogleSignInClient.signOut().addOnCompleteListener(this.getActivity(),
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        updateUI(null);
+                    }
+                });
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            myView.findViewById(R.id.login).setVisibility(View.GONE);
+            myView.findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
+        } else {
+
+            myView.findViewById(R.id.login).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.sign_out).setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
+        updateUI(currentUser);
     }
 
     @Override
@@ -106,13 +131,13 @@ public class login extends Fragment {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
+                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(getContext(), "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            updateUI(null);
                         }
 
                         // ...
@@ -128,6 +153,8 @@ public class login extends Fragment {
         googleButton = view.findViewById(R.id.login);
         googleButton.setOnClickListener(buttonClickListener);
 
+        view.findViewById(R.id.sign_out).setOnClickListener(buttonClickListener);
+
         //googleButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
 
@@ -140,10 +167,12 @@ public class login extends Fragment {
                 if (v.getId() == R.id.back) {
                     ((MainActivity)getActivity()).switchFrag(R.id.back);
                 }
-
                 else if (v.getId() == R.id.login) {
                     Log.d("loginFrag", "login()");
                     signIn();
+                }
+                else if(v.getId() == R.id.sign_out){
+                    signOut();
                 }
 
 
