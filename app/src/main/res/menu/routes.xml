@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/r1"
+        android:icon="@drawable/ic_bus"
+        android:title="walk 3 > bus 10 > walk 7"
+        />
+
+    <item
+        android:id="@+id/r2"
+        android:icon="@drawable/ic_bus"
+        android:title="walk 7 > bus 18 > walk 9"
+        />
+
+    <item
+        android:id="@+id/r3"
+        android:icon="@drawable/ic_bus"
+        android:title="walk 7 > bus 24 > walk 9"
+        />
+
+
+</menu>

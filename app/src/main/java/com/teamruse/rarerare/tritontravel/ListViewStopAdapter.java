@@ -73,6 +73,10 @@ public class ListViewStopAdapter extends BaseAdapter {
                         History.stopsList.remove(position);
 
                         notifyDataSetChanged();
+                        if (History.stopsList.isEmpty()) {
+                            //History.noHis=(TextView) myView.findViewById(R.id.noHistory);
+                            History.noHis.setText("No history");
+                        }
 
                         Toast.makeText(v.getContext(),"removed", Toast.LENGTH_SHORT).show();
                     }

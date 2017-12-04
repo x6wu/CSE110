@@ -30,7 +30,7 @@ public class History extends Fragment {
     public static ArrayList<StopHistory> stopsList;
     private ArrayList<StopHistory> listStops;
     private Fragment currFrag=this;
-
+    public static TextView noHis;
 
 
 
@@ -46,7 +46,7 @@ public class History extends Fragment {
 
         stopsList= new StopHistoryBaseHelper(getContext()).getStopHistoryList();
         listStops = stopsList;
-        TextView noHis = (TextView) myView.findViewById(R.id.noHistory);
+        noHis = (TextView) myView.findViewById(R.id.noHistory);
 
         if (stopsList.isEmpty()) {
             noHis.setText("No history");
@@ -111,10 +111,10 @@ public class History extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 (new StopHistoryBaseHelper(currFrag.getActivity())).deleteTable();
                 stopsList.clear();
-               listStops = stopsList;
+                listStops = stopsList;
                 ListView lv = (ListView)myView.findViewById(R.id.stopListView);
                 lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
-
+                noHis.setText("No history");
                 Toast.makeText(getContext(),"Cleared", Toast.LENGTH_SHORT).show();
             }
         });
@@ -136,6 +136,7 @@ public class History extends Fragment {
             b.setTextColor(Color.parseColor("#064264"));
 
         }
+
 
     }
 

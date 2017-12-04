@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -232,6 +232,8 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag(destFragTag)).commit();
         } else {
             try {
+                Log.d(TAG, "frag name:"+destFragTag.toString());
+                //Log.d(TAG, "frag name:"+)
                 fragmentManager.beginTransaction().add(R.id.fragment_container
                         , (Fragment)destFragClass.newInstance(), destFragTag).commit();
             } catch (InstantiationException e) {

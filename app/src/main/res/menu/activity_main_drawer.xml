@@ -4,12 +4,12 @@
 
         <item
             android:id="@+id/login"
-            android:icon="@drawable/profile"
+            android:icon="@drawable/ic_account"
             android:title="Sign In" />
 
         <item
             android:id="@+id/history"
-            android:icon="@drawable/history"
+            android:icon="@drawable/ic_history"
             android:title="@string/history_menu_title" />
         <!--
         <item
@@ -20,12 +20,12 @@
 
         <item
             android:id="@+id/fb"
-            android:icon="@drawable/feedback"
+            android:icon="@drawable/ic_fb"
             android:title="@string/feedback_menu_title" />
 
         <item
             android:id="@+id/faq"
-            android:icon="@drawable/faq"
+            android:icon="@drawable/ic_faq"
             android:title="@string/faq_menu_title" />
 
 

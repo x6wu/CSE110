@@ -18,9 +18,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -56,6 +58,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import ru.whalemare.sheetmenu.SheetMenu;
 
 /**
  * Author: Shuyuan Ma
@@ -167,9 +171,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 if(mDestMarker != null)
                     builder.include(mDestMarker.getPosition());
 
-                if(mOriginMarker != null){
-
-                }
 
                 if (mOriginMarker != null) {
                     mOriginMarker.remove();
@@ -177,7 +178,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                mOriginMarker.setTitle(place.getName().toString());
                 //mOrigin = place.getAddress().toString();
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+                                                  @Override
+                                                  public boolean onMarkerClick(Marker arg0) {
+                                                      if (arg0.equals(mDestMarker)){
+                                                          showMenu(mDestMarker);
+                                                          return true;
+                                                      }
+                                                      else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
+                                                          showMenu(mOriginMarker);
+                                                          return true;
+                                                      }
+                                                      //Toast.makeText(getContext(), "l",Toast.LENGTH_SHORT).show();
+                                                      return false;
+                                                  }
+                                              });
+
+
+
+
+
                 mOrigin = place.getId();
                 Log.i(TAG, "origin seleted: " + place.getAddress().toString());
                 Log.i(TAG, "\tId: " + mOrigin);
@@ -231,9 +254,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 if(mOriginMarker != null)
                     builder.include(mOriginMarker.getPosition());
 
-                if(mDestMarker != null){
-
-                }
                 if (mDestMarker != null) {
                     mDestMarker.remove();
                 }
@@ -251,9 +271,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
 
-
                 mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                mDestMarker.setTitle(place.getName().toString());
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+                    @Override
+                    public boolean onMarkerClick(Marker arg0) {
+                        if (arg0.equals(mDestMarker)){
+                            showMenu(mDestMarker);
+                            return true;
+                        }
+                        else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
+                            showMenu(mOriginMarker);
+                            return true;
+                        }
+                        //Toast.makeText(getContext(), "l",Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+
+
+
 
                 //mDest = place.getAddress().toString();
                 mDest = place.getId();
@@ -282,6 +321,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
             }
+
+
 
 
             @Override
@@ -316,6 +357,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 //TODO: navigation button callback
                 //sendRequest();
 
+                if(mDestMarker != null && mOriginMarker !=null) {
+                    mOriginMarker.setVisible(true);
+                    builder = new LatLngBounds.Builder();
+                    builder.include(mOriginMarker.getPosition());
+                    builder.include(mDestMarker.getPosition());
+                    bounds = builder.build();
+
+                    int padding = 300; // offset from edges of the map in pixels
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    mMap.animateCamera(cu);
+
+                    showRoutes(mOriginMarker, mDestMarker);
+                }
+
+
 
 
 
@@ -323,6 +379,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 //MainActivity will handle the sendRequest() part
                 if(mListener != null) {
                     mListener.onNavRequest(mOrigin, mDest);
+
                 }
             }
         });
@@ -335,6 +392,49 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
+    private void showMenu(Marker m) {
+        SheetMenu.with(getContext()).setTitle(m.getTitle()).setMenu(R.menu.sheet_menu)
+                .setClick(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        /*if (item.getItemId() == R.id.bus) {
+                            Toast.makeText(getContext(),"fetching route", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }*/
+                        if (item.getItemId() == R.id.schedule) {
+                            Toast.makeText(getContext(),"fetching schedule", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        else if (item.getItemId() == R.id.saveStop) {
+                            Toast.makeText(getContext(),"saving", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        return false;
+                    }
+                }).show();
+    }
+
+    private void showRoutes(Marker o,Marker d) {
+        SheetMenu.with(getContext()).setTitle(o.getTitle() + " > " + d.getTitle()).setMenu(R.menu.routes)
+                .setClick(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.r1) {
+                            Toast.makeText(getContext(),"fetching route 1", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        else if (item.getItemId() == R.id.r2) {
+                            Toast.makeText(getContext(),"fetching route 2", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        else if (item.getItemId() == R.id.saveStop) {
+                            Toast.makeText(getContext(),"fetching route 3", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        return false;
+                    }
+                }).show();
+    }
 
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
@@ -345,6 +445,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults){
@@ -522,6 +623,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
 
                             mOrigin=mostLikelyPlace.getId();
+                            mOriginMarker = mMap.addMarker(new MarkerOptions().position(mostLikelyPlace.getLatLng()).
+                                    icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                            mOriginMarker.setVisible(false);
                             Log.i(TAG, "origin seleted" + mOrigin);
                             likelyPlaces.release();
                         }catch (Exception e){
