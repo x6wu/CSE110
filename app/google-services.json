@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "902499584199-bc99lctnf0d6tvdfenbctk1ujgrja0df.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teamruse.rarerare.tritontravel",
+            "certificate_hash": "c3bff10343a1fe44ba7c2ecc5c92efd9effe38bb"
+          }
+        },
+        {
           "client_id": "902499584199-2l5ljcr6d7or6dre24ol4tnfitvit0gp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -160,6 +160,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onGenerateSuccess(List<Path> paths) {
         //TODO
+        /*
+         *  Ruoyu Xu
+         *  Display the first path
+         */
+        if (paths.isEmpty()){
+            return;
+        }
+        mMapFragment.displayPath(paths.get(0));
+
+
     }
 
     //TODO

@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.app.Activity;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -22,7 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import android.widget.Toast;
+
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -113,6 +119,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLng currLatLng;
     private Place destPlace;
 
+    //private LinearLayout routeBottomSheet;
+    //private BottomSheetBehavior routeBottomSheetBehavior;
+    private TextView routeText;
+    private TextView originText;
+    private TextView destText;
 
     public MapFragment() {
         // Required empty public constructor
@@ -178,6 +189,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
                 mOriginMarker.setTitle(place.getName().toString());
                 //mOrigin = place.getAddress().toString();
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -205,6 +217,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 Log.i(TAG, "origin seleted: " + place.getAddress().toString());
                 Log.i(TAG, "\tId: " + mOrigin);
 
+                mOrigin = place.getAddress().toString();
+                //mOrigin = place.getId();
+                Log.i(TAG, "origin seleted, Name: " + place.getName());
+                Log.i(TAG, "\t\tId: " + place.getId());
+                Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
+
+
                 builder.include(mOriginMarker.getPosition());
                 bounds = builder.build();
 
@@ -217,9 +236,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
                 }
-
-
-                Log.i(TAG, "origin seleted" + mOrigin);
 
             }
 
@@ -262,12 +278,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     History.stopsList = new ArrayList<>();
                 }
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
+                //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
                 Date date = new Date();
 
                 (new StopHistoryBaseHelper(getActivity().getApplicationContext()))
                         .writeStopHistory( new StopHistory(place.getName().toString()
-                        , dateFormat.format(date), place.getId()));
+                        , date.getTime(), place.getId()));
 
 
 
@@ -294,11 +310,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
 
-                //mDest = place.getAddress().toString();
-                mDest = place.getId();
+                mDest = place.getAddress().toString();
+                //mDest = place.getId();
 
-                Log.i(TAG, "destination seleted: " + place.getAddress().toString());
-                Log.i(TAG, "\tId: " + mDest);
+                Log.i(TAG, "destination seleted, Name: " + place.getName());
+                Log.i(TAG, "\t\tId: " + place.getId());
+                Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
 
                 builder.include(mDestMarker.getPosition());
 
@@ -313,10 +330,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
                 }
-
-
-                Log.i(TAG, "destination seleted" + mDest);
-
 
 
 
@@ -390,6 +403,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         if(destPlace!=null){
             fillInDestSearchBox(destPlace);
         }
+
+        /*routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
+        routeBottomSheetBehavior = BottomSheetBehavior.from(routeBottomSheet);
+        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        Button hideRouteButt=getView().findViewById(R.id.hide_route_bottom_sheet_butt);
+        hideRouteButt.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
+                }
+        );
+        routeText=getView().findViewById(R.id.basic_route_text);
+        originText=getView().findViewById(R.id.basic_origin_text);
+        destText=getView().findViewById(R.id.basic_dest_text);*/
     }
 
     private void showMenu(Marker m) {
@@ -622,10 +651,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
                             autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
 
+
                             mOrigin=mostLikelyPlace.getId();
                             mOriginMarker = mMap.addMarker(new MarkerOptions().position(mostLikelyPlace.getLatLng()).
                                     icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                             mOriginMarker.setVisible(false);
+
+                            //mOrigin=mostLikelyPlace.getId();
+                            mOrigin = mostLikelyPlace.getAddress().toString();
+
                             Log.i(TAG, "origin seleted" + mOrigin);
                             likelyPlaces.release();
                         }catch (Exception e){
@@ -673,8 +707,56 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     }
     private void fillInDestSearchBox(Place place){
+        builder = new LatLngBounds.Builder();
+        if(mOriginMarker != null)
+            builder.include(mOriginMarker.getPosition());
         mDest=place.getId();
         autocompleteFragmentDest.setText(place.getAddress().toString());
+        mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        //mDest = place.getAddress().toString();
+        mDest = place.getId();
+
+        Log.i(TAG, "destination seleted: " + place.getAddress().toString());
+        Log.i(TAG, "\tId: " + mDest);
+        builder.include(mDestMarker.getPosition());
+
+        bounds = builder.build();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+        if (mOriginMarker != null) {
+
+            int padding = 300; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+        }
+
+
+        Log.i(TAG, "destination seleted" + mDest);
+
+    }
+
+    /*
+     * Ruoyu Xu
+     * Display path information on a bottomSheet
+     */
+    protected void displayPath(Path path){
+        /*originText.setText(mOrigin);
+        destText.setText(mDest+"\n");
+        String basicPathStr="";
+        for (PathSegment seg:path.getPathSegments()){
+            if (seg.getTravelMode()==SegmentFactory.TravelMode.WALKING){
+                basicPathStr+="Walk"+seg.getDistance()+"\n";
+            }else if(seg.getTravelMode()==SegmentFactory.TravelMode.BUS){
+                seg=(BusSegment)seg;
+                basicPathStr+="Bus"+((BusSegment) seg).getBusName();
+            }
+        }
+        routeText.setText(basicPathStr);
+        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);*/
 
     }
 

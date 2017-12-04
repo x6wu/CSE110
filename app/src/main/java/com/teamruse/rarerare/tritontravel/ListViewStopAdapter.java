@@ -89,7 +89,7 @@ public class ListViewStopAdapter extends BaseAdapter {
             }
             holder.placeId=listContact.get(position).getPlaceId();
             holder.txtname.setText(listContact.get(position).getStopName());
-            holder.txttime.setText(listContact.get(position).getStopTime());
+            holder.txttime.setText(listContact.get(position).getStopTimeStr());
             holder.id=listContact.get(position).getId();
             return convertView;
         }

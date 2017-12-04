@@ -11,9 +11,15 @@ public abstract class PathSegment {
     private LatLng mStartLocation;
     private LatLng mEndLocation;
     private String mDuration;
+
+
+
     private String mDistance;
     //private Polyline mPolyLine;
     private String mEncodedPolyLine;
+
+
+
     private SegmentFactory.TravelMode mTravelMode;
 
     public PathSegment(LatLng startLocation, LatLng endLocation, String duration, String distance,
@@ -27,5 +33,21 @@ public abstract class PathSegment {
 
     public void setPolyLine(String encodedPolyLine){
         mEncodedPolyLine = encodedPolyLine;
+    }
+
+    /*
+     * Ruoyu Xu
+     *
+     */
+    public SegmentFactory.TravelMode getTravelMode() {
+        return mTravelMode;
+    }
+
+    /*
+     * Ruoyu Xu
+     * get Distance
+     */
+    public String getDistance() {
+        return mDistance;
     }
 }
