@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
     //TODO
     //check if user is signed in
     public boolean signedIn(){
-        if(mAuth ==)
+
         return true;
     }
 

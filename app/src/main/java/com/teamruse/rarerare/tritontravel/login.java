@@ -86,7 +86,6 @@ public class login extends Fragment {
             myView.findViewById(R.id.login).setVisibility(View.GONE);
             myView.findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
         } else {
-
             myView.findViewById(R.id.login).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.sign_out).setVisibility(View.GONE);
         }
