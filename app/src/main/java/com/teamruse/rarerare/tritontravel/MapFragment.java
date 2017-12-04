@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.app.Activity;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +22,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -109,6 +112,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLng currLatLng;
     private Place destPlace;
 
+    private LinearLayout routeBottomSheet;
+    private BottomSheetBehavior routeBottomSheetBehavior;
+    private TextView routeText;
+    private TextView originText;
+    private TextView destText;
 
     public MapFragment() {
         // Required empty public constructor
@@ -328,6 +336,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         if(destPlace!=null){
             fillInDestSearchBox(destPlace);
         }
+
+        routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
+        routeBottomSheetBehavior = BottomSheetBehavior.from(routeBottomSheet);
+        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        Button hideRouteButt=getView().findViewById(R.id.hide_route_bottom_sheet_butt);
+        hideRouteButt.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
+                }
+        );
+        routeText=getView().findViewById(R.id.basic_route_text);
+        originText=getView().findViewById(R.id.basic_origin_text);
+        destText=getView().findViewById(R.id.basic_dest_text);
     }
 
 
@@ -594,6 +618,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
         Log.i(TAG, "destination seleted" + mDest);
+
+    }
+
+    /*
+     * Ruoyu Xu
+     * Display path information on a bottomSheet
+     */
+    protected void displayPath(Path path){
+        originText.setText(mOrigin);
+        destText.setText(mDest+"\n");
+        String basicPathStr="";
+        for (PathSegment seg:path.getPathSegments()){
+            if (seg.getTravelMode()==SegmentFactory.TravelMode.WALKING){
+                basicPathStr+="Walk"+seg.getDistance()+"\n";
+            }else if(seg.getTravelMode()==SegmentFactory.TravelMode.BUS){
+                seg=(BusSegment)seg;
+                basicPathStr+="Bus"+((BusSegment) seg).getBusName();
+            }
+        }
+        routeText.setText(basicPathStr);
+        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
     }
 

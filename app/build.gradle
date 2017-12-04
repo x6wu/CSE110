@@ -6,7 +6,7 @@ android {
         config {
             keyAlias 'mydomain'
             keyPassword 'android'
-            storeFile file('/Users/AustinMossEnnis/KeyStore.jks')
+            storeFile file('/Users/rarerare/AndroidStudioProjects/TritonTravel/KeyStore.jks')
             storePassword 'android'
         }
     }
@@ -53,6 +53,8 @@ dependencies {
     compile 'com.android.support:multidex:1.0.2'
     testCompile 'junit:junit:4.12'
     apply plugin: 'com.google.gms.google-services'
+
+    compile 'com.android.support:design:26.1.0'
 }
 
 
