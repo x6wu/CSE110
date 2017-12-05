@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,41 +18,46 @@ import android.view.MenuItem;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
 
-public class MainActivity extends AppCompatActivity
-        implements MapFragment.OnFragmentInteractionListener,
+public class MainActivity extends AppCompatActivity implements MapFragment.OnFragmentInteractionListener,
                    NavigationView.OnNavigationItemSelectedListener,
                    DirectionGeneratorListener {
-
     private static String TAG = "Main_Activity";
-
     private MapFragment mMapFragment;
     private String currFragTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (signedIn())
+        if (signedIn()) {
             setContentView(R.layout.activity_main_signed_in);
-
-        else
+        }
+        else {
             setContentView(R.layout.activity_main);
-
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer;
 
-        if (signedIn())
-           drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
-
-        else
+        if (signedIn()) {
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
+        }
+        else {
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
+        }
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -62,7 +68,6 @@ public class MainActivity extends AppCompatActivity
 
         FragmentManager manager = getSupportFragmentManager();
         mMapFragment=new MapFragment();
-
         /*manager.beginTransaction().replace(R.id.fragment_container, mMapFragment)
                 .commit();*/
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
@@ -72,10 +77,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer;
-        if (signedIn())
+        if (signedIn()) {
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
-        else
+        }
+        else {
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        }
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -96,12 +103,10 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -135,7 +140,6 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.fragment_container, new Faq())
                     .commit();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);*/
         switchFrag(id);
@@ -151,50 +155,50 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "mOrigin:" + origin + " mDest:" + dest);
     }
 
-
     @Override
     public void onGenerateStart() {
-        //TODO
+        mMapFragment.btnNavigation.setEnabled(false);
     }
 
     @Override
     public void onGenerateSuccess(List<Path> paths) {
-        //TODO
-        /*
-         *  Ruoyu Xu
-         *  Display the first path
-         */
+        mMapFragment.btnNavigation.setEnabled(true);
+        ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
+        for(int i = 0; i < recPathSegments.size(); ++i){
+            PathSegment currSegment = recPathSegments.get(i);
+            Log.d("travel mode", currSegment.getTravelMode().toString());
+            Log.d("polyline", currSegment.getEncodedPolyLine());
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .addAll(currSegment.getPolyLine())
+                    .color(ContextCompat.getColor(getApplicationContext(),R.color.blue));
+            //set polyline pattern to be dotted if travel mode is walking
+            if(currSegment.getTravelMode() == WALKING){
+                List<PatternItem> patternItemList = new ArrayList<>();
+                patternItemList.add(new Dot());
+                polylineOptions.pattern(patternItemList);
+            }
+            mMapFragment.drawPolylines(polylineOptions);
+        }
         if (paths.isEmpty()){
             return;
         }
         mMapFragment.displayPath(paths.get(0));
-
-
     }
 
     //TODO
     //check if user is signed in
     public boolean signedIn(){
-
         return true;
     }
 
-
-
     protected void switchFrag(int id){
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
-
-
         DrawerLayout drawer;
         if (signedIn())
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
         else
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-
-
 
         String destFragTag="";
         Class destFragClass=null;
@@ -254,7 +258,6 @@ public class MainActivity extends AppCompatActivity
         }
         if(currFrag != null){
             fragmentManager.beginTransaction().hide(currFrag).commit();
-
             if (currFragTag!="map"){
                 Log.d(TAG, "remove "+currFragTag);
                 fragmentManager.beginTransaction().remove(currFrag).commit();
@@ -265,11 +268,9 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public void onDestroy() {
-
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
     }
-
 
     protected void goToStop(String placeId){
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -299,5 +300,4 @@ public class MainActivity extends AppCompatActivity
         //mMapFragment.setDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
         currFragTag="map";
     }
-
 }

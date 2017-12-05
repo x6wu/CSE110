@@ -44,12 +44,10 @@ public class DirectionGenerator {
     }
 
     public String buildUrl() {
-
         String originUrl = origin.replaceAll(" ", "+");
         String destUrl = dest.replaceAll(" ", "+");
         String URL = ApiUrl + "origin=" + originUrl + "&destination="
                 + destUrl + "&mode=transit&key=" + ApiKey;
-
         //String URL = ApiUrl + "origin=place_id:"+origin+"&destination=place_id"
         //        + dest + "&mode=transit&key=" + ApiKey;
         Log.i(TAG, "Request URL:"+URL);
@@ -65,17 +63,25 @@ public class DirectionGenerator {
 
         @Override
         protected String doInBackground(String... strings) {
-            try {
+            try{
                 URL url = new URL(strings[0]);
                 InputStream inputStream = url.openConnection().getInputStream();
                 BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+
                 String inputLine;
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder builder = new StringBuilder();
+                builder.ensureCapacity(1048576);
                 while ((inputLine = in.readLine()) != null) {
-                    buffer.append(inputLine + "\n");
+                    builder.append(inputLine + "\n");
                 }
-                Log.d("JSON", buffer.toString());
-                return buffer.toString();
+                //Log.d("JSON", builder.toString());
+                final int chunkSize = 2048;
+                for (int i = 0; i < builder.toString().length(); i += chunkSize) {
+                    Log.d(TAG, builder.toString().substring(i, Math.min(builder.toString().length(), i + chunkSize)));
+                }
+                inputStream.close();
+                in.close();
+                return builder.toString();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -99,7 +105,7 @@ public class DirectionGenerator {
         if (data == null) {
             return;
         }
-        List<Path> paths = new ArrayList<Path>();
+        List<Path> paths = new ArrayList<>();
         JSONObject jsonObject = new JSONObject(data);
         //json array that contains all routs
         JSONArray jsonArray = jsonObject.getJSONArray("routes");
@@ -110,8 +116,8 @@ public class DirectionGenerator {
             JSONObject jsonLeg = jsonLegs.getJSONObject(0);
             JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
             JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
-            JSONObject jsonDepartureTime = jsonLeg.getJSONObject("departure_time");
-            JSONObject jsonArrivalTime = jsonLeg.getJSONObject("arrival_time");
+            //JSONObject jsonDepartureTime = jsonLeg.getJSONObject("departure_time");
+            //JSONObject jsonArrivalTime = jsonLeg.getJSONObject("arrival_time");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONArray jsonStepsArray = jsonLeg.getJSONArray("steps");
@@ -120,30 +126,36 @@ public class DirectionGenerator {
             String duration = jsonDuration.getString("text");
             String distance = jsonDistance.getString("text");
             Path newPath = new Path(startLocation, endLocation, duration, distance);
-            newPath.setArrivalTime(jsonArrivalTime.getString("text"));
-            newPath.setDepartureTime(jsonDepartureTime.getString("text"));
+            //newPath.setArrivalTime(jsonArrivalTime.getString("text"));
+            //newPath.setDepartureTime(jsonDepartureTime.getString("text"));
+            Log.d(TAG, "number of steps " + jsonStepsArray.length());
             for (int j = 0; j < jsonStepsArray.length(); ++j) {
                 //retrieve each step
-                JSONObject jsonStep = jsonStepsArray.getJSONObject(i);
+                JSONObject jsonStep = jsonStepsArray.getJSONObject(j);
                 JSONObject jsonStepDistance = jsonStep.getJSONObject("distance");
                 JSONObject jsonStepDuration = jsonStep.getJSONObject("duration");
                 JSONObject jsonStepStartLocation = jsonStep.getJSONObject("start_location");
                 JSONObject jsonStepEndLocation = jsonStep.getJSONObject("end_location");
+                JSONObject jsonStepPolyline = jsonStep.getJSONObject("polyline");
                 LatLng stepStartLocation = new LatLng(jsonStepStartLocation.getDouble("lat"),
                         jsonStepStartLocation.getDouble("lng"));
                 LatLng stepEndLocation = new LatLng(jsonStepEndLocation.getDouble("lat"),
                         jsonStepEndLocation.getDouble("lng"));
                 String stepDuration = jsonStepDuration.getString("text");
                 String stepDistance = jsonStepDistance.getString("text");
+                String stepPolyline = jsonStepPolyline.getString("points");
+                Log.d(TAG, stepPolyline);
                 SegmentFactory.TravelMode travelMode;
                 if (jsonStep.getString("travel_mode").equals("WALKING")) {
                     travelMode = WALKING;
                 } else {
                     travelMode = BUS;
                 }
-                PathSegment newSegment = segmentFactory.getSegment(travelMode, startLocation,
-                        endLocation, duration, distance);
-                //TODO: store encoded polylines
+                PathSegment newSegment = segmentFactory.getSegment(travelMode, stepStartLocation,
+                        stepEndLocation, stepDuration, stepDistance);
+                newSegment.setEncodedPolyline(stepPolyline);
+                newSegment.setPolyLine(decodePolyline(stepPolyline));
+                Log.d(TAG, "num of points: " + newSegment.getPolyLine().size());
                 if (travelMode == BUS) {
                     JSONObject jsonTransitDetails = jsonStep.getJSONObject("transit_details");
                     JSONObject jsonArrivalStop = jsonTransitDetails.getJSONObject("arrival_stop");
@@ -169,15 +181,17 @@ public class DirectionGenerator {
         listener.onGenerateSuccess(paths);
     }
 
-    //based on
-    // http://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java
-    private List<LatLng> decodePolyline(String encoded) {
-        List<LatLng> poly = new ArrayList<>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
+    private ArrayList<LatLng> decodePolyline(String encoded) {
+        int len = encoded.length();
+        int index = 0;
+        ArrayList<LatLng> decoded = new ArrayList<LatLng>();
+        int lat = 0;
+        int lng = 0;
 
         while (index < len) {
-            int b, shift = 0, result = 0;
+            int b;
+            int shift = 0;
+            int result = 0;
             do {
                 b = encoded.charAt(index++) - 63;
                 result |= (b & 0x1f) << shift;
@@ -185,6 +199,7 @@ public class DirectionGenerator {
             } while (b >= 0x20);
             int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lat += dlat;
+
             shift = 0;
             result = 0;
             do {
@@ -194,11 +209,13 @@ public class DirectionGenerator {
             } while (b >= 0x20);
             int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lng += dlng;
-            LatLng p = new LatLng((((double) lng / 1E5) * 1E6), (((double) lng / 1E5) * 1E6));
-            poly.add(p);
+            decoded.add(new LatLng(
+                    lat / 100000d, lng / 100000d
+            ));
         }
-        return poly;
+        return decoded;
     }
+
 }
 
 
