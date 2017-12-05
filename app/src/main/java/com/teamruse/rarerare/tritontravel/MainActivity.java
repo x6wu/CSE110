@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
@@ -184,7 +185,7 @@ public class MainActivity extends AppCompatActivity
                 patternItemList.add(new Dot());
                 polylineOptions.pattern(patternItemList);
             }
-            mMapFragment.map.addPolyline(polylineOptions);
+            mMapFragment.drawPolylines(polylineOptions);
         }
     }
 

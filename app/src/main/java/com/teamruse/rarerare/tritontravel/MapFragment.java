@@ -574,4 +574,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         autocompleteFragmentDest.setText(place.getAddress().toString());
 
     }
+
+    public void drawPolylines(PolylineOptions polylineOptions){
+        map.addPolyline(polylineOptions);
+    }
 }
