@@ -334,7 +334,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     int padding = 300; // offset from edges of the map in pixels
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
-                    showRoutes(mOriginMarker, mDestMarker);
+                    //showRoutes(mOriginMarker, mDestMarker);
+
                 }
                 //navigation button callback to onFragmentInteraction
                 //MainActivity will handle the sendRequest() part
@@ -662,8 +663,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
      * Display path information on a bottomSheet
      */
     protected void displayPath(Path path){
-        /*originText.setText(mOrigin);
-        destText.setText(mDest+"\n");
+        //originText.setText(mOrigin);
+        //destText.setText(mDest+"\n");
         String basicPathStr="";
         for (PathSegment seg:path.getPathSegments()){
             if (seg.getTravelMode()==SegmentFactory.TravelMode.WALKING){
@@ -673,8 +674,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 basicPathStr+="Bus"+((BusSegment) seg).getBusName();
             }
         }
-        routeText.setText(basicPathStr);
-        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);*/
+        //routeText.setText(basicPathStr);
+        //routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        Log.d(TAG, "basicPathStr:\n"+basicPathStr);
     }
 
     public void drawPolylines(PolylineOptions polylineOptions){
