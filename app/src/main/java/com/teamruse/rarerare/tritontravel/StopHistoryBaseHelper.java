@@ -27,13 +27,14 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
     private static final String COL_NAME_NAME="name";
     public static final String COL_NAME_PLACE_ID = "place_id";
     public static final String COL_NAME_TIME = "time";
+
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
 
                     COL_NAME_ID + " INTEGER PRIMARY KEY ," +
 
                     COL_NAME_NAME + " TEXT," +
-                    COL_NAME_PLACE_ID + " TEXT," +
+                    COL_NAME_PLACE_ID + " TEXT UNIQUE," +
                     COL_NAME_TIME + " TEXT)";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -55,8 +56,9 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COL_NAME_NAME, sh.getStopName());
         values.put(COL_NAME_PLACE_ID, sh.getPlaceId());
-        values.put(COL_NAME_TIME, sh.getStopTime());
-        long newRowId = db.insert(TABLE_NAME, null, values);
+        values.put(COL_NAME_TIME, sh.getTimeStamp());
+        long newRowId = db.replace(TABLE_NAME, null, values);
+
         Log.d(TAG, "written, id="+String.valueOf(newRowId));
     }
     protected ArrayList<StopHistory> getStopHistoryList(){
@@ -69,6 +71,9 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
                 COL_NAME_TIME
 
         };
+        String sortOrder =
+                COL_NAME_TIME + " DESC";
+
         Cursor cur=db.query(
                 TABLE_NAME,
                 projection,
@@ -76,7 +81,7 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                null
+                sortOrder
 
         );
         ArrayList<StopHistory> histList=new ArrayList<StopHistory>();
@@ -84,7 +89,7 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
             cur.getColumnIndexOrThrow(COL_NAME_NAME);
 
             StopHistory sh=new StopHistory(cur.getString(cur.getColumnIndexOrThrow(COL_NAME_NAME)),
-                    cur.getString(cur.getColumnIndexOrThrow(COL_NAME_TIME)),
+                    cur.getLong(cur.getColumnIndexOrThrow(COL_NAME_TIME)),
                     cur.getString(cur.getColumnIndexOrThrow(COL_NAME_PLACE_ID)));
             sh.setId(cur.getInt(cur.getColumnIndexOrThrow(COL_NAME_ID)));
             Log.d(TAG,"id"+cur.getInt(cur.getColumnIndexOrThrow(COL_NAME_ID))+"name"

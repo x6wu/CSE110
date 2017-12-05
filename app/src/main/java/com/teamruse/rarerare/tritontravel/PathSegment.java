@@ -1,7 +1,6 @@
 package com.teamruse.rarerare.tritontravel;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 

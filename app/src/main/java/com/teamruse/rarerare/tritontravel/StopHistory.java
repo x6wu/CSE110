@@ -2,6 +2,8 @@ package com.teamruse.rarerare.tritontravel;
 
 import com.google.android.gms.location.places.Place;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -19,8 +21,12 @@ public class StopHistory {
 
     private long id;
     private String stopName;
-    private String stopTime;
+    private String stopTimeStr;
     private String placeId;
+
+
+
+    private long timeStamp;
 
 
     public StopHistory() {
@@ -30,10 +36,13 @@ public class StopHistory {
 
     }
 
-    public StopHistory(String name, String time, String placeId) {
+    public StopHistory(String name, long time, String placeId) {
         this.stopName = name;
-        this.stopTime = time;
+        this.timeStamp = time;
         this.placeId=placeId;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm:ss aa");
+        Date date = new Date(timeStamp);
+        stopTimeStr=dateFormat.format(date);
 
     }
 
@@ -41,22 +50,29 @@ public class StopHistory {
         stopName = name;
     }
 
-    public void setStopTime (String time) {
-        stopTime = time;
+    public void setStopTimeStr (String time) {
+        stopTimeStr = time;
     }
 
     public String getStopName() {
         return stopName;
     }
 
-    public String getStopTime() {
-        return stopTime;
+    public String getStopTimeStr() {
+        return stopTimeStr;
     }
 
     public String getPlaceId() {
         return placeId;
     }
+    public long getTimeStamp() {
+        return timeStamp;
+    }
 
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+
+    }
 
 
 

@@ -73,6 +73,10 @@ public class ListViewStopAdapter extends BaseAdapter {
                         History.stopsList.remove(position);
 
                         notifyDataSetChanged();
+                        if (History.stopsList.isEmpty()) {
+                            //History.noHis=(TextView) myView.findViewById(R.id.noHistory);
+                            History.noHis.setText("No history");
+                        }
 
                         Toast.makeText(v.getContext(),"removed", Toast.LENGTH_SHORT).show();
                     }
@@ -85,7 +89,7 @@ public class ListViewStopAdapter extends BaseAdapter {
             }
             holder.placeId=listContact.get(position).getPlaceId();
             holder.txtname.setText(listContact.get(position).getStopName());
-            holder.txttime.setText(listContact.get(position).getStopTime());
+            holder.txttime.setText(listContact.get(position).getStopTimeStr());
             holder.id=listContact.get(position).getId();
             return convertView;
         }

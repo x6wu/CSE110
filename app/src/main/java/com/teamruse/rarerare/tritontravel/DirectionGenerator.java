@@ -44,12 +44,10 @@ public class DirectionGenerator {
     }
 
     public String buildUrl() {
-
         String originUrl = origin.replaceAll(" ", "+");
         String destUrl = dest.replaceAll(" ", "+");
         String URL = ApiUrl + "origin=" + originUrl + "&destination="
                 + destUrl + "&mode=transit&key=" + ApiKey;
-
         //String URL = ApiUrl + "origin=place_id:"+origin+"&destination=place_id"
         //        + dest + "&mode=transit&key=" + ApiKey;
         Log.i(TAG, "Request URL:"+URL);
