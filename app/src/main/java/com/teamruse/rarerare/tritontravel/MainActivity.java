@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,14 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private static String TAG = "Main_Activity";
     private MapFragment mMapFragment;
     private String currFragTag;
+
+
+    /*
+     *Ruoyu Xu
+     * Test checking login in MainActivity
+     *
+     */
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .commit();*/
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
+
+        //Ruoyu Xu test signin in MainActivity
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -88,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         } else {
             super.onBackPressed();
         }
+
+
     }
 
    /* @Override
@@ -188,9 +202,28 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     //TODO
     //check if user is signed in
     public boolean signedIn(){
-        return true;
+        /*
+         * Ruoyu Xu check user login in MainActivity
+         *
+         */
+        if (mAuth==null){
+            Log.d(TAG, "mAuth is null");
+            return false;
+
+        }
+        if (mAuth.getCurrentUser()!=null){
+            Log.d(TAG, "really logged in");
+            return true;
+        }
+        Log.d(TAG, "currUser is null");
+        return false;
+
     }
 
+    /*
+     * Ruoyu Xu
+     * Switch the fragment in the fragment_container
+     */
     protected void switchFrag(int id){
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
