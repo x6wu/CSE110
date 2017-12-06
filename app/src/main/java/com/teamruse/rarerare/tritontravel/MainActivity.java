@@ -15,6 +15,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
@@ -47,10 +50,19 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
      *
      */
     private FirebaseAuth mAuth;
-
+    private GoogleSignInClient mGoogleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Ruoyu Xu test signin in MainActivity
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mAuth = FirebaseAuth.getInstance();
+
+
         if (signedIn()) {
             setContentView(R.layout.activity_main_signed_in);
         }
@@ -82,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
 
-        //Ruoyu Xu test signin in MainActivity
-        mAuth = FirebaseAuth.getInstance();
+
     }
 
     @Override
