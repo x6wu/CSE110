@@ -11,12 +11,11 @@
             android:id="@+id/history"
             android:icon="@drawable/ic_history"
             android:title="@string/history_menu_title" />
-        <!--
         <item
-            android:id="@+id/pt"
-            android:icon="@drawable/peak"
-            android:title="Peak Time" />
-        -->
+            android:id="@+id/saved"
+            android:icon="@drawable/ic_save"
+            android:title="Saved"
+            android:visible="false"/>
 
         <item
             android:id="@+id/fb"

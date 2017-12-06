@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private String currFragTag;
 
 
+
     /*
      *Ruoyu Xu
      * Test checking login in MainActivity
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
      */
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private NavigationView mNavigationView;
+    private DrawerLayout drawer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,24 +64,16 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
+        setContentView(R.layout.activity_main);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        //mNavigationView.inflateMenu(R.menu.activity_main_drawer);
+        updateSignInUI();
 
 
-        if (signedIn()) {
-            setContentView(R.layout.activity_main_signed_in);
-        }
-        else {
-            setContentView(R.layout.activity_main);
-        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer;
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        if (signedIn()) {
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
-        }
-        else {
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        }
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -96,16 +91,21 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
 
 
     }
+    //Ruoyu Xu
+    protected void updateSignInUI() {
+        if (signedIn()) {
+            mNavigationView.getMenu().findItem(R.id.login).setTitle("Profile");
+            mNavigationView.getMenu().findItem(R.id.saved).setVisible(true);
+        }
+        else {
+                mNavigationView.getMenu().findItem(R.id.login).setTitle("Sign In");
+                mNavigationView.getMenu().findItem(R.id.saved).setVisible(false);
+        }
+    }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer;
-        if (signedIn()) {
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
-        }
-        else {
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        }
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -238,11 +238,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     protected void switchFrag(int id){
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currFrag=fragmentManager.findFragmentByTag(currFragTag);
-        DrawerLayout drawer;
-        if (signedIn())
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout_signed_in);
-        else
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
 
         String destFragTag="";
         Class destFragClass=null;
