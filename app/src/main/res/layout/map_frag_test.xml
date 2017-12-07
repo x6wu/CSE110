@@ -71,6 +71,6 @@
 
 
 </RelativeLayout>
-
+<include layout="@layout/bottom_sheet_route"/>
 
 </android.support.design.widget.CoordinatorLayout>

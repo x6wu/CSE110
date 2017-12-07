@@ -46,6 +46,16 @@ public class StopHistory {
 
     }
 
+    public StopHistory(String name, String placeId) {
+        this.stopName = name;
+        //this.timeStamp = time;
+        this.placeId=placeId;
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm:ss aa");
+        //Date date = new Date(timeStamp);
+        //stopTimeStr=dateFormat.format(date);
+
+    }
+
     public void setStopName (String name) {
         stopName = name;
     }

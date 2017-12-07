@@ -39,6 +39,25 @@ public class Saved extends Fragment {
         myView = inflater.inflate(R.layout.saved, container, false);
         defineButtons(myView);
 
+        if ( stopsList == null) {
+            stopsList = new ArrayList<>();
+        }
+
+        listStops = stopsList;
+
+        final ListView lv = (ListView)myView.findViewById(R.id.savedStops);
+        lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String placeId=((StopHistory)lv.getAdapter().getItem(position)).getPlaceId();
+                ((MainActivity)getActivity()).goToStop(placeId);
+
+
+            }
+        });
+
 
         return myView;
     }
@@ -67,7 +86,7 @@ public class Saved extends Fragment {
 
     };
 
-    public void clearHist() {
+   /* public void clearHist() {
 
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         alert.setMessage("Clear all history?");
@@ -101,6 +120,6 @@ public class Saved extends Fragment {
 
         }
 
-    }
+    }*/
 
 }

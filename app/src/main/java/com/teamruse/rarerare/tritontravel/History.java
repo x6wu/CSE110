@@ -46,6 +46,7 @@ public class History extends Fragment {
 
         stopsList= new StopHistoryBaseHelper(getContext()).getStopHistoryList();
         listStops = stopsList;
+
         noHis = (TextView) myView.findViewById(R.id.noHistory);
 
         if (stopsList.isEmpty()) {

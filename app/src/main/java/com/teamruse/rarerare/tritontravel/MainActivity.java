@@ -11,11 +11,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.location.places.Place;
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+
         //mNavigationView.inflateMenu(R.menu.activity_main_drawer);
         updateSignInUI();
 
@@ -91,15 +96,27 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
 
 
     }
-    //Ruoyu Xu
+
     protected void updateSignInUI() {
         if (signedIn()) {
-            mNavigationView.getMenu().findItem(R.id.login).setTitle("Profile");
+            mNavigationView.getMenu().findItem(R.id.login).setVisible(false);
             mNavigationView.getMenu().findItem(R.id.saved).setVisible(true);
+            mNavigationView.getMenu().findItem(R.id.prof).setVisible(true);
+            View hView =  mNavigationView.getHeaderView(0);
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+                TextView name = (TextView) hView.findViewById(R.id.welcome);
+
+                name.setText("Welcome, " + acct.getGivenName() + "!");
+
         }
         else {
-                mNavigationView.getMenu().findItem(R.id.login).setTitle("Sign In");
-                mNavigationView.getMenu().findItem(R.id.saved).setVisible(false);
+            mNavigationView.getMenu().findItem(R.id.login).setVisible(true);
+            mNavigationView.getMenu().findItem(R.id.saved).setVisible(false);
+            mNavigationView.getMenu().findItem(R.id.prof).setVisible(false);
+            View hView =  mNavigationView.getHeaderView(0);
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+            TextView name = (TextView) hView.findViewById(R.id.welcome);
+            name.setText("Welcome!");
         }
     }
 
@@ -176,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     @Override
     public void onNavRequest(String origin, String dest) {
         new DirectionGenerator(this, origin, dest).generate();
+
         Log.i(TAG, "sendRequest() called");
         Log.i(TAG, "mOrigin:" + origin + " mDest:" + dest);
     }
@@ -188,16 +206,17 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     @Override
     public void onGenerateSuccess(List<Path> paths) {
         mMapFragment.btnNavigation.setEnabled(true);
+
         ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
-        for(int i = 0; i < recPathSegments.size(); ++i){
+        for (int i = 0; i < recPathSegments.size(); ++i) {
             PathSegment currSegment = recPathSegments.get(i);
             Log.d("travel mode", currSegment.getTravelMode().toString());
             Log.d("polyline", currSegment.getEncodedPolyLine());
             PolylineOptions polylineOptions = new PolylineOptions()
                     .addAll(currSegment.getPolyLine())
-                    .color(ContextCompat.getColor(getApplicationContext(),R.color.blue));
+                    .color(ContextCompat.getColor(getApplicationContext(), R.color.blue));
             //set polyline pattern to be dotted if travel mode is walking
-            if(currSegment.getTravelMode() == WALKING){
+            if (currSegment.getTravelMode() == WALKING) {
                 List<PatternItem> patternItemList = new ArrayList<>();
                 patternItemList.add(new Dot());
                 polylineOptions.pattern(patternItemList);
@@ -267,6 +286,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             case R.id.saved:
                 destFragTag="saved";
                 destFragClass=Saved.class;
+                break;
+            case R.id.prof:
+                destFragTag="profile";
+                destFragClass=Profile.class;
                 break;
         }
         if (currFragTag.equals(destFragTag)){

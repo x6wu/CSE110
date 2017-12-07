@@ -12,9 +12,6 @@ public class BusSegment extends PathSegment {
     private String mArrivalTime;
     private String mDepartureTime;
     private String mBusHeadsign;
-
-
-
     private String mBusName;
     private int mNumStops;
 
@@ -52,12 +49,29 @@ public class BusSegment extends PathSegment {
         this.mEndStop = endStop;
     }
 
-    /*
-     * Ruoyu Xu
-     *
-     */
+
     public String getBusName() {
         return mBusName;
+    }
+
+    public String getStartStop() {
+        return mStartStop;
+    }
+
+    public String getArrivalTime() {
+        return mArrivalTime;
+    }
+
+    public String getDepartureTime() {
+        return mDepartureTime;
+    }
+
+    public String getBusHeadsign() {
+        return mBusHeadsign;
+    }
+
+    public int getNumStops() {
+        return mNumStops;
     }
 
 

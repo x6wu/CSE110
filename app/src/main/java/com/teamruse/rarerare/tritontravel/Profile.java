@@ -33,43 +33,44 @@ import com.google.android.gms.common.SignInButton;
 //import java.util.concurrent.Executor;
 
 
-public class login extends Fragment {
+public class Profile extends Fragment {
     View myView;
     SignInButton googleButton;
-   GoogleSignInClient mGoogleSignInClient;
+    GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-    private static final String TAG = "Login_Fragment";
+    private static final String TAG = "Profile_Fragment";
     private static final int RC_SIGN_IN = 9001;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
     private Fragment thisFrag=this;
+    GoogleSignInAccount acct;
 
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myView = inflater.inflate(R.layout.login, container, false);
+        myView = inflater.inflate(R.layout.profile, container, false);
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        defineButtons(myView);
+
         mGoogleSignInClient = GoogleSignIn.getClient(this.getActivity(), gso);
+        defineButtons(myView);
         mAuth = FirebaseAuth.getInstance();
 
         return myView;
     }
 
-
-    private void signIn() {
+    /*private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
 
-    }
+    }*/
 
-    /*private void signOut() {
+    private void signOut() {
         // Firebase sign out
         mAuth.signOut();
 
@@ -82,17 +83,20 @@ public class login extends Fragment {
                     }
                 });
         Toast.makeText(getContext(), "Signed out", Toast.LENGTH_SHORT).show();
-    }*/
+        //updateUI(null);
+        ((MainActivity)getActivity()).updateSignInUI();
+        ((MainActivity)getActivity()).switchFrag(R.id.login);
+    }
 
     private void updateUI(FirebaseUser user) {
         /*if (user != null) {
-            myView.findViewById(R.id.login).setVisibility(View.GONE);
-            //myView.findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
+            //myView.findViewById(R.id.login).setVisibility(View.GONE);
+            myView.findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
         } else {
-            myView.findViewById(R.id.login).setVisibility(View.VISIBLE);
-            //myView.findViewById(R.id.sign_out).setVisibility(View.GONE);
+            //myView.findViewById(R.id.login).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.sign_out).setVisibility(View.GONE);
         }*/
-        ((MainActivity)getActivity()).updateSignInUI();
+       // ((MainActivity)getActivity()).updateSignInUI();
     }
 
     @Override
@@ -100,9 +104,19 @@ public class login extends Fragment {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        //updateUI(currentUser);
+        ((MainActivity)getActivity()).updateSignInUI();
+
+        acct = GoogleSignIn.getLastSignedInAccount(getActivity());
+        if (acct != null) {
+            TextView name = (TextView) myView.findViewById(R.id.username);
+            name.setText(acct.getDisplayName());
+            TextView email = (TextView) myView.findViewById(R.id.useremail);
+            email.setText(acct.getEmail());
+        }
     }
 
+    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,7 +128,8 @@ public class login extends Fragment {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-                Toast.makeText(getContext(), "Signing in", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Signed in", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).switchFrag(R.id.profile_frag);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
@@ -123,8 +138,8 @@ public class login extends Fragment {
             }
         }
     }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+*/
+    /*private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -137,8 +152,6 @@ public class login extends Fragment {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
-                            ((MainActivity)getActivity()).switchFrag(R.id.prof);
-                            Toast.makeText(getContext(), "Signed in", Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -150,17 +163,17 @@ public class login extends Fragment {
                         // ...
                     }
                 });
-    }
+    }*/
 
 
 
     public void defineButtons(View view) {
         view.findViewById(R.id.back).setOnClickListener(buttonClickListener);
 
-        googleButton = view.findViewById(R.id.login);
-        googleButton.setOnClickListener(buttonClickListener);
+        //googleButton = view.findViewById(R.id.login);
+        //googleButton.setOnClickListener(buttonClickListener);
 
-        //view.findViewById(R.id.sign_out).setOnClickListener(buttonClickListener);
+        view.findViewById(R.id.sign_out).setOnClickListener(buttonClickListener);
 
         //googleButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
@@ -168,26 +181,26 @@ public class login extends Fragment {
 
     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
 
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(View v){
-                if (v.getId() == R.id.back) {
-                    ((MainActivity)getActivity()).switchFrag(R.id.back);
-                }
-                else if (v.getId() == R.id.login) {
-                    Log.d("loginFrag", "login()");
-                    signIn();
-                }
-                /*else if(v.getId() == R.id.sign_out){
-                    signOut();
-                }*/
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        public void onClick(View v){
+            if (v.getId() == R.id.back) {
+                ((MainActivity)getActivity()).switchFrag(R.id.back);
+            }
+            /*else if (v.getId() == R.id.login) {
+                Log.d("loginFrag", "login()");
+                signIn();
+            }*/
+            else if(v.getId() == R.id.sign_out){
+                signOut();
+            }
 
 
         }
     };
     public void onResume(){
         super.onResume();
-        Log.d(TAG, "resume login frag");
+        Log.d(TAG, "resume profrag frag");
     }
     @Override
     public void onDestroy() {

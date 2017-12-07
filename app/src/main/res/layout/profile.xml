@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/history_frag"
+    android:id="@+id/profile_frag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -36,7 +36,7 @@
             app:layout_constraintVertical_bias="0.057" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/profi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -44,7 +44,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:fontFamily="Hiragino Sans"
-            android:text="Saved"
+            android:text="Profile"
             android:textColor="@color/blue"
             android:textSize="35dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -53,38 +53,30 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.039" />
 
-        <android.support.design.widget.TabLayout
-            android:layout_width="349dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+        <Button
+            android:id="@+id/sign_out"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="160dp"
+            android:layout_height="56dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#ffffff"
+            android:fontFamily="Hiragino Sans"
+            android:selectAllOnFocus="false"
+            android:text="Sign Out"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.526"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.182">
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
-            <android.support.design.widget.TabItem
-                android:id="@+id/stopTab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stops" />
-
-
-            <android.support.design.widget.TabItem
-                android:id="@+id/routesTab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Routes" />
-        </android.support.design.widget.TabLayout>
-
-        <ListView
-            android:id="@+id/savedStops"
-            android:layout_width="322dp"
-            android:layout_height="366dp"
+        <ImageView
+            android:id="@+id/face"
+            android:layout_width="78dp"
+            android:layout_height="86dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -93,22 +85,82 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.843" />
+            app:layout_constraintVertical_bias="0.269"
+            app:srcCompat="@drawable/face" />
 
-        <ListView
-            android:id="@+id/savedRoutes"
-            android:layout_width="322dp"
-            android:layout_height="366dp"
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:fontFamily="Hiragino Sans"
+            android:text="Name: "
+            android:textColor="@color/blue"
+            android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.197"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="Hiragino Sans"
+            android:text="Email: "
+            android:textColor="@color/blue"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.195"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.843"
-            android:visibility="gone"/>
+            app:layout_constraintVertical_bias="0.645" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="Hiragino Sans"
+            android:text=""
+            android:textColor="@color/blue"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/useremail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="Hiragino Sans"
+            android:text=""
+            android:textColor="@color/blue"
+            android:textSize="17dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.645" />
+
+
 
 
     </android.support.constraint.ConstraintLayout>

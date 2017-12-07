@@ -4,19 +4,19 @@
     <item
         android:id="@+id/r1"
         android:icon="@drawable/ic_bus"
-        android:title="walk 3 > bus 10 > walk 7"
+        android:title=""
         />
 
     <item
         android:id="@+id/r2"
         android:icon="@drawable/ic_bus"
-        android:title="walk 7 > bus 18 > walk 9"
+        android:title=""
         />
 
     <item
         android:id="@+id/r3"
         android:icon="@drawable/ic_bus"
-        android:title="walk 7 > bus 24 > walk 9"
+        android:title=""
         />
 
 
