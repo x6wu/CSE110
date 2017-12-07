@@ -119,7 +119,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private OnFragmentInteractionListener mListener;
 
     private LatLng currLatLng;
-    private Place destPlace;
+    private Place destPlace = null;
+    private Place oriPlace = null;
 
     //private LinearLayout routeBottomSheet;
     //private BottomSheetBehavior routeBottomSheetBehavior;
@@ -167,7 +168,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         autocompleteFragmentOrigin.setHint("From");
         autocompleteFragmentDest.setHint("To");
 
-        //set onPlaceSelectedListener
+        /**
+         * Shuyuan Ma @Dec. 6
+         * Origin search box selected listener
+         */
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -197,9 +201,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         return false;
                     }
                 });
-                mOrigin = place.getId();
-                Log.i(TAG, "origin seleted: " + place.getAddress().toString());
-                Log.i(TAG, "\tId: " + mOrigin);
+                /**
+                 * Shuyuan Ma Dec 6th
+                 * Deep copy of origin place, for reconstruction of markers
+                 * See below in the clear button listener
+                 */
+                oriPlace = place;
 
                 mOrigin = place.getAddress().toString();
                 //mOrigin = place.getId();
@@ -225,6 +232,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }
         });
 
+        /**
+         * Shuyuan Ma @Dec. 6
+         * Origin search box clear button listener
+         */
         autocompleteFragmentOrigin.getView().findViewById(R.id.place_autocomplete_clear_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -234,11 +245,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         // .findViewById(R.id.place_autocomplete_search_input)).setText("");
                         autocompleteFragmentOrigin.setText("");
                         view.setVisibility(View.GONE);
+
+                        /**
+                         * Shuyuan Ma Dec 6th
+                         * Clear map when clear button clicked
+                         * If destination marker is still selected, reconstruct mDestMarker
+                         */
+
+                        if (mDestMarker != null) {
+                            mMap.clear();
+                            //reconstruct the Dest marker
+                            mDestMarker = mMap.addMarker(new MarkerOptions().position(destPlace.getLatLng()).
+                                    icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                            mDestMarker.setTitle(destPlace.getName().toString());
+                        } else {
+                            mMap.clear();
+                        }
+
+                        oriPlace = null;
+                        mOriginMarker = null;
+                        /*
                         if (mOriginMarker != null)
                             mOriginMarker.remove();
+                        */
                     }
                 });
 
+        /**
+         * Shuyuan Ma @Dec. 6
+         * Destination search box selected listener
+         */
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -276,7 +312,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         return false;
                     }
                 });
-
+                /**
+                 * Shuyuan Ma Dec 6th
+                 * Deep copy of origin place, for reconstruction of markers
+                 * See below in the clear button listener
+                 */
+                destPlace = place;
                 mDest = place.getAddress().toString();
                 //mDest = place.getId();
 
@@ -301,6 +342,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }
         });
 
+        /**
+         * Shuyuan Ma @Dec. 6
+         * Destination search box clear button listener
+         */
         autocompleteFragmentDest.getView().findViewById(R.id.place_autocomplete_clear_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -310,8 +355,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         // .findViewById(R.id.place_autocomplete_search_input)).setText("");
                         autocompleteFragmentDest.setText("");
                         view.setVisibility(View.GONE);
+
+                        /**
+                         * Shuyuan Ma Dec 6th
+                         * Clear map when clear button clicked
+                         * If origin marker is still selected, reconstruct mOriginMarker
+                         */
+
+                        if (mOriginMarker != null) {
+                            mMap.clear();
+                            //reconstruct the Origin marker
+                            mOriginMarker = mMap.addMarker(new MarkerOptions().position(oriPlace.getLatLng()).
+                                    icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                            mOriginMarker.setTitle(oriPlace.getName().toString());
+                        } else {
+                            mMap.clear();
+                        }
+
+                        destPlace = null;
+                        mDestMarker = null;
+                        /*
                         if (mDestMarker != null)
                             mDestMarker.remove();
+                        */
                     }
                 });
 
