@@ -46,6 +46,12 @@ public class StopHistory {
 
     }
 
+    public StopHistory(Place p) {
+        this.stopName = p.getName().toString();
+        this.placeId=p.getId();
+
+    }
+
     public StopHistory(String name, String placeId) {
         this.stopName = name;
         //this.timeStamp = time;

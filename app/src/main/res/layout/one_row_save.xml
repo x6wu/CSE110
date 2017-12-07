@@ -7,13 +7,13 @@
 
 
     <TextView
-        android:id="@+id/stopname"
+        android:id="@+id/savestopname"
         android:layout_width="340dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:paddingLeft="40dip"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="5dp"
         android:paddingRight="30dp"
         android:textColor="@color/blue"
         android:textSize="18dp"
@@ -27,7 +27,7 @@
         android:id="@+id/saveflag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/stopname"
+        android:layout_alignBottom="@+id/savestopname"
         android:layout_alignParentStart="true"
         app:srcCompat="@drawable/ic_saveflag" />
 
@@ -35,7 +35,7 @@
         android:id="@+id/delete"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignBottom="@+id/stopname"
+        android:layout_alignBottom="@+id/savestopname"
         android:layout_alignParentEnd="true"
         app:srcCompat="@drawable/delete"
         android:background="#FFFFFF"

@@ -2,22 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <!--><item
-        android:id="@+id/bus"
-        android:icon="@drawable/ic_bus"
-        android:title="Bus Route"
-        /><-->
+   <!-- <item
+        android:id="@+id/tag"
+        android:icon="@drawable/ic_tag"
+        android:title="Tag"
+        />-->
+
     <item
         android:id="@+id/saveStop"
         android:icon="@drawable/ic_save"
         android:title="Save"
         />
 
+    <!--
     <item
         android:id="@+id/schedule"
         android:icon="@drawable/ic_schedule"
         android:title="Bus Schedule"
         />
+    -->
 
 
 

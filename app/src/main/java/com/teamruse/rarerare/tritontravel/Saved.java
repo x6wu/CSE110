@@ -1,6 +1,8 @@
 package com.teamruse.rarerare.tritontravel;
 
 import android.app.AlertDialog;
+import android.support.design.widget.TabItem;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -8,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +31,13 @@ import java.util.ArrayList;
 public class Saved extends Fragment {
 
     View myView;
-    public static ArrayList<StopHistory> stopsList;
-    private ArrayList<StopHistory> listStops;
-    private Fragment currFrag=this;
+    //public static ArrayList<StopHistory> stopsList;
+    //private ArrayList<StopHistory> listStops;
+    //private Fragment currFrag=this;
+    TabLayout tabLayout;
+    ViewPager viewPager;
+    ViewPagerAdapter viewPagerAdapter;
+
 
 
     @Nullable
@@ -38,26 +46,15 @@ public class Saved extends Fragment {
 
         myView = inflater.inflate(R.layout.saved, container, false);
         defineButtons(myView);
+        //tabLayout = (TabLayout) myView.findViewById(R.id.tabs);
 
-        if ( stopsList == null) {
-            stopsList = new ArrayList<>();
-        }
-
-        listStops = stopsList;
-
-        final ListView lv = (ListView)myView.findViewById(R.id.savedStops);
-        lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String placeId=((StopHistory)lv.getAdapter().getItem(position)).getPlaceId();
-                ((MainActivity)getActivity()).goToStop(placeId);
-
-
-            }
-        });
-
+        viewPager = (ViewPager) myView.findViewById(R.id.viewPager);
+        //viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
+        viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout = (TabLayout) myView.findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        //tabLayout.addOnTabSelectedListener();
 
         return myView;
     }

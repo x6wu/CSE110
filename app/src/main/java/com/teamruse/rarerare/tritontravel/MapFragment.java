@@ -1,7 +1,9 @@
 package com.teamruse.rarerare.tritontravel;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -13,6 +15,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -20,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import android.widget.EditText;
 import android.widget.Toast;
 
 import android.widget.TextView;
@@ -167,6 +171,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                mOriginPlace = place;
                 builder = new LatLngBounds.Builder();
                 if(mDestMarker != null) {
                     builder.include(mDestMarker.getPosition());
@@ -200,12 +205,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
                         if (arg0.equals(mDestMarker)){
-                            showMenu(mDestMarker);
+                            showMenu(mDestPlace);
+                            //((MainActivity)getActivity()).switchFrag(R.id.saveStop);
+
                             return true;
                         }
                         else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
-                            showMenu(mOriginMarker);
+                            showMenu(mOriginPlace);
                             return true;
+
                         }
                         return false;
                     }
@@ -277,6 +285,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 mOriginPlace = null;
                 mOriginMarker = null;
+                mOriginStr="";
+
                 /*
                 if (mOriginMarker != null)
                     mOriginMarker.remove();
@@ -292,6 +302,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onPlaceSelected(Place place) {
+                mDestPlace = place;
                 builder = new LatLngBounds.Builder();
                 if(mOriginMarker != null)
                     builder.include(mOriginMarker.getPosition());
@@ -331,12 +342,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
-                        if (arg0.equals(mDestMarker)){
-                            showMenu(mDestMarker);
+                        if (arg0.equals(mOriginMarker)){
+                            showMenu(mOriginPlace);
                             return true;
                         }
-                        else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
-                            showMenu(mOriginMarker);
+                        else if (arg0.equals(mDestMarker)) {// if marker source is clicked
+                            showMenu(mDestPlace);
                             return true;
                         }
                         return false;
@@ -411,6 +422,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 mDestPlace = null;
                 mDestMarker = null;
+                mDestStr="";
                 /*
                 if (mDestMarker != null)
                     mDestMarker.remove();
@@ -476,21 +488,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         destText=getView().findViewById(R.id.basic_dest_text);*/
     }
 
-    private void showMenu(Marker m) {
-        SheetMenu.with(getContext()).setTitle(m.getTitle()).setMenu(R.menu.sheet_menu)
+    private void showMenu(final Place p) {
+        SheetMenu.with(getContext()).setTitle(p.getName().toString()).setMenu(R.menu.sheet_menu)
                 .setClick(new MenuItem.OnMenuItemClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        /*if (item.getItemId() == R.id.bus) {
-                            Toast.makeText(getContext(),"fetching route", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }*/
-                        if (item.getItemId() == R.id.schedule) {
-                            Toast.makeText(getContext(),"fetching schedule", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        else if (item.getItemId() == R.id.saveStop) {
-                            Toast.makeText(getContext(),"saving", Toast.LENGTH_SHORT).show();
+                      if (item.getItemId() == R.id.saveStop) {
+                            if ( SavedStops.stopsList == null) {
+                                SavedStops.stopsList = new ArrayList<>();
+                            }
+                            SavedStops.stopsList.add(new StopHistory(p));
+                            Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
+
                             return true;
                         }
                         return false;

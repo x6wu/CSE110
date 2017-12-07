@@ -282,10 +282,17 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 destFragTag="map";
                 destFragClass=MapFragment.class;
                 break;
+
+            case R.id.saveStop:
+                destFragTag="map";
+                destFragClass=MapFragment.class;
+                break;
+
             case R.id.saved:
                 destFragTag="saved";
                 destFragClass=Saved.class;
                 break;
+
             case R.id.prof:
                 destFragTag="profile";
                 destFragClass=Profile.class;

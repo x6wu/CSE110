@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="saved_stops_title_test"/>
+    <ListView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/savedStops"
+        android:layout_width="318dp"
+        android:layout_height="316dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:layout_marginTop="8dp"
+        />
+
+</RelativeLayout>
