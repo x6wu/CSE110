@@ -51,6 +51,11 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,6 +90,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private Place mOriginPlace = null;
     private Marker mOriginMarker;
     private Marker mDestMarker;
+    private DatabaseReference mDatabase;
     //private Button btnNavigation;
     //private GoogleMap mMap;
 
@@ -106,6 +112,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
     private ArrayList<Polyline> mPolylines;
+    private FirebaseAuth mAuth;
 
     View mapView;
 
@@ -134,7 +141,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mAuth = FirebaseAuth.getInstance();
         mPolylines = new ArrayList<>();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
@@ -491,6 +500,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         }
                         else if (item.getItemId() == R.id.saveStop) {
                             Toast.makeText(getContext(),"saving", Toast.LENGTH_SHORT).show();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if(user != null){
+                                mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mDestStr);
+                            }
                             return true;
                         }
                         return false;
