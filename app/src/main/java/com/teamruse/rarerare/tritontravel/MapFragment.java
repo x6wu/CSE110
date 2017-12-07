@@ -485,9 +485,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         destText=getView().findViewById(R.id.basic_dest_text);*/
     }
 
-    private void showMenu(Marker m) {
+    private void showMenu(final Marker m) {
         SheetMenu.with(getContext()).setTitle(m.getTitle()).setMenu(R.menu.sheet_menu)
                 .setClick(new MenuItem.OnMenuItemClickListener() {
+                    public final Marker n = m;
+
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         /*if (item.getItemId() == R.id.bus) {
@@ -502,7 +504,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             Toast.makeText(getContext(),"saving", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                             if(user != null){
-                                mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mDestStr);
+                                if(this.n.equals(mDestMarker)) {
+                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mDestStr);
+                                }
+                                else{
+                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mOriginStr);
+                                }
                             }
                             return true;
                         }
