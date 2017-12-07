@@ -54,6 +54,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import ru.whalemare.sheetmenu.SheetMenu;
 
@@ -78,8 +79,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final String TAG = "Map_Fragment";
     // TODO: parameters
-    private String mOrigin = "";
-    private String mDest = "";
+    private String mOriginStr = "";
+    private String mDestStr = "";
+    private Place mDestPlace = null;
+    private Place mOriginPlace = null;
     private Marker mOriginMarker;
     private Marker mDestMarker;
     //private Button btnNavigation;
@@ -109,8 +112,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private OnFragmentInteractionListener mListener;
 
     private LatLng currLatLng;
-    private Place destPlace = null;
-    private Place oriPlace = null;
+
 
     //private LinearLayout routeBottomSheet;
     //private BottomSheetBehavior routeBottomSheetBehavior;
@@ -178,21 +180,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     if (mDestMarker != null) {
                         mMap.clear();
                         //reconstruct the Dest marker
-                        mDestMarker = mMap.addMarker(new MarkerOptions().position(destPlace.getLatLng()).
+                        mDestMarker = mMap.addMarker(new MarkerOptions().position(mDestPlace.getLatLng()).
                                 icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                        mDestMarker.setTitle(destPlace.getName().toString());
+                        mDestMarker.setTitle(mDestPlace.getName().toString());
                     } else {
                         mMap.clear();
                     }
                     mOriginMarker = null;
-                    oriPlace = null;
+                    mOriginPlace = null;
+                    mOriginStr = "";
 
                     //mOriginMarker.remove();
                 }
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 mOriginMarker.setTitle(place.getName().toString());
-                //mOrigin = place.getAddress().toString();
+                //mOriginStr = place.getAddress().toString();
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
@@ -204,7 +207,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             showMenu(mOriginMarker);
                             return true;
                         }
-                        //Toast.makeText(getContext(), "l",Toast.LENGTH_SHORT).show();
                         return false;
                     }
                 });
@@ -213,10 +215,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                  * Deep copy of origin place, for reconstruction of markers
                  * See below in the clear button listener
                  */
-                oriPlace = place;
+                mOriginPlace = place;
 
-                mOrigin = place.getAddress().toString();
-                //mOrigin = place.getId();
+                mOriginStr = place.getAddress().toString();
+                //mOriginStr = place.getId();
                 Log.i(TAG, "origin seleted, Name: " + place.getName());
                 Log.i(TAG, "\t\tId: " + place.getId());
                 Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
@@ -266,14 +268,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 if (mDestMarker != null) {
                     mMap.clear();
                     //reconstruct the Dest marker
-                    mDestMarker = mMap.addMarker(new MarkerOptions().position(destPlace.getLatLng()).
+                    mDestMarker = mMap.addMarker(new MarkerOptions().position(mDestPlace.getLatLng()).
                             icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                    mDestMarker.setTitle(destPlace.getName().toString());
+                    mDestMarker.setTitle(mDestPlace.getName().toString());
                 } else {
                     mMap.clear();
                 }
 
-                oriPlace = null;
+                mOriginPlace = null;
                 mOriginMarker = null;
                 /*
                 if (mOriginMarker != null)
@@ -302,15 +304,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     if (mOriginMarker != null) {
                         mMap.clear();
                         //reconstruct the Origin marker
-                        mOriginMarker = mMap.addMarker(new MarkerOptions().position(oriPlace.getLatLng()).
+                        mOriginMarker = mMap.addMarker(new MarkerOptions().position(mOriginPlace.getLatLng()).
                                 icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                        mOriginMarker.setTitle(oriPlace.getName().toString());
+                        mOriginMarker.setTitle(mOriginPlace.getName().toString());
                     } else {
                         mMap.clear();
                     }
 
-                    destPlace = null;
+                    mDestPlace = null;
                     mDestMarker = null;
+                    mDestStr = "";
                     //mDestMarker.remove();
                 }
                 if ( History.stopsList == null) {
@@ -336,7 +339,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             showMenu(mOriginMarker);
                             return true;
                         }
-                        //Toast.makeText(getContext(), "l",Toast.LENGTH_SHORT).show();
                         return false;
                     }
                 });
@@ -345,9 +347,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                  * Deep copy of origin place, for reconstruction of markers
                  * See below in the clear button listener
                  */
-                destPlace = place;
-                mDest = place.getAddress().toString();
-                //mDest = place.getId();
+                mDestPlace = place;
+                mDestStr = place.getAddress().toString();
+                //mDestStr = place.getId();
 
                 Log.i(TAG, "destination seleted, Name: " + place.getName());
                 Log.i(TAG, "\t\tId: " + place.getId());
@@ -400,14 +402,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 if (mOriginMarker != null) {
                     mMap.clear();
                     //reconstruct the Origin marker
-                    mOriginMarker = mMap.addMarker(new MarkerOptions().position(oriPlace.getLatLng()).
+                    mOriginMarker = mMap.addMarker(new MarkerOptions().position(mOriginPlace.getLatLng()).
                             icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                    mOriginMarker.setTitle(oriPlace.getName().toString());
+                    mOriginMarker.setTitle(mOriginPlace.getName().toString());
                 } else {
                     mMap.clear();
                 }
 
-                destPlace = null;
+                mDestPlace = null;
                 mDestMarker = null;
                 /*
                 if (mDestMarker != null)
@@ -441,13 +443,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 //navigation button callback to onFragmentInteraction
                 //MainActivity will handle the sendRequest() part
                 if(mListener != null) {
-                    mListener.onNavRequest(mOrigin, mDest);
+                    if(mOriginPlace == null) {
+                        Toast.makeText(getContext(), "Please enter an origin.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    else if(mDestPlace == null){
+                        Toast.makeText(getContext(), "Please enter a destination.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    mListener.onNavRequest(mOriginStr, mDestStr);
                 }
             }
         });
         fillInOriginSearchBox();
-        if(destPlace!=null){
-            fillInDestSearchBox(destPlace);
+        if(mDestPlace !=null){
+            fillInDestSearchBox(mDestPlace);
         }
         /*routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
         routeBottomSheetBehavior = BottomSheetBehavior.from(routeBottomSheet);
@@ -633,26 +643,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Log.i(TAG, "onDetach");
     }
 
-    //click listener to navigation button
-    //now moved in to MainActivity
-    /*
-    private void sendRequest(){
-        new DirectionGenerator(this, mOrigin, mDest).generate();
-        Log.i(TAG, "sendRequest() called");
-        Log.i(TAG, "mOrigin:"+mOrigin+" mDest:"+mDest);
-    }
-    */
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: implement this interface in case we need to communicate with the activity
         void onNavRequest(String origin, String dest);
@@ -689,12 +679,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
                         autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
 
-                        mOrigin=mostLikelyPlace.getId();
+                        mOriginStr =mostLikelyPlace.getId();
                         mOriginMarker = mMap.addMarker(new MarkerOptions().position(mostLikelyPlace.getLatLng()).
                                 icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                         mOriginMarker.setVisible(false);
-                        mOrigin = mostLikelyPlace.getAddress().toString();
-                        Log.i(TAG, "origin seleted" + mOrigin);
+                        mOriginStr = mostLikelyPlace.getAddress().toString();
+                        Log.i(TAG, "origin seleted" + mOriginStr);
                         likelyPlaces.release();
                     }catch (Exception e){
                         Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
@@ -723,13 +713,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Log.d(TAG, "onDestroy called");
     }
 
-    protected void setDestPlace(Place place){
+    protected void setmDestPlace(Place place){
         PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
         /*
          * Ruoyu Xu
          * Set text in destination textbox
          */
-        this.destPlace=place;
+        this.mDestPlace =place;
         try {
             fillInDestSearchBox(place);
         }catch (Exception e){
@@ -741,11 +731,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         builder = new LatLngBounds.Builder();
         if(mOriginMarker != null)
             builder.include(mOriginMarker.getPosition());
-        mDest=place.getId();
+        mDestStr =place.getId();
         autocompleteFragmentDest.setText(place.getAddress().toString());
         mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                 icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        mDest = place.getAddress().toString();
+        mDestStr = place.getAddress().toString();
         Log.i(TAG, "destination seleted: " + place.getAddress().toString());
         builder.include(mDestMarker.getPosition());
         bounds = builder.build();
@@ -756,16 +746,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
             mMap.animateCamera(cu);
         }
-        Log.i(TAG, "destination seleted" + mDest);
+        Log.i(TAG, "destination seleted" + mDestStr);
     }
 
     /*
      * Ruoyu Xu
      * Display path information on a bottomSheet
      */
-    protected void displayPath(Path path){
-        //originText.setText(mOrigin);
-        //destText.setText(mDest+"\n");
+    protected void displayPath(List<Path> paths){
+        //originText.setText(mOriginStr);
+        //destText.setText(mDestStr+"\n");
+        Path path = paths.get(0);
         String basicPathStr="";
         for (PathSegment seg:path.getPathSegments()){
             if (seg.getTravelMode()==SegmentFactory.TravelMode.WALKING){
@@ -778,6 +769,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         //routeText.setText(basicPathStr);
         //routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         Log.d(TAG, "basicPathStr:\n"+basicPathStr);
+
     }
 
     public void drawPolylines(PolylineOptions polylineOptions){
