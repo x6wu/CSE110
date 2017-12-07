@@ -70,7 +70,8 @@ public class ListViewSavedAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     deleteHist(listContact.get(position).getId());
-                    SavedStops.stopsList.remove(position);
+                    //TODO 
+                    //SavedStops.stopsList.remove(position);
 
                     notifyDataSetChanged();
                    /* if (History.stopsList.isEmpty()) {

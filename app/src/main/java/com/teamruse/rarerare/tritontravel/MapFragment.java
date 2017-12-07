@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -55,6 +56,11 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,6 +95,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private Place mOriginPlace = null;
     private Marker mOriginMarker;
     private Marker mDestMarker;
+    private DatabaseReference mDatabase;
     //private Button btnNavigation;
     //private GoogleMap mMap;
 
@@ -110,6 +117,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
     private ArrayList<Polyline> mPolylines;
+    private FirebaseAuth mAuth;
 
     View mapView;
 
@@ -138,7 +146,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mAuth = FirebaseAuth.getInstance();
         mPolylines = new ArrayList<>();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
@@ -205,13 +215,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
                         if (arg0.equals(mDestMarker)){
-                            showMenu(mDestPlace);
+                            showMenu(mDestMarker);
                             //((MainActivity)getActivity()).switchFrag(R.id.saveStop);
 
                             return true;
                         }
                         else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
-                            showMenu(mOriginPlace);
+                            showMenu(mOriginMarker);
                             return true;
 
                         }
@@ -343,11 +353,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
                         if (arg0.equals(mOriginMarker)){
-                            showMenu(mOriginPlace);
+                            showMenu(mOriginMarker);
                             return true;
                         }
                         else if (arg0.equals(mDestMarker)) {// if marker source is clicked
-                            showMenu(mDestPlace);
+                            showMenu(mDestMarker);
                             return true;
                         }
                         return false;
@@ -488,7 +498,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         destText=getView().findViewById(R.id.basic_dest_text);*/
     }
 
-    private void showMenu(final Place p) {
+
+    /*private void showMenu(final Place p) {
         SheetMenu.with(getContext()).setTitle(p.getName().toString()).setMenu(R.menu.sheet_menu)
                 .setClick(new MenuItem.OnMenuItemClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -499,7 +510,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                                 SavedStops.stopsList = new ArrayList<>();
                             }
                             SavedStops.stopsList.add(new StopHistory(p));
+                            Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();*/
+
+
+    private void showMenu(final Marker m) {
+        SheetMenu.with(getContext()).setTitle(m.getTitle()).setMenu(R.menu.sheet_menu)
+                .setClick(new MenuItem.OnMenuItemClickListener() {
+                    public final Marker n = m;
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        /*if (item.getItemId() == R.id.bus) {
+                            Toast.makeText(getContext(),"fetching route", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }*/
+                        /*if (item.getItemId() == R.id.schedule) {
+                            Toast.makeText(getContext(),"fetching schedule", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }*/
+                        if (item.getItemId() == R.id.saveStop) {
                             Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user == null) {
+                                Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
+                            }
+                            if(user != null){
+                                if(this.n.equals(mDestMarker)) {
+                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mDestStr);
+                                }
+                                else{
+                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mOriginStr);
+                                }
+                            }
 
                             return true;
                         }

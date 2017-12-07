@@ -19,8 +19,8 @@ import java.util.ArrayList;
 public class SavedStops extends Fragment {
 
     private static final String TAG="SavedStops_tag";
-    public static ArrayList<StopHistory> stopsList;
-    private ArrayList<StopHistory> listStops;
+    private ArrayList<StopHistory> stopsList;
+    //private ArrayList<StopHistory> listStops;
     public SavedStops() {
 
     }
@@ -33,13 +33,13 @@ public class SavedStops extends Fragment {
             stopsList = new ArrayList<>();
         }
 
-        listStops = stopsList;
+
 
         stopsList.add(new StopHistory("ss","tt"));
 
         final ListView lv = (ListView) view.findViewById(R.id.savedStops);
         //lv.setAdapter(new ListViewSavedAdapter(getActivity(), listStops));
-        lv.setAdapter(new ListViewSavedAdapter(getContext(), listStops));
+        lv.setAdapter(new ListViewSavedAdapter(getContext(), stopsList));
 
         Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
