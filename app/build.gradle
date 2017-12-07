@@ -6,7 +6,7 @@ android {
         config {
             keyAlias 'mydomain'
             keyPassword 'android'
-            storeFile file('/Users/rarerare/AndroidStudioProjects/TritonTravel/KeyStore.jks')
+            storeFile file('/Users/JingJing/Desktop/cse110/TritonTravel/KeyStore.jks')
             storePassword 'android'
         }
     }
@@ -49,6 +49,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.6.0'
     compile 'com.google.android.gms:play-services-vision:11.6.0'
     compile 'com.google.firebase:firebase-auth:11.6.0'
+    compile 'com.google.firebase:firebase-database:11.6.0'
     compile 'com.google.android.gms:play-services-auth:11.6.0'
     compile 'com.android.support:multidex:1.0.2'
     compile 'com.github.whalemare:sheetmenu:1.0'

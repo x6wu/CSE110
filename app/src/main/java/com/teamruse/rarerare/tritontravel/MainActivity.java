@@ -13,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -27,7 +26,6 @@ import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.PatternItem;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -35,7 +33,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
@@ -207,6 +204,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     public void onGenerateSuccess(List<Path> paths) {
         mMapFragment.btnNavigation.setEnabled(true);
 
+        if (paths.isEmpty()){
+            return;
+        }
+
         ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
         for (int i = 0; i < recPathSegments.size(); ++i) {
             PathSegment currSegment = recPathSegments.get(i);
@@ -223,10 +224,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             }
             mMapFragment.drawPolylines(polylineOptions);
         }
-        if (paths.isEmpty()){
-            return;
-        }
-        mMapFragment.displayPath(paths.get(0));
+
+        mMapFragment.displayPath(paths);
     }
 
     //TODO
@@ -353,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                         if (task.isSuccessful()) {
                             PlaceBufferResponse places = task.getResult();
                             Place myPlace = places.get(0);
-                            mMapFragment.setDestPlace(myPlace);
+                            mMapFragment.setmDestPlace(myPlace);
                             Log.i(TAG, "Place found: " + myPlace.getName());
                             places.release();
                         } else {
@@ -361,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                         }
                     }
                 });
-        //mMapFragment.setDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
+        //mMapFragment.setmDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
         currFragTag="map";
     }
 }
