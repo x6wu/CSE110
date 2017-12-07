@@ -21,6 +21,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+
 import java.util.ArrayList;
 
 /**
@@ -35,6 +46,8 @@ public class Saved extends Fragment {
     //private ArrayList<StopHistory> listStops;
     //private Fragment currFrag=this;
     TabLayout tabLayout;
+    private FirebaseAuth mAuth;
+    private ArrayList<String> savedStopList = new ArrayList<String>();
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
 
@@ -55,6 +68,25 @@ public class Saved extends Fragment {
         tabLayout = (TabLayout) myView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         //tabLayout.addOnTabSelectedListener();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("stops").child("stop_id_" + mAuth.getUid());
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        for(DataSnapshot shot : snapshot.getChildren()) {
+                            savedStopList.add(shot.getValue(String.class));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+
+
+
 
         return myView;
     }
