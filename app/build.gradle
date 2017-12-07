@@ -6,7 +6,7 @@ android {
         config {
             keyAlias 'mydomain'
             keyPassword 'android'
-            storeFile file('/Users/JingJing/Desktop/cse110/TritonTravel/KeyStore.jks')
+            storeFile file('/Users/cloud.ma/cse110/CSE110/app/KeyStore.jks')
             storePassword 'android'
         }
     }
