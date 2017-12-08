@@ -35,7 +35,7 @@ public class SavedStops extends Fragment {
 
 
 
-        stopsList.add(new StopHistory("ss","tt"));
+       // stopsList.add(new StopHistory("ss","tt"));
 
         final ListView lv = (ListView) view.findViewById(R.id.savedStops);
         //lv.setAdapter(new ListViewSavedAdapter(getActivity(), listStops));
