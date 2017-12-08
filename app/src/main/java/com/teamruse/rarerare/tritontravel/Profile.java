@@ -1,5 +1,6 @@
 package com.teamruse.rarerare.tritontravel;
 
+
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,9 +9,10 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import android.content.Intent;
+
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,18 +21,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
 import com.google.android.gms.common.SignInButton;
+import com.squareup.picasso.Picasso;
 
-//import java.util.concurrent.Executor;
+
 
 
 public class Profile extends Fragment {
@@ -104,7 +104,6 @@ public class Profile extends Fragment {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
         ((MainActivity)getActivity()).updateSignInUI();
 
         acct = GoogleSignIn.getLastSignedInAccount(getActivity());
@@ -113,6 +112,10 @@ public class Profile extends Fragment {
             name.setText(acct.getDisplayName());
             TextView email = (TextView) myView.findViewById(R.id.useremail);
             email.setText(acct.getEmail());
+            //render the profilephoto
+            ImageView profile_photo = (ImageView) myView.findViewById(R.id.face);
+            Picasso.with(this.getActivity()).load(acct.getPhotoUrl()).into(profile_photo);
+
         }
     }
 

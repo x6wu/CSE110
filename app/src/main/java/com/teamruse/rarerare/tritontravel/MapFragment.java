@@ -91,10 +91,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     // TODO: parameters
     private String mOriginStr = "";
     private String mDestStr = "";
-    //private String mOriginId = "";
-    //private String mDestId = "";
-    private Place mDestPlace = null;
-    private Place mOriginPlace = null;
+
+    private Place mDestPlace;
+    private Place mOriginPlace;
     private Marker mOriginMarker;
     private Marker mDestMarker;
     private DatabaseReference mDatabase;
@@ -111,7 +110,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LocationRequest mLocationRequest;
     private Location mLastKnownLocation;
     private Marker mLastKnownLocationMarker;
-    private boolean mLocationPermissionGranted;
+    private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng mDefaultLatLng = new LatLng(32.880088,  -117.234003);
     //new LatLng(32.879409, -117.2389395);
@@ -204,7 +203,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     } else {
                         mMap.clear();
                     }
-
                 }
 
                 /**
@@ -225,11 +223,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
                         if (arg0.equals(mDestMarker)){
-                            showMenu(mDestMarker);
+                            showMenu(mDestPlace);
                             return true;
                         }
                         else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
-                            showMenu(mOriginMarker);
+                            showMenu(mOriginPlace);
                             return true;
 
                         }
@@ -326,7 +324,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     } else {
                         mMap.clear();
                     }
-
                 }
 
                 /**
@@ -358,11 +355,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     @Override
                     public boolean onMarkerClick(Marker arg0) {
                         if (arg0.equals(mOriginMarker)){
-                            showMenu(mOriginMarker);
+                            showMenu(mOriginPlace);
                             return true;
                         }
                         else if (arg0.equals(mDestMarker)) {// if marker source is clicked
-                            showMenu(mDestMarker);
+                            showMenu(mDestPlace);
                             return true;
                         }
                         return false;
@@ -508,35 +505,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
     //Zijing sheet menu for save
-    private void showMenu(final Marker m) {
-        SheetMenu.with(getContext()).setTitle(m.getTitle()).setMenu(R.menu.sheet_menu)
-                .setClick(new MenuItem.OnMenuItemClickListener() {
-                    public final Marker n = m;
+    private void showMenu(final Place p) {
+        SheetMenu.with(getContext()).setTitle(p.getName().toString()).setMenu(R.menu.sheet_menu)
+            .setClick(new MenuItem.OnMenuItemClickListener() {
+                public final Place q = p;
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-
-                        if (item.getItemId() == R.id.saveStop) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user == null) {
-                                Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
-                            }
-                            if(user != null){
-                                if(this.n.equals(mDestMarker)) {
-                                    //minor fix to save id
-                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId()));
-                                }
-                                else{
-                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId()));
-                                }
-                                Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
-                            }
-
-                            return true;
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (item.getItemId() == R.id.saveStop) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user == null) {
+                            Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
                         }
-                        return false;
+                        if(user != null){
+                            if(this.q.equals(mDestPlace)) {
+                                //minor fix to save id
+                                mDatabase.child("stops")
+                                        .child("stop_id_" + user.getUid())
+                                        .push()
+                                        .setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId()));
+                            }
+                            else if(this.q.equals(mOriginPlace)){
+                                mDatabase.child("stops")
+                                        .child("stop_id_" + user.getUid())
+                                        .push()
+                                        .setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId()));
+                            }
+                            Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
                     }
-                }).show();
+                    return false;
+                }
+            }).show();
     }
 
     //zijing show dummy routes

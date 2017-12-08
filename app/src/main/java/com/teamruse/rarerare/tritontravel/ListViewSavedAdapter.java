@@ -44,6 +44,10 @@ public class ListViewSavedAdapter extends BaseAdapter {
     @Override
     public Object getItem(int arg0) {
         // TODO Auto-generated method stub
+        Log.d("ListViewSavedAdapter", "arg0:" + arg0 + " listContact.size="+listContact.size());
+        if(listContact.size()==0){
+            return null;
+        }
         return listContact.get(arg0);
     }
 
