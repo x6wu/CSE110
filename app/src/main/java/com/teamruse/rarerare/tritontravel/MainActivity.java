@@ -2,19 +2,19 @@ package com.teamruse.rarerare.tritontravel;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         setContentView(R.layout.activity_main);
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        //mNavigationView.inflateMenu(R.menu.activity_main_drawer);
         updateSignInUI();
 
 
@@ -101,10 +101,12 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             mNavigationView.getMenu().findItem(R.id.prof).setVisible(true);
             View hView =  mNavigationView.getHeaderView(0);
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-                TextView name = (TextView) hView.findViewById(R.id.welcome);
-
-                name.setText("Welcome, " + acct.getGivenName() + "!");
-
+            //render the username
+            TextView name = (TextView) hView.findViewById(R.id.welcome);
+            name.setText("Welcome, " + acct.getGivenName() + "!");
+            //render the profilephoto
+            ImageView nav_photo = (ImageView) hView.findViewById(R.id.nav_photo);
+            Picasso.with(this).load(acct.getPhotoUrl()).into(nav_photo);
         }
         else {
             mNavigationView.getMenu().findItem(R.id.login).setVisible(true);
@@ -114,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
             TextView name = (TextView) hView.findViewById(R.id.welcome);
             name.setText("Welcome!");
+            ImageView nav_photo = (ImageView) hView.findViewById(R.id.nav_photo);
+            nav_photo.setImageResource(R.drawable.face);
         }
     }
 
@@ -342,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Log.d(TAG, "onDestroy called");
     }
 
+    //For History
     protected void goToStop(String placeId){
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (mMapFragment==null){

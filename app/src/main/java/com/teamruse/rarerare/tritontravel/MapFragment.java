@@ -91,8 +91,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     // TODO: parameters
     private String mOriginStr = "";
     private String mDestStr = "";
-    private Place mDestPlace = null;
-    private Place mOriginPlace = null;
+    private Place mDestPlace;
+    private Place mOriginPlace;
     private Marker mOriginMarker;
     private Marker mDestMarker;
     private DatabaseReference mDatabase;
@@ -109,7 +109,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LocationRequest mLocationRequest;
     private Location mLastKnownLocation;
     private Marker mLastKnownLocationMarker;
-    private boolean mLocationPermissionGranted;
+    private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng mDefaultLatLng = new LatLng(32.880088,  -117.234003);
     //new LatLng(32.879409, -117.2389395);
@@ -201,11 +201,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     } else {
                         mMap.clear();
                     }
-                    mOriginMarker = null;
-                    mOriginPlace = null;
-                    mOriginStr = "";
-
-                    //mOriginMarker.remove();
                 }
                 mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
                         icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
@@ -331,11 +326,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     } else {
                         mMap.clear();
                     }
-
-                    mDestPlace = null;
-                    mDestMarker = null;
-                    mDestStr = "";
-                    //mDestMarker.remove();
                 }
                 if ( History.stopsList == null) {
                     History.stopsList = new ArrayList<>();
@@ -515,39 +505,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private void showMenu(final Marker m) {
         SheetMenu.with(getContext()).setTitle(m.getTitle()).setMenu(R.menu.sheet_menu)
-                .setClick(new MenuItem.OnMenuItemClickListener() {
-                    public final Marker n = m;
+            .setClick(new MenuItem.OnMenuItemClickListener() {
+                public final Marker n = m;
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        /*if (item.getItemId() == R.id.bus) {
-                            Toast.makeText(getContext(),"fetching route", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }*/
-                        /*if (item.getItemId() == R.id.schedule) {
-                            Toast.makeText(getContext(),"fetching schedule", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }*/
-                        if (item.getItemId() == R.id.saveStop) {
-                            Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user == null) {
-                                Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
-                            }
-                            if(user != null){
-                                if(this.n.equals(mDestMarker)) {
-                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mDestStr);
-                                }
-                                else{
-                                    mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mOriginStr);
-                                }
-                            }
-
-                            return true;
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    /*if (item.getItemId() == R.id.bus) {
+                        Toast.makeText(getContext(),"fetching route", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }*/
+                    /*if (item.getItemId() == R.id.schedule) {
+                        Toast.makeText(getContext(),"fetching schedule", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }*/
+                    if (item.getItemId() == R.id.saveStop) {
+                        Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user == null) {
+                            Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
                         }
-                        return false;
+                        if(user != null){
+                            if(this.n.equals(mDestMarker)) {
+                                mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mDestStr);
+                            }
+                            else{
+                                mDatabase.child("stops").child("stop_id_" + user.getUid()).push().setValue(mOriginStr);
+                            }
+                        }
+
+                        return true;
                     }
-                }).show();
+                    return false;
+                }
+            }).show();
     }
 
     private void showRoutes(Marker o,Marker d) {
@@ -731,12 +721,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
                         autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
 
-                        mOriginStr =mostLikelyPlace.getId();
                         mOriginMarker = mMap.addMarker(new MarkerOptions().position(mostLikelyPlace.getLatLng()).
                                 icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                         mOriginMarker.setVisible(false);
-                        mOriginStr = mostLikelyPlace.getAddress().toString();
-                        Log.i(TAG, "origin seleted" + mOriginStr);
+                        Log.i(TAG, "origin seleted" + mostLikelyPlace.getAddress().toString());
                         likelyPlaces.release();
                     }catch (Exception e){
                         Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
