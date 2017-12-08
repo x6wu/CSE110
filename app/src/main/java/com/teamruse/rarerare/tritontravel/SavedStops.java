@@ -10,6 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 /**
@@ -20,6 +27,8 @@ public class SavedStops extends Fragment {
 
     private static final String TAG="SavedStops_tag";
     private ArrayList<StopHistory> stopsList;
+    private FirebaseAuth mAuth;
+    private ArrayList<String> savedStopList = new ArrayList<String>();
     //private ArrayList<StopHistory> listStops;
     public SavedStops() {
 
@@ -28,6 +37,21 @@ public class SavedStops extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.saved_stops, container, false);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("stops").child("stop_id_" + mAuth.getUid());
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        for(DataSnapshot shot : snapshot.getChildren()) {
+                            savedStopList.add(shot.getValue(String.class));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
 
         if (stopsList == null) {
             stopsList = new ArrayList<>();
