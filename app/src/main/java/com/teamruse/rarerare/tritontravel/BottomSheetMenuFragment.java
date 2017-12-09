@@ -28,6 +28,7 @@ import butterknife.OnClick;
 public class BottomSheetMenuFragment extends BottomSheetDialogFragment {
     private static final String ARG_LAYOUT_ID = "ARG_LAYOUT_ID";
     private static final int LIST = R.layout.fragment_list_bottom_sheet;
+    private static final String TAG = "BottomSheetMenuFragment";
     //private static final int SLIST = R.layout.sheet_menu;
 
     public static BottomSheetMenuFragment createInstanceList() {

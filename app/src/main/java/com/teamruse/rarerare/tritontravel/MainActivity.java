@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             return;
         }
 
+        //render and draw the first path's polyline
         ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
         for (int i = 0; i < recPathSegments.size(); ++i) {
             PathSegment currSegment = recPathSegments.get(i);
@@ -220,7 +221,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         mMapFragment.displayPath(paths);
     }
 
-    //TODO
     //check if user is signed in
     public boolean signedIn(){
         /*
