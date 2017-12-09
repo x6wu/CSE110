@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.text.TextPaint;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,11 +86,11 @@ import ru.whalemare.sheetmenu.SheetMenu;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback,
                                                      GoogleMap.OnMyLocationButtonClickListener {
-    // TODO:parameter arguments, choose names that match
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final String TAG = "Map_Fragment";
-    // TODO: parameters
+
     private String mOriginStr = "";
     private String mDestStr = "";
 
@@ -97,8 +99,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private Marker mOriginMarker;
     private Marker mDestMarker;
     private DatabaseReference mDatabase;
-    //private Button btnNavigation;
-    //private GoogleMap mMap;
 
     public Button btnNavigation;
     public  GoogleMap mMap;
@@ -106,14 +106,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private SupportPlaceAutocompleteFragment autocompleteFragmentOrigin;
     private SupportPlaceAutocompleteFragment autocompleteFragmentDest;
 
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private Location mLastKnownLocation;
     private Marker mLastKnownLocationMarker;
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng mDefaultLatLng = new LatLng(32.880088,  -117.234003);
-    //new LatLng(32.879409, -117.2389395);
     private int mDefaultZoom = 15;
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
@@ -123,24 +120,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     View mapView;
 
     private OnFragmentInteractionListener mListener;
-
     private LatLng currLatLng;
-
 
     //private LinearLayout routeBottomSheet;
     //private BottomSheetBehavior routeBottomSheetBehavior;
-    private TextView routeText;
-    private TextView originText;
-    private TextView destText;
+
 
     public MapFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //outState.putInt("curChoice", mCurCheckPosition);
     }
 
     @Override
@@ -196,7 +183,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
           Origin search box clear button listener
          */
         autocompleteFragmentOrigin.getView().findViewById(R.id.place_autocomplete_clear_button)
-                .setOnClickListener(new View.OnClickListener() {
+            .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // example : way to access view from PlaceAutoCompleteFragment
@@ -246,7 +233,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
          * Destination search box clear button listener
          */
         autocompleteFragmentDest.getView().findViewById(R.id.place_autocomplete_clear_button)
-                .setOnClickListener(new View.OnClickListener() {
+            .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 autocompleteFragmentDest.setText("");
@@ -284,8 +271,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         btnNavigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: navigation button callback
-                //sendRequest();
                 if(mDestMarker != null && mOriginMarker !=null) {
                     mOriginMarker.setVisible(true);
                     builder = new LatLngBounds.Builder();
@@ -382,24 +367,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     //zijing show dummy routes
     private void showRoutes(Marker o,Marker d) {
         SheetMenu.with(getContext()).setTitle(o.getTitle() + " > " + d.getTitle()).setMenu(R.menu.routes)
-                .setClick(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.r1) {
-                            Toast.makeText(getContext(),"fetching route 1", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        else if (item.getItemId() == R.id.r2) {
-                            Toast.makeText(getContext(),"fetching route 2", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        else if (item.getItemId() == R.id.saveStop) {
-                            Toast.makeText(getContext(),"fetching route 3", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        return false;
+            .setClick(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (item.getItemId() == R.id.r1) {
+                        Toast.makeText(getContext(),"fetching route 1", Toast.LENGTH_SHORT).show();
+                        return true;
                     }
-                }).show();
+                    else if (item.getItemId() == R.id.r2) {
+                        Toast.makeText(getContext(),"fetching route 2", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    else if (item.getItemId() == R.id.saveStop) {
+                        Toast.makeText(getContext(),"fetching route 3", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    return false;
+                }
+            }).show();
     }
 
     private void getLocationPermission() {
@@ -433,20 +418,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         try{
             if(mLocationPermissionGranted){
                 mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                //mMap.getUiSettings().setZoomControlsEnabled(true);
-                //mMap.getUiSettings().setZoomGesturesEnabled(true);
             }
             else{
                 mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                //mMap.getUiSettings().setZoomControlsEnabled(true);
-                //mMap.getUiSettings().setZoomGesturesEnabled(true);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
         } catch (SecurityException e){
-            Log.e("Exception %s", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -457,40 +436,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            mLastKnownLocation = task.getResult();
-                            try {
-                                currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
-                                CameraPosition cameraPosition = new CameraPosition(
-                                        currLatLng,
-                                        mDefaultZoom, mMap.getCameraPosition().tilt,
-                                        mMap.getCameraPosition().bearing);
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-                            }catch (NullPointerException e){
-                                Log.d(TAG, "Current location is null. Using defaults.");
-                                Log.e(TAG, "Exception: %s", task.getException());
-                                CameraPosition cameraPosition = new CameraPosition(
-                                        mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
-                                        mMap.getCameraPosition().bearing);
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                            }
-                        } else {
+                    if (task.isSuccessful()) {
+                        mLastKnownLocation = task.getResult();
+                        try {
+                            currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
+                            CameraPosition cameraPosition = new CameraPosition(
+                                currLatLng,
+                                mDefaultZoom, mMap.getCameraPosition().tilt,
+                                mMap.getCameraPosition().bearing);
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                        } catch (NullPointerException e){
                             Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
+                            Log.e(TAG, "Exception: " + task.getException());
                             CameraPosition cameraPosition = new CameraPosition(
                                     mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
                                     mMap.getCameraPosition().bearing);
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Task Failed: " + task.getException());
+                        CameraPosition cameraPosition = new CameraPosition(
+                                mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
+                                mMap.getCameraPosition().bearing);
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    }
                     }
                 });
             }
         } catch (SecurityException e){
-            Log.e(TAG,"Exception :"+e.getMessage());
+            Log.e(TAG,"SecurityException :"+e.getMessage());
         }
     }
 
@@ -502,7 +480,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         getDeviceLocation();
         updateLocationUI();
 
-        mMap.setPadding(0,350,0,0);
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
+
+        mMap.setPadding(0,height/5,0,0);
         mMap.setOnMyLocationButtonClickListener(this);
     }
 
@@ -702,19 +685,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onPause(){
         super.onPause();
 
-        Log.d(TAG, "onPause called");
+        Log.i(TAG, "onPause called");
     }
 
     @Override
     public void onStop(){
         super.onStop();
-        Log.d(TAG, "onStop called");
+        Log.i(TAG, "onStop called");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy called");
+        Log.i(TAG, "onDestroy called");
     }
 
 
