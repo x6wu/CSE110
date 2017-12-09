@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private static String TAG = "Main_Activity";
     private MapFragment mMapFragment;
     private String currFragTag;
-
+    private DatabaseReference mDatabase;
 
 
     /*
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private GoogleSignInClient mGoogleSignInClient;
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
 
+        //Ruoyu Xu use only one db ref in the activity
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
     }
 
@@ -381,5 +388,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                     }
                 });
         currFragTag="map";
+    }
+    public DatabaseReference getDatabase() {
+        return mDatabase;
     }
 }

@@ -157,7 +157,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mAuth = FirebaseAuth.getInstance();
         mPolylines = new ArrayList<>();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = ((MainActivity)getActivity()).getDatabase();
     }
 
     @Override
