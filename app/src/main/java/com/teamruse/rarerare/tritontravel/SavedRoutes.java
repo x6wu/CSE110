@@ -69,9 +69,9 @@ public class SavedRoutes extends Fragment {
                         Log.d(TAG, "onDataChange called.");
                         for(DataSnapshot shot : snapshot.getChildren()) {
                             Log.d(TAG, "a shot");
-                            StopHistory data =null;
+                            StopHistoryWithKey data =null;
                             try {
-                                data = shot.getValue(StopHistory.class);
+                                data = shot.getValue(StopHistoryWithKey.class);
                             }catch (DatabaseException e){
                                 Log.e(TAG, e.getMessage());
                             }
@@ -79,6 +79,7 @@ public class SavedRoutes extends Fragment {
                                 Log.d(TAG,  "retrieved data (StopHistory):" +
                                         "\n\tplaceId: " + data.getPlaceId()
                                         +"\n\tstopName: "+ data.getStopName());
+                                data.setKey(shot.getKey());
 
                                 routesList.add(data);
                             }
@@ -86,9 +87,9 @@ public class SavedRoutes extends Fragment {
                         }
                         //update list and update UI render
 
-                        //lv.setAdapter(new ListViewSavedAdapter(getActivity(), listStops));
+                        //lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), listStops));
                         Log.d("SavedStops","calling adapter, size of savedStopList:"+routesList.size());
-                        lv.setAdapter(new ListViewSavedAdapter(getContext(), routesList));
+                        lv.setAdapter(new ListViewSavedRouteAdapter(getContext(), routesList));
 
                         Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
                         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -111,7 +112,7 @@ public class SavedRoutes extends Fragment {
                 });
         Log.d(TAG, "onCreateView");
 
-        lv.setAdapter(new ListViewSavedAdapter(getActivity(), routesList));
+        lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), routesList));
         return view;
     }
     @Override

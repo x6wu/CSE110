@@ -3,15 +3,12 @@ package com.teamruse.rarerare.tritontravel;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +20,13 @@ import java.util.ArrayList;
  * Created by JingJing on 12/6/17.
  */
 
-public class ListViewSavedAdapter extends BaseAdapter {
+public class ListViewSavedRouteAdapter extends BaseAdapter {
 
     private ArrayList<StopHistory> listContact;
 
     private LayoutInflater mInflater;
     private Context mContext;
-    public ListViewSavedAdapter(Context context, ArrayList<StopHistory> results){
+    public ListViewSavedRouteAdapter(Context context, ArrayList<StopHistory> results){
         listContact = results;
         mInflater = LayoutInflater.from(context);
         this.mContext=context;
@@ -44,7 +41,7 @@ public class ListViewSavedAdapter extends BaseAdapter {
     @Override
     public Object getItem(int arg0) {
         // TODO Auto-generated method stub
-        Log.d("ListViewSavedAdapter", "arg0:" + arg0 + " listContact.size="+listContact.size());
+        Log.d("ListViewSavedStopAdapter", "arg0:" + arg0 + " listContact.size="+listContact.size());
         if(listContact.size()==0){
             return null;
         }
@@ -77,6 +74,11 @@ public class ListViewSavedAdapter extends BaseAdapter {
                     //TODO 
                     //SavedStops.stopsList.remove(position);
 
+
+                    StopHistoryWithKey saveRoute=(StopHistoryWithKey)(listContact.get(position));
+
+                    ((MainActivity)mContext).deleteRoute(saveRoute.getKey());
+                    listContact.remove(position);
                     notifyDataSetChanged();
                    /* if (History.stopsList.isEmpty()) {
                         //History.noHis=(TextView) myView.findViewById(R.id.noHistory);

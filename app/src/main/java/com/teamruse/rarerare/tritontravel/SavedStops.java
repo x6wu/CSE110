@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +30,7 @@ public class SavedStops extends Fragment {
     private FirebaseAuth mAuth;
     private ArrayList<StopHistory> savedStopList = new ArrayList<StopHistory>();
     private View view;
+
     //private ArrayList<StopHistory> listStops;
     public SavedStops() {
 
@@ -64,9 +64,9 @@ public class SavedStops extends Fragment {
                     }
                     //update list and update UI render
                     final ListView lv = (ListView) view.findViewById(R.id.savedStops);
-                    //lv.setAdapter(new ListViewSavedAdapter(getActivity(), listStops));
+                    //lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), listStops));
                     Log.d("SavedStops","calling adapter, size of savedStopList:"+savedStopList.size());
-                    lv.setAdapter(new ListViewSavedAdapter(getContext(), savedStopList));
+                    lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), savedStopList));
 
                     Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
                     lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,9 +86,9 @@ public class SavedStops extends Fragment {
 
 
         final ListView lv = (ListView) view.findViewById(R.id.savedStops);
-        //lv.setAdapter(new ListViewSavedAdapter(getActivity(), listStops));
+        //lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), listStops));
         Log.d("SavedStops","calling adapter, size of savedStopList:"+savedStopList.size());
-        lv.setAdapter(new ListViewSavedAdapter(getContext(), savedStopList));
+        lv.setAdapter(new ListViewSavedStopAdapter(getContext(), savedStopList));
 
         Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
