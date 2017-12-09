@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
@@ -171,33 +172,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        /*FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (id == R.id.login) {
-            // Handle the camera action
-            //fragmentManager.beginTransaction().replace(R.id.content_frame, new login())
-            //        .commit();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new login())
-                    .commit();
-        } else if (id == R.id.history) {
-            // Handle the camera action
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new History())
-                    .commit();
-        /*
-        } else if (id == R.id.pt) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
-                    .commit();
-        *//*
-        } else if (id == R.id.fb) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Feedback())
-                    .commit();
-
-        } else if (id == R.id.faq) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Faq())
-                    .commit();
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);*/
         switchFrag(id);
         return true;
     }
@@ -391,5 +366,12 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     }
     public DatabaseReference getDatabase() {
         return mDatabase;
+    }
+    //Ruoyu Xu
+    protected void writeStopToDB(FirebaseUser user, StopHistory o) {
+        mDatabase.child("stops")
+                .child("stop_id_" + user.getUid())
+                .push()
+                .setValue(o);
     }
 }

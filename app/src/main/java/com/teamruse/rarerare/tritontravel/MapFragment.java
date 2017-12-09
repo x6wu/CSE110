@@ -378,24 +378,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
                     else if (item.getItemId() == R.id.saveStop) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user == null) {
+
+                        if (!((MainActivity)getActivity()).signedIn()) {
                             Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
                         }
-                        else if(user != null){
+                        else {
 
-                            openDialog();
+
+                            openDialog(q);
 
                             //TODO
                             //move the database part to TagDialog.java
-                            if(this.q.equals(mDestPlace)) {
-                                //minor fix to save id
-                                writeStopToDB(user,new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId(),tag));
-                            }
-                            else if(this.q.equals(mOriginPlace)){
-                                writeStopToDB(user, new StopHistory(mOriginPlace.getName().toString(), mOriginPlace.getId(), tag));
-                            }
-                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
+
+
                             tag = "";
                         }
                         return true;
@@ -405,16 +400,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }).show();
     }
 
-    private void writeStopToDB(FirebaseUser user, StopHistory o) {
-        mDatabase.child("stops")
-                .child("stop_id_" + user.getUid())
-                .push()
-                .setValue(o);
+    //Ruoyu Xu
+    protected void writeOriginToDB(String tag){
+        FirebaseUser user = mAuth.getCurrentUser();
+        ((MainActivity)getActivity()).writeStopToDB(user, new StopHistory(mOriginPlace.getName().toString()
+                , mOriginPlace.getId(), tag));
+    }
+    //Ruoyu Xu
+    protected void writeDestToDB(String tag){
+        FirebaseUser user = mAuth.getCurrentUser();
+        ((MainActivity)getActivity()).writeStopToDB(user,new StopHistory(mDestPlace.getName().toString()
+                ,mDestPlace.getId(),tag));
+        Log.d(TAG, "history:"+new StopHistory(mDestPlace.getName().toString()
+                ,mDestPlace.getId(),tag).toString());
     }
 
-    public void openDialog() {
-        TagDialog dialog = new TagDialog();
 
+
+    public void openDialog( Place p) {
+        Bundle args=new Bundle();
+
+        if(p.equals(mDestPlace)) {
+            args.putString("destOrOrigin", "dest");
+
+        }
+        else if(p.equals(mOriginPlace)){
+            args.putString("destOrOrigin", "origin");
+
+        }
+        TagDialog dialog = new TagDialog();
+        dialog.setArguments(args);
         dialog.show(getChildFragmentManager(),"tag dialog");
     }
 
@@ -799,4 +814,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void drawPolylines(PolylineOptions polylineOptions){
         mMap.addPolyline(polylineOptions);
     }
+
 }
