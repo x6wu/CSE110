@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -34,6 +35,12 @@ public class TagDialog extends AppCompatDialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.tag_dialog,null);
+        String btnText="save location";
+        if (getArguments().getString("type")!=null
+                &&getArguments().getString("type").equals("route")){
+            btnText="save route";
+            ((TextView)(view.findViewById(R.id.edit_tag))).setHint("tag this route (optional)");
+        }
         builder.setView(view)
                 .setTitle("Tag")
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -41,7 +48,7 @@ public class TagDialog extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 })
-                .setPositiveButton("save location", new DialogInterface.OnClickListener() {
+                .setPositiveButton(btnText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String tag = editTextTag.getText().toString();

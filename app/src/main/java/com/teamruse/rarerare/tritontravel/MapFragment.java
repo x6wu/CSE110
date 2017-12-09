@@ -783,7 +783,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    openDialog();
+                    Bundle args=new Bundle();
+                    args.putString("type", "route");
+                    openDialog(args);
                 }
             }
         });
@@ -853,8 +855,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         dialog.show();
     }
 
-    public void openDialog() {
+    public void openDialog(Bundle args) {
         TagDialog dialog = new TagDialog();
+        dialog.setArguments(args);
         dialog.show(getChildFragmentManager(),"tag dialog");
     }
 

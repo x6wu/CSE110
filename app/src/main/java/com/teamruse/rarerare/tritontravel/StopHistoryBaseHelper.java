@@ -11,7 +11,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Created by rarerare on 11/30/17.
+ * Created by Ruoyu Xu on 11/30/17.
  */
 
 public class StopHistoryBaseHelper extends SQLiteOpenHelper {

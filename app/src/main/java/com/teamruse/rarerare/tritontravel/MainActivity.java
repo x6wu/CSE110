@@ -379,14 +379,16 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     public DatabaseReference getDatabase() {
         return mDatabase;
     }
-    //Ruoyu Xu
+
+    //Ruoyu Xu refactored Austin Moss-Ennis's code in MapFragment @Dec 8
     protected void writeStopToDB(FirebaseUser user, StopHistory o) {
+        //Copied from Austin Moss-Ennis's code in MapFragment
         mDatabase.child("stops")
                 .child("stop_id_" + user.getUid())
                 .child(o.getPlaceId())
                 .setValue(o);
     }
-    //Ruoyu Xu
+
     protected void writeRouteToDB(FirebaseUser user, StopHistory o){
         mDatabase.child("routes")
                 .child("route_id_" + user.getUid())
@@ -394,9 +396,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .setValue(o);
         Log.d(TAG, "written route to db");
     }
-    public MapFragment getMapFragment(){
-        return mMapFragment;
-    }
+
     //Ruoyu Xu
     protected void goToRoute(String placeId1, String placeId2){
         switchFrag(R.id.back);
