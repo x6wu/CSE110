@@ -97,11 +97,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private String mOriginStr = "";
     private String mDestStr = "";
 
-    public static Place mDestPlace;
-    public static Place mOriginPlace;
+    private  Place mDestPlace;
+    private  Place mOriginPlace;
     private Marker mOriginMarker;
     private Marker mDestMarker;
-    public static DatabaseReference mDatabase;
+    private  DatabaseReference mDatabase;
     //private Button btnNavigation;
     //private GoogleMap mMap;
 
@@ -123,9 +123,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
     private ArrayList<Polyline> mPolylines;
-    public static FirebaseAuth mAuth;
+    private  FirebaseAuth mAuth;
 
-    public static String tag = "";
+    public String tag = "";
 
     View mapView;
 

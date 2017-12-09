@@ -43,7 +43,7 @@ public class TagDialog extends AppCompatDialogFragment {
                         String tag = editTextTag.getText().toString();
                         listener.applyTexts(tag);
 
-                        FirebaseUser user = MapFragment.mAuth.getCurrentUser();
+                        //FirebaseUser user = MapFragment.mAuth.getCurrentUser();
                     //TODO
                         /*if(this.q.equals(mDestPlace)) {
                             //minor fix to save id

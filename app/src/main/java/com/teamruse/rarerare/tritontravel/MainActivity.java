@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     }
 
     public void applyTexts(String s){
-        MapFragment.tag = s;
+        mMapFragment.tag = s;
     }
 
     protected void updateSignInUI() {

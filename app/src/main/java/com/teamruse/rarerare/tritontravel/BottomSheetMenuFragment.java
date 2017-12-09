@@ -104,11 +104,11 @@ public class BottomSheetMenuFragment extends BottomSheetDialogFragment {
 
     @OnClick({R.id.saveRoutesButton})
     public void onClickBottomSheet(View view) {
-        FirebaseUser user = MapFragment.mAuth.getCurrentUser();
-        if (user == null) {
+        //FirebaseUser user = MapFragment.mAuth.getCurrentUser();
+        if (!((MainActivity)getActivity()).signedIn()) {
             Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
         }
-        else if(user != null) {
+        else {
 
             openDialog();
 
