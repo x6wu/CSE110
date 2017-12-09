@@ -33,8 +33,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -390,11 +395,27 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     public MapFragment getMapFragment(){
         return mMapFragment;
     }
+    //Ruoyu Xu
     protected void goToRoute(String placeId1, String placeId2){
         switchFrag(R.id.back);
         mMapFragment.goToTwoStops(placeId1, placeId2);
     }
+    //Ruoyu Xu
+    protected void deleteStop(String key){
+        mDatabase.child("stops")
+                .child("stop_id_" + mAuth.getUid()).child(key).removeValue();
 
+
+    }
+
+    //Ruoyu Xu
+    protected void deleteRoute(String key){
+        mDatabase.child("routes")
+                .child("route_id_" + mAuth.getUid()).child(key).removeValue();
+        Log.d(TAG, "delete route");
+
+
+    }
 
 
 }
