@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Map;
 
 /**
  * Created by JingJing on 12/8/17.
@@ -43,25 +46,17 @@ public class TagDialog extends AppCompatDialogFragment {
                         String tag = editTextTag.getText().toString();
                         listener.applyTexts(tag);
 
-                        FirebaseUser user = MapFragment.mAuth.getCurrentUser();
-                    //TODO
-                        /*if(this.q.equals(mDestPlace)) {
-                            //minor fix to save id
-                            mDatabase.child("stops")
-                                    .child("stop_id_" + user.getUid())
-                                    .push()
-                                    .setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId(),tag));
+                        //Ruoyu Xu save stop with tag
+                        String destOrOrigin=getArguments().getString("destOrOrigin");
+                        if (destOrOrigin.equals("dest")){
+                            ((MapFragment)getParentFragment()).writeDestToDB(tag);
+                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
+                        }else if(destOrOrigin.equals("origin")){
+                            ((MapFragment)getParentFragment()).writeOriginToDB(tag);
+                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
                         }
-                        else if(this.q.equals(mOriginPlace)){
-                            mDatabase.child("stops")
-                                    .child("stop_id_" + user.getUid())
-                                    .push()
-                                    .setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId(),tag));
-                        }
-                        Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
-                        tag = "";
 
-                        Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();*/
+
                     }
                 });
 

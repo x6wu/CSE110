@@ -17,8 +17,6 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.InputType;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -27,21 +25,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
+
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
@@ -66,9 +62,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import java.util.ArrayList;
@@ -102,12 +96,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private String mOriginStr = "";
     private String mDestStr = "";
 
-    public static Place mDestPlace;
-    public static Place mOriginPlace;
+    private  Place mDestPlace;
+    private  Place mOriginPlace;
     private Marker mOriginMarker;
     private Marker mDestMarker;
 
-    public static DatabaseReference mDatabase;
+    private  DatabaseReference mDatabase;
+    //private Button btnNavigation;
+    //private GoogleMap mMap;
 
 
     public Button btnNavigation;
@@ -125,9 +121,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
     private ArrayList<Polyline> mPolylines;
-    public static FirebaseAuth mAuth;
+    private  FirebaseAuth mAuth;
 
-    public static String tag = "";
+    public String tag = "";
 
     View mapView;
 
@@ -146,7 +142,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mAuth = FirebaseAuth.getInstance();
         mPolylines = new ArrayList<>();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = ((MainActivity)getActivity()).getDatabase();
     }
 
     @Override
@@ -347,30 +343,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
                     else if (item.getItemId() == R.id.saveStop) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user == null) {
+
+                        if (!((MainActivity)getActivity()).signedIn()) {
                             Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
                         }
-                        else if(user != null){
+                        else {
 
-                            openDialog();
+
+                            openDialog(q);
 
                             //TODO
                             //move the database part to TagDialog.java
-                            if(this.q.equals(mDestPlace)) {
-                                //minor fix to save id
-                                mDatabase.child("stops")
-                                        .child("stop_id_" + user.getUid())
-                                        .push()
-                                        .setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId(),tag));
-                            }
-                            else if(this.q.equals(mOriginPlace)){
-                                mDatabase.child("stops")
-                                        .child("stop_id_" + user.getUid())
-                                        .push()
-                                        .setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId(),tag));
-                            }
-                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
+
+
                             tag = "";
                         }
                         return true;
@@ -380,8 +365,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }).show();
     }
 
-    public void openDialog() {
+    //Ruoyu Xu
+    protected void writeOriginToDB(String tag){
+        FirebaseUser user = mAuth.getCurrentUser();
+        ((MainActivity)getActivity()).writeStopToDB(user, new StopHistory(mOriginPlace.getName().toString()
+                , mOriginPlace.getId(), tag));
+    }
+    //Ruoyu Xu
+    protected void writeDestToDB(String tag){
+        FirebaseUser user = mAuth.getCurrentUser();
+        ((MainActivity)getActivity()).writeStopToDB(user,new StopHistory(mDestPlace.getName().toString()
+                ,mDestPlace.getId(),tag));
+        Log.d(TAG, "history:"+new StopHistory(mDestPlace.getName().toString()
+                ,mDestPlace.getId(),tag).toString());
+    }
+
+    protected void writeRouteToDB(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        ((MainActivity)getActivity()).writeRouteToDB(user,new StopHistory(mOriginPlace.getName().toString()
+                + " -> " + mDestPlace.getName().toString()
+                ,mOriginPlace.getId() + " -> " +  mDestPlace.getId()
+                ,tag));
+    }
+
+
+    public void openDialog( Place p) {
+        Bundle args=new Bundle();
+
+        if(p.equals(mDestPlace)) {
+            args.putString("destOrOrigin", "dest");
+
+        }
+        else if(p.equals(mOriginPlace)){
+            args.putString("destOrOrigin", "origin");
+
+        }
         TagDialog dialog = new TagDialog();
+        dialog.setArguments(args);
         dialog.show(getChildFragmentManager(),"tag dialog");
     }
 
@@ -706,6 +726,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }
         });
         //builder to move the camera to appropriate mode
+        zoomToDestWithOrigin(place);
+    }
+
+    //Ruoyu Xu refactor Zijing's code
+    protected void zoomToDestWithOrigin(Place place){
         builder = new LatLngBounds.Builder();
         builder.include(mDestMarker.getPosition());
         if (mOriginMarker != null) {
@@ -719,7 +744,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 18));
         }
     }
-
 
     @Override
     public void onPause(){
@@ -795,4 +819,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void drawPolylines(PolylineOptions polylineOptions){
         mMap.addPolyline(polylineOptions);
     }
+
+    //Ruoyu Xu
+    protected void goToTwoStops(String placeId1, String placeId2){
+
+
+        (Places.getGeoDataClient(getActivity(),null)).getPlaceById(placeId1)
+                .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            mOriginPlace = places.get(0);
+                            fillInOriginSearchBox(mOriginPlace);
+
+                            places.release();
+                        } else {
+                            Log.e(TAG, "Place not found.");
+                        }
+                    }
+                });
+        (Places.getGeoDataClient(getActivity(),null)).getPlaceById(placeId2)
+                .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            mDestPlace = places.get(0);
+                            fillInDestSearchBox(mDestPlace);
+
+                            places.release();
+                        } else {
+                            Log.e(TAG, "Place not found.");
+                        }
+                    }
+                });
+        
+
+
+    }
+
 }

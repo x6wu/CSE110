@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -46,11 +47,19 @@ public class SavedStops extends Fragment {
                 public void onDataChange(DataSnapshot snapshot) {
                     Log.d(TAG, "onDataChange called.");
                     for(DataSnapshot shot : snapshot.getChildren()) {
-                        StopHistory data = shot.getValue(StopHistory.class);
-                        Log.d(TAG,  "retrieved data (StopHistory):" +
-                                "\n\tplaceId: " + data.getPlaceId()
-                                +"\n\tstopName: "+ data.getStopName());
-                        savedStopList.add(data);
+                        StopHistory data =null;
+                        try {
+                            data = shot.getValue(StopHistory.class);
+                        }catch (DatabaseException e){
+                            Log.e(TAG, e.getMessage());
+                        }
+                        if (data!=null){
+                            Log.d(TAG,  "retrieved data (StopHistory):" +
+                                    "\n\tplaceId: " + data.getPlaceId()
+                                    +"\n\tstopName: "+ data.getStopName());
+                            savedStopList.add(data);
+                        }
+
                     }
                     //update list and update UI render
                     final ListView lv = (ListView) view.findViewById(R.id.savedStops);

@@ -32,6 +32,9 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private static String TAG = "Main_Activity";
     private MapFragment mMapFragment;
     private String currFragTag;
-
+    private DatabaseReference mDatabase;
 
     /*
      *Ruoyu Xu
@@ -57,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private GoogleSignInClient mGoogleSignInClient;
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,10 +97,14 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .commit();*/
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
+
+        //Ruoyu Xu use only one db ref in the activity
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
     }
 
     public void applyTexts(String s){
-        MapFragment.tag = s;
+        mMapFragment.tag = s;
     }
 
     protected void updateSignInUI() {
@@ -161,33 +171,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        /*FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (id == R.id.login) {
-            // Handle the camera action
-            //fragmentManager.beginTransaction().replace(R.id.content_frame, new login())
-            //        .commit();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new login())
-                    .commit();
-        } else if (id == R.id.history) {
-            // Handle the camera action
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new History())
-                    .commit();
-        /*
-        } else if (id == R.id.pt) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
-                    .commit();
-        *//*
-        } else if (id == R.id.fb) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Feedback())
-                    .commit();
-
-        } else if (id == R.id.faq) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Faq())
-                    .commit();
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);*/
         switchFrag(id);
         return true;
     }
@@ -348,7 +332,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Log.d(TAG, "onDestroy called");
     }
 
-    //For History
+    /* Ruoyu Xu
+     *
+     */
     protected void goToStop(String placeId){
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (mMapFragment==null){
@@ -378,4 +364,32 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 });
         currFragTag="map";
     }
+    public DatabaseReference getDatabase() {
+        return mDatabase;
+    }
+    //Ruoyu Xu
+    protected void writeStopToDB(FirebaseUser user, StopHistory o) {
+        mDatabase.child("stops")
+                .child("stop_id_" + user.getUid())
+                .push()
+                .setValue(o);
+    }
+    //Ruoyu Xu
+    protected void writeRouteToDB(FirebaseUser user, StopHistory o){
+        mDatabase.child("routes")
+                .child("route_id_" + user.getUid())
+                .push()
+                .setValue(o);
+        Log.d(TAG, "written route to db");
+    }
+    public MapFragment getMapFragment(){
+        return mMapFragment;
+    }
+    protected void goToRoute(String placeId1, String placeId2){
+        switchFrag(R.id.back);
+        mMapFragment.goToTwoStops(placeId1, placeId2);
+    }
+
+
+
 }
