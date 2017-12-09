@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     @Override
     public void onGenerateFailure() {
         mMapFragment.btnNavigation.setEnabled(true);
+        Toast.makeText(this, "Something goes wrong.\nWe couldn't find a route for you.", Toast.LENGTH_LONG).show();
     }
 
     @Override
