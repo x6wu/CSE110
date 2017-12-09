@@ -390,16 +390,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                             //move the database part to TagDialog.java
                             if(this.q.equals(mDestPlace)) {
                                 //minor fix to save id
-                                mDatabase.child("stops")
-                                        .child("stop_id_" + user.getUid())
-                                        .push()
-                                        .setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId(),tag));
+                                writeStopToDB(user,new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId(),tag));
                             }
                             else if(this.q.equals(mOriginPlace)){
-                                mDatabase.child("stops")
-                                        .child("stop_id_" + user.getUid())
-                                        .push()
-                                        .setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId(),tag));
+                                writeStopToDB(user, new StopHistory(mOriginPlace.getName().toString(), mOriginPlace.getId(), tag));
                             }
                             Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
                             tag = "";
@@ -411,8 +405,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }).show();
     }
 
+    private void writeStopToDB(FirebaseUser user, StopHistory o) {
+        mDatabase.child("stops")
+                .child("stop_id_" + user.getUid())
+                .push()
+                .setValue(o);
+    }
+
     public void openDialog() {
         TagDialog dialog = new TagDialog();
+
         dialog.show(getChildFragmentManager(),"tag dialog");
     }
 
