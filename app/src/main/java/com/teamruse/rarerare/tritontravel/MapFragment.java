@@ -64,6 +64,13 @@ import com.google.firebase.database.DatabaseReference;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -146,6 +153,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mAuth = FirebaseAuth.getInstance();
         mPolylines = new ArrayList<>();
         mDatabase = ((MainActivity)getActivity()).getDatabase();
+
     }
 
     @Override
@@ -366,13 +374,89 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }).show();
     }
 
-    //Ruoyu Xu
     protected void writeOriginToDB(String tag){
         FirebaseUser user = mAuth.getCurrentUser();
         ((MainActivity)getActivity()).writeStopToDB(user, new StopHistory(mOriginPlace.getName().toString()
                 , mOriginPlace.getId(), tag));
     }
-    //Ruoyu Xu
+
+    //Type = "route" or "origin" or "dest"
+    protected Boolean hasDupe(String type){
+        Log.d(TAG, "made it to hasDupe");
+        final Long[] dupe = new Long[1];
+        dupe[0] = (long) 0;
+        //If you want to check for a duplicate route
+        if(type.equals("route")){
+            final String placeID = mOriginPlace.getId() + " -> " +  mDestPlace.getId();
+            DatabaseReference route = FirebaseDatabase.getInstance().getReference().child("routes").child("route_id_" + mAuth.getUid());
+            route.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    for(DataSnapshot shot : snapshot.getChildren()) {
+                        //Gets PlaceID from child
+                        String place = shot.child("placeId").getValue().toString();
+                        Log.d(TAG, "placeId:" + place);
+                        Log.d(TAG, "Our placeID:" + placeID);
+                        if(place.equals(placeID)){
+                            Log.d(TAG, "made it into If Statement");
+                            dupe[0] = (long) 1;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // ...
+                }
+            });
+        }
+        //If you want to check for a duplicate stop
+        else{
+            final String placeID;
+
+            if(type.equals("origin")){
+                placeID = mOriginPlace.getId();
+            }
+            else{
+                placeID = mDestPlace.getId();
+            }
+
+            DatabaseReference stop = FirebaseDatabase.getInstance().getReference().child("stops").child("stop_id_" + mAuth.getUid());
+            stop.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    for(DataSnapshot shot : snapshot.getChildren()) {
+                        //Gets PlaceID from child
+                        String place = shot.child("placeId").getValue().toString();
+                        Log.d(TAG, "placeId:" + place);
+                        Log.d(TAG, "Our placeID:" + placeID);
+                        if(place.equals(placeID)){
+                            Log.d(TAG, "made it into If Statement");
+                            dupe[0] = (long) 1;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // ...
+                }
+            });
+        }
+
+        long dupeVal = dupe[0];
+        Log.d(TAG, "Value of Dupe: " + dupeVal);
+        if(dupeVal == (long) 1){
+            Log.d(TAG, "made it into true If Statement");
+            return true;
+        }
+        if(dupeVal == (long) 0){
+            Log.d(TAG, "made it into false If Statement");
+            return false;
+        }
+        return true;
+    }
+
     protected void writeDestToDB(String tag){
         FirebaseUser user = mAuth.getCurrentUser();
         ((MainActivity)getActivity()).writeStopToDB(user,new StopHistory(mDestPlace.getName().toString()
@@ -381,6 +465,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 ,mDestPlace.getId(),tag).toString());
     }
 
+    //Ruoyu Xu
     protected void writeRouteToDB(){
         FirebaseUser user = mAuth.getCurrentUser();
         ((MainActivity)getActivity()).writeRouteToDB(user,new StopHistory(mOriginPlace.getName().toString()
@@ -388,7 +473,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 ,mOriginPlace.getId() + " -> " +  mDestPlace.getId()
                 ,tag));
     }
-
 
     public void openDialog( Place p) {
         Bundle args=new Bundle();

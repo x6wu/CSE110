@@ -49,19 +49,21 @@ public class TagDialog extends AppCompatDialogFragment {
 
 
                         try {
-                            //Ruoyu Xu save stop with tag
+                            //Ruoyu Xu save stop with tag. Austin Moss-Ennis check for duplicates before adding
                             String destOrOrigin = getArguments().getString("destOrOrigin");
-                            if (destOrOrigin.equals("dest")) {
+                            if (destOrOrigin.equals("dest") && !((MapFragment) getParentFragment()).hasDupe("dest")) {
                                 ((MapFragment) getParentFragment()).writeDestToDB(tag);
                                 Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
-                            } else if (destOrOrigin.equals("origin")) {
+                            } else if (destOrOrigin.equals("origin") && !((MapFragment) getParentFragment()).hasDupe("origin")) {
                                 ((MapFragment) getParentFragment()).writeOriginToDB(tag);
                                 Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
                             }
                         } catch (Exception e) {
                             Log.i(TAG, "Saving Route, no dest or ori is available.");
                             Log.i(TAG, "The new tag for route is:" +tag);
-                            ((MapFragment)getParentFragment()).writeRouteToDB();
+                            if(!((MapFragment) getParentFragment()).hasDupe("route")) {
+                                ((MapFragment) getParentFragment()).writeRouteToDB();
+                            }
                             Toast.makeText(getContext(), "Route saved", Toast.LENGTH_LONG).show();
                         }
 
