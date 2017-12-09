@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import android.widget.TextView;
@@ -64,9 +65,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 import ru.whalemare.sheetmenu.SheetMenu;
 
@@ -85,7 +90,7 @@ import ru.whalemare.sheetmenu.SheetMenu;
  */
 
 public class MapFragment extends Fragment implements OnMapReadyCallback,
-                                                     GoogleMap.OnMyLocationButtonClickListener {
+        GoogleMap.OnMyLocationButtonClickListener,TagDialog.TagDialogListener {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -94,11 +99,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private String mOriginStr = "";
     private String mDestStr = "";
 
-    private Place mDestPlace;
-    private Place mOriginPlace;
+    public static Place mDestPlace;
+    public static Place mOriginPlace;
     private Marker mOriginMarker;
     private Marker mDestMarker;
-    private DatabaseReference mDatabase;
+
+    public static DatabaseReference mDatabase;
+
 
     public Button btnNavigation;
     public  GoogleMap mMap;
@@ -115,7 +122,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
     private ArrayList<Polyline> mPolylines;
-    private FirebaseAuth mAuth;
+    public static FirebaseAuth mAuth;
+
+    public static String tag = "";
 
     View mapView;
 
@@ -124,6 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     //private LinearLayout routeBottomSheet;
     //private BottomSheetBehavior routeBottomSheetBehavior;
+
 
 
     public MapFragment() {
@@ -295,6 +305,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
                     mListener.onNavRequest(mOriginStr, mDestStr);
                 }
+
+                //TODO
+                //add different options of routes to bottom sheet list
+
+
+                showBottomSheetList(view);
             }
         });
         /*routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
@@ -315,47 +331,65 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
 
-    /*private void showMenu(final Place p) {
-        SheetMenu.with(getContext()).setTitle(p.getName().toString()).setMenu(R.menu.sheet_menu)
-                .setClick(new MenuItem.OnMenuItemClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                      if (item.getItemId() == R.id.saveStop) {
-                            if ( SavedStops.stopsList == null) {
-                                SavedStops.stopsList = new ArrayList<>();
-                            }
-                            SavedStops.stopsList.add(new StopHistory(p));
-                            Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();*/
 
-
-    //Zijing sheet menu for save
+    //sheet menu for save
     private void showMenu(final Place p) {
         SheetMenu.with(getContext()).setTitle(p.getName().toString()).setMenu(R.menu.sheet_menu)
             .setClick(new MenuItem.OnMenuItemClickListener() {
                 public final Place q = p;
                 @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    if (item.getItemId() == R.id.saveStop) {
+                public boolean onMenuItemClick(MenuItem item){
+                    if  (item.getItemId() == R.id.seeAddrBtn) {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                        alert.setMessage(p.getAddress().toString());
+                        alert.setNegativeButton("got you", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        //alert.show();
+
+                        AlertDialog dialog = alert.create();
+                        dialog.show();
+
+                        Button b = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+
+                        if(b != null) {
+                            b.setTextColor(Color.parseColor("#064264"));
+
+                        }
+
+                    }
+
+
+                    else if (item.getItemId() == R.id.saveStop) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user == null) {
                             Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
                         }
-                        if(user != null){
+                        else if(user != null){
+
+                            openDialog();
+
+                            //TODO
+                            //move the database part to TagDialog.java
                             if(this.q.equals(mDestPlace)) {
                                 //minor fix to save id
                                 mDatabase.child("stops")
                                         .child("stop_id_" + user.getUid())
                                         .push()
-                                        .setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId()));
+                                        .setValue(new StopHistory(mDestPlace.getName().toString(),mDestPlace.getId(),tag));
                             }
                             else if(this.q.equals(mOriginPlace)){
                                 mDatabase.child("stops")
                                         .child("stop_id_" + user.getUid())
                                         .push()
-                                        .setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId()));
+                                        .setValue(new StopHistory(mOriginPlace.getName().toString(),mOriginPlace.getId(),tag));
                             }
-                            Toast.makeText(getContext(),"saved", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
+                            tag = "";
                         }
                         return true;
                     }
@@ -363,6 +397,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 }
             }).show();
     }
+
+    public void openDialog() {
+        TagDialog dialog = new TagDialog();
+        dialog.show(getChildFragmentManager(),"tag dialog");
+    }
+
+    @Override
+    public void applyTexts(String inputTag) {
+        this.tag = inputTag;
+    }
+
 
     //zijing show dummy routes
     private void showRoutes(Marker o,Marker d) {
@@ -385,6 +430,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     return false;
                 }
             }).show();
+    }
+
+
+    @OnClick(R.id.saveRoutesButton)
+    public void showBottomSheetList(View view) {
+        BottomSheetMenuFragment frg = BottomSheetMenuFragment.createInstanceList();
+        frg.show(getChildFragmentManager(), BottomSheetMenuFragment.class.getSimpleName());
     }
 
     private void getLocationPermission() {
@@ -573,6 +625,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Log.i(TAG, "\t\tId: " + place.getId());
         Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
 
+        //store destination into History
+        if ( History.stopsList == null) {
+            History.stopsList = new ArrayList<>();
+        }
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
+        Date date = new Date();
+        (new StopHistoryBaseHelper(getActivity().getApplicationContext()))
+                .writeStopHistory( new StopHistory(place.getName().toString()
+                        , date.getTime(), place.getId()));
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -717,7 +778,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             if (seg.getTravelMode()==SegmentFactory.TravelMode.WALKING){
                 basicPathStr+="Walk"+seg.getDistance()+"\n";
             }else if(seg.getTravelMode()==SegmentFactory.TravelMode.BUS){
-                seg=(BusSegment)seg;
                 basicPathStr+="Bus"+((BusSegment) seg).getBusName();
             }
         }

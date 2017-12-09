@@ -11,5 +11,6 @@
     <string name="history_menu_title">History</string>
     <string name="feedback_menu_title">Feedback</string>
     <string name="faq_menu_title">FAQ</string>
+    <string name="save_route">Save Route</string>
 
 </resources>

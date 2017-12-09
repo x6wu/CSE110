@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/navSheetMenu">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:id="@+id/menuLinearLayout">
+
+
+
+        <TextView
+            android:id="@+id/RouteW"
+            style="@style/AppTheme.BottomSheetListItem"
+            android:drawableLeft="@drawable/ic_walk"
+            android:text="" />
+
+
+        <Button
+            android:id="@+id/saveRoutesButton"
+            android:onClick="doclick"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            style="?android:attr/borderlessButtonStyle"
+            android:fontFamily="Hiragino Sans"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:text="@string/save_route"
+            android:background="#d8d8d8"/>
+
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

@@ -42,7 +42,7 @@ import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKI
 
 public class MainActivity extends AppCompatActivity implements MapFragment.OnFragmentInteractionListener,
                    NavigationView.OnNavigationItemSelectedListener,
-                   DirectionGeneratorListener {
+                   DirectionGeneratorListener, TagDialog.TagDialogListener {
     private static String TAG = "Main_Activity";
     private MapFragment mMapFragment;
     private String currFragTag;
@@ -94,6 +94,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         currFragTag="map";
 
 
+    }
+
+    public void applyTexts(String s){
+        MapFragment.tag = s;
     }
 
     protected void updateSignInUI() {
@@ -214,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             return;
         }
 
+        //render and draw the first path's polyline
         ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
         for (int i = 0; i < recPathSegments.size(); ++i) {
             PathSegment currSegment = recPathSegments.get(i);
@@ -234,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         mMapFragment.displayPath(paths);
     }
 
-    //TODO
     //check if user is signed in
     public boolean signedIn(){
         /*
