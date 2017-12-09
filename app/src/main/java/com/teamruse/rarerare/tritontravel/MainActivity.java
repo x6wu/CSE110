@@ -383,14 +383,14 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     protected void writeStopToDB(FirebaseUser user, StopHistory o) {
         mDatabase.child("stops")
                 .child("stop_id_" + user.getUid())
-                .push()
+                .child(o.getPlaceId())
                 .setValue(o);
     }
     //Ruoyu Xu
     protected void writeRouteToDB(FirebaseUser user, StopHistory o){
         mDatabase.child("routes")
                 .child("route_id_" + user.getUid())
-                .push()
+                .child(o.getPlaceId())
                 .setValue(o);
         Log.d(TAG, "written route to db");
     }
