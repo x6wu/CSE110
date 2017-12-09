@@ -47,9 +47,9 @@ public class SavedStops extends Fragment {
                 public void onDataChange(DataSnapshot snapshot) {
                     Log.d(TAG, "onDataChange called.");
                     for(DataSnapshot shot : snapshot.getChildren()) {
-                        StopHistory data =null;
+                        StopHistoryWithKey data =null;
                         try {
-                            data = shot.getValue(StopHistory.class);
+                            data = shot.getValue(StopHistoryWithKey.class);
                         }catch (DatabaseException e){
                             Log.e(TAG, e.getMessage());
                         }
@@ -57,6 +57,7 @@ public class SavedStops extends Fragment {
                             Log.d(TAG,  "retrieved data (StopHistory):" +
                                     "\n\tplaceId: " + data.getPlaceId()
                                     +"\n\tstopName: "+ data.getStopName());
+                            data.setKey(shot.getKey());
                             savedStopList.add(data);
                         }
 
