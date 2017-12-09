@@ -26,6 +26,7 @@ import java.util.Map;
 public class TagDialog extends AppCompatDialogFragment {
     private EditText editTextTag;
     private TagDialogListener listener;
+    private final static String TAG = "TagDialog";
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -46,16 +47,22 @@ public class TagDialog extends AppCompatDialogFragment {
                         String tag = editTextTag.getText().toString();
                         listener.applyTexts(tag);
 
-                        //Ruoyu Xu save stop with tag
-                        String destOrOrigin=getArguments().getString("destOrOrigin");
-                        if (destOrOrigin.equals("dest")){
-                            ((MapFragment)getParentFragment()).writeDestToDB(tag);
-                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
-                        }else if(destOrOrigin.equals("origin")){
-                            ((MapFragment)getParentFragment()).writeOriginToDB(tag);
-                            Toast.makeText(getContext(),"Location saved", Toast.LENGTH_SHORT).show();
-                        }
 
+                        try {
+                            //Ruoyu Xu save stop with tag
+                            String destOrOrigin = getArguments().getString("destOrOrigin");
+                            if (destOrOrigin.equals("dest")) {
+                                ((MapFragment) getParentFragment()).writeDestToDB(tag);
+                                Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
+                            } else if (destOrOrigin.equals("origin")) {
+                                ((MapFragment) getParentFragment()).writeOriginToDB(tag);
+                                Toast.makeText(getContext(), "Location saved", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Log.i(TAG, "Saving Route, no dest or ori is available.");
+                            Log.i(TAG, "The new tag for route is:" +tag);
+                            ((MapFragment)getParentFragment()).writeRouteToDB();
+                        }
 
                     }
                 });

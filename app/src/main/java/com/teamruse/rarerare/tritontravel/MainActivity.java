@@ -192,6 +192,11 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     }
 
     @Override
+    public void onGenerateFailure() {
+        mMapFragment.btnNavigation.setEnabled(true);
+    }
+
+    @Override
     public void onGenerateSuccess(List<Path> paths) {
         mMapFragment.btnNavigation.setEnabled(true);
 

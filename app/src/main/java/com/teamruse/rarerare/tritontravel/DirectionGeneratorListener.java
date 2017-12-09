@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface DirectionGeneratorListener {
     void onGenerateStart();
+    void onGenerateFailure();
     void onGenerateSuccess(List<Path> paths);
 }

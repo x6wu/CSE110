@@ -50,10 +50,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -71,6 +73,8 @@ import java.util.List;
 
 
 import ru.whalemare.sheetmenu.SheetMenu;
+
+import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
 /**
  * Author: Shuyuan Ma
@@ -102,6 +106,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private Marker mDestMarker;
 
     private  DatabaseReference mDatabase;
+    protected List<Path> mPaths;
     //private Button btnNavigation;
     //private GoogleMap mMap;
 
@@ -351,8 +356,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
                             openDialog(q);
-
-                            //TODO
                             //move the database part to TagDialog.java
 
 
@@ -770,30 +773,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
      * Display path information on a bottomSheet
      */
     public void displayPath(List<Path> paths){
-        /*
-        BottomSheetMenuFragment frg = BottomSheetMenuFragment.createInstanceList(paths);
-        frg.show(getChildFragmentManager(), "dialog");
-        */
+        mPaths = paths;
         View view = getLayoutInflater().inflate(R.layout.fragment_list_bottom_sheet, null);
+
+        Button saveRoutesButton = view.findViewById(R.id.saveRoutesButton);
+        saveRoutesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!((MainActivity)getActivity()).signedIn()) {
+                    Toast.makeText(getContext(),"Please sign in", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    openDialog();
+                }
+            }
+        });
 
 
         BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
 
-        LinearLayout path_container = (LinearLayout) view.findViewById(R.id.path_container);
+        LinearLayout path_container = view.findViewById(R.id.path_container);
 
         ArrayList<pathResult> results = new ArrayList<>();
         for (Path path: paths) {
             results.add(new pathResult(path));
         }
-        for(pathResult result: results) {
+        for(int i = 0; i<results.size(); i++) {
             LinearLayout a = new LinearLayout(getContext());
             a.setOrientation(LinearLayout.HORIZONTAL);
             //Place the object in the center of its container in both the vertical and horizontal
             //axis, not changing its size.
             a.setGravity(11);
-            ArrayList<String> segments = result.segments;
-            for (int i = 0; i < segments.size(); i++) {
-                if (segments.get(i) == "Walking") {
+            ArrayList<String> segments = results.get(i).segments;
+            for (int j = 0; j < segments.size(); j++) {
+                if (segments.get(j) == "Walking") {
                     ImageView img = new ImageView(getContext());
                     img.setImageResource(R.drawable.ic_walk);
                     a.addView(img);
@@ -802,18 +815,48 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     img.setImageResource(R.drawable.ic_bus);
                     a.addView(img);
                     TextView txt = new TextView(getContext());
-                    txt.setText(segments.get(i));
+                    txt.setText(segments.get(j));
                     a.addView(txt);
                 }
                 ImageView img = new ImageView(getContext());
                 img.setImageResource(R.drawable.ic_menu_send);
                 a.addView(img);
             }
+            a.setClickable(true);
+            //set onClickListener for each line of result
+            a.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int index = ((ViewGroup) view.getParent()).indexOfChild(view);
+                    //render and draw the first path's polyline
+                    ArrayList<PathSegment> recPathSegments = mPaths.get(index).getPathSegments();
+                    for (int i = 0; i < recPathSegments.size(); ++i) {
+                        PathSegment currSegment = recPathSegments.get(i);
+                        Log.d("travel mode", currSegment.getTravelMode().toString());
+                        Log.d("polyline", currSegment.getEncodedPolyLine());
+                        PolylineOptions polylineOptions = new PolylineOptions()
+                                .addAll(currSegment.getPolyLine())
+                                .color(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.blue));
+                        //set polyline pattern to be dotted if travel mode is walking
+                        if (currSegment.getTravelMode() == WALKING) {
+                            List<PatternItem> patternItemList = new ArrayList<>();
+                            patternItemList.add(new Dot());
+                            polylineOptions.pattern(patternItemList);
+                        }
+                        drawPolylines(polylineOptions);
+                    }
+                }
+            });
             path_container.addView(a);
         }
 
         dialog.setContentView(view);
         dialog.show();
+    }
+
+    public void openDialog() {
+        TagDialog dialog = new TagDialog();
+        dialog.show(getChildFragmentManager(),"tag dialog");
     }
 
     public void drawPolylines(PolylineOptions polylineOptions){
@@ -822,8 +865,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     //Ruoyu Xu
     protected void goToTwoStops(String placeId1, String placeId2){
-
-
         (Places.getGeoDataClient(getActivity(),null)).getPlaceById(placeId1)
                 .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
