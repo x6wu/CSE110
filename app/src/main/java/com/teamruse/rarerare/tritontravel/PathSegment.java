@@ -58,6 +58,10 @@ public abstract class PathSegment {
         return mEncodedPolyLine;
     }
 
+    public String getBusName() {
+        return null;
+    }
+
     public SegmentFactory.TravelMode getTravelMode() {
         return mTravelMode;
     }

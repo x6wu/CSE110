@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:orientation="vertical"
-        android:id="@+id/menuLinearLayout">
+        android:id="@+id/menuLinearLayout"/>
 
 
 
@@ -21,10 +21,16 @@
             android:drawableLeft="@drawable/ic_walk"
             android:text="" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:id="@+id/path_container">
+
 
         <Button
             android:id="@+id/saveRoutesButton"
-            android:onClick="doclick"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             style="?android:attr/borderlessButtonStyle"

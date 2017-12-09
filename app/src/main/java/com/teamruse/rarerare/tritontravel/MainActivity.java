@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private String currFragTag;
 
 
-
     /*
      *Ruoyu Xu
      * Test checking login in MainActivity
@@ -92,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .commit();*/
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
-
-
     }
 
     public void applyTexts(String s){
@@ -235,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             }
             mMapFragment.drawPolylines(polylineOptions);
         }
-
         mMapFragment.displayPath(paths);
     }
 

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +28,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -130,9 +133,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private OnFragmentInteractionListener mListener;
     private LatLng currLatLng;
-
-    //private LinearLayout routeBottomSheet;
-    //private BottomSheetBehavior routeBottomSheetBehavior;
 
 
 
@@ -306,28 +306,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     mListener.onNavRequest(mOriginStr, mDestStr);
                 }
 
-                //TODO
-                //add different options of routes to bottom sheet list
 
 
-                showBottomSheetList(view);
             }
         });
-        /*routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
-        routeBottomSheetBehavior = BottomSheetBehavior.from(routeBottomSheet);
-        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        Button hideRouteButt=getView().findViewById(R.id.hide_route_bottom_sheet_butt);
-        hideRouteButt.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                    }
-                }
-        );
-        routeText=getView().findViewById(R.id.basic_route_text);
-        originText=getView().findViewById(R.id.basic_origin_text);
-        destText=getView().findViewById(R.id.basic_dest_text);*/
     }
 
 
@@ -410,6 +392,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
     //zijing show dummy routes
+    /*
     private void showRoutes(Marker o,Marker d) {
         SheetMenu.with(getContext()).setTitle(o.getTitle() + " > " + d.getTitle()).setMenu(R.menu.routes)
             .setClick(new MenuItem.OnMenuItemClickListener() {
@@ -431,13 +414,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 }
             }).show();
     }
+    */
 
 
-    @OnClick(R.id.saveRoutesButton)
-    public void showBottomSheetList(View view) {
-        BottomSheetMenuFragment frg = BottomSheetMenuFragment.createInstanceList();
-        frg.show(getChildFragmentManager(), BottomSheetMenuFragment.class.getSimpleName());
-    }
 
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
@@ -488,34 +467,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
-                    if (task.isSuccessful()) {
-                        mLastKnownLocation = task.getResult();
-                        try {
-                            currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
-                            CameraPosition cameraPosition = new CameraPosition(
-                                currLatLng,
-                                mDefaultZoom, mMap.getCameraPosition().tilt,
-                                mMap.getCameraPosition().bearing);
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                        } catch (NullPointerException e){
+                        if (task.isSuccessful()) {
+                            mLastKnownLocation = task.getResult();
+                            try {
+                                currLatLng=new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
+                                CameraPosition cameraPosition = new CameraPosition(
+                                    currLatLng,
+                                    mDefaultZoom, mMap.getCameraPosition().tilt,
+                                    mMap.getCameraPosition().bearing);
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                            } catch (NullPointerException e){
+                                Log.d(TAG, "Current location is null. Using defaults.");
+                                Log.e(TAG, "Exception: " + task.getException());
+                                CameraPosition cameraPosition = new CameraPosition(
+                                        mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
+                                        mMap.getCameraPosition().bearing);
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
+                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            }
+                        } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: " + task.getException());
+                            Log.e(TAG, "Task Failed: " + task.getException());
                             CameraPosition cameraPosition = new CameraPosition(
                                     mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
                                     mMap.getCameraPosition().bearing);
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.e(TAG, "Task Failed: " + task.getException());
-                        CameraPosition cameraPosition = new CameraPosition(
-                                mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
-                                mMap.getCameraPosition().bearing);
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    }
                     }
                 });
             }
@@ -762,29 +741,55 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
 
-
-
-
     /*
-     * Ruoyu Xu
+     * Shuyuan Ma @Dec 8
      * Display path information on a bottomSheet
      */
-    protected void displayPath(List<Path> paths){
-        //originText.setText(mOriginStr);
-        //destText.setText(mDestStr+"\n");
-        Path path = paths.get(0);
-        String basicPathStr="";
-        for (PathSegment seg:path.getPathSegments()){
-            if (seg.getTravelMode()==SegmentFactory.TravelMode.WALKING){
-                basicPathStr+="Walk"+seg.getDistance()+"\n";
-            }else if(seg.getTravelMode()==SegmentFactory.TravelMode.BUS){
-                basicPathStr+="Bus"+((BusSegment) seg).getBusName();
-            }
-        }
-        //routeText.setText(basicPathStr);
-        //routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        Log.d(TAG, "basicPathStr:\n"+basicPathStr);
+    public void displayPath(List<Path> paths){
+        /*
+        BottomSheetMenuFragment frg = BottomSheetMenuFragment.createInstanceList(paths);
+        frg.show(getChildFragmentManager(), "dialog");
+        */
+        View view = getLayoutInflater().inflate(R.layout.fragment_list_bottom_sheet, null);
 
+
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
+
+        LinearLayout path_container = (LinearLayout) view.findViewById(R.id.path_container);
+
+        ArrayList<pathResult> results = new ArrayList<>();
+        for (Path path: paths) {
+            results.add(new pathResult(path));
+        }
+        for(pathResult result: results) {
+            LinearLayout a = new LinearLayout(getContext());
+            a.setOrientation(LinearLayout.HORIZONTAL);
+            //Place the object in the center of its container in both the vertical and horizontal
+            //axis, not changing its size.
+            a.setGravity(11);
+            ArrayList<String> segments = result.segments;
+            for (int i = 0; i < segments.size(); i++) {
+                if (segments.get(i) == "Walking") {
+                    ImageView img = new ImageView(getContext());
+                    img.setImageResource(R.drawable.ic_walk);
+                    a.addView(img);
+                } else {
+                    ImageView img = new ImageView(getContext());
+                    img.setImageResource(R.drawable.ic_bus);
+                    a.addView(img);
+                    TextView txt = new TextView(getContext());
+                    txt.setText(segments.get(i));
+                    a.addView(txt);
+                }
+                ImageView img = new ImageView(getContext());
+                img.setImageResource(R.drawable.ic_menu_send);
+                a.addView(img);
+            }
+            path_container.addView(a);
+        }
+
+        dialog.setContentView(view);
+        dialog.show();
     }
 
     public void drawPolylines(PolylineOptions polylineOptions){

@@ -49,7 +49,7 @@ public class BusSegment extends PathSegment {
         this.mEndStop = endStop;
     }
 
-
+    @Override
     public String getBusName() {
         return mBusName;
     }
