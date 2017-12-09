@@ -23,39 +23,14 @@ import java.util.ArrayList;
  * Created by JingJing on 12/6/17.
  */
 
-public class ListViewSavedStopAdapter extends BaseAdapter {
+public class ListViewSavedStopAdapter extends ListViewSavedAdapter {
 
-    private ArrayList<StopHistory> listContact;
 
-    private LayoutInflater mInflater;
-    private Context mContext;
     public ListViewSavedStopAdapter(Context context, ArrayList<StopHistory> results){
-        listContact = results;
-        mInflater = LayoutInflater.from(context);
-        this.mContext=context;
+        super(context, results);
     }
 
-    @Override
-    public int getCount() {
-        // TODO Auto-generated method stub
-        return listContact.size();
-    }
 
-    @Override
-    public Object getItem(int arg0) {
-        // TODO Auto-generated method stub
-        Log.d("lvSavedStopAdapter", "arg0:" + arg0 + " listContact.size="+listContact.size());
-        if(listContact.size()==0){
-            return null;
-        }
-        return listContact.get(arg0);
-    }
-
-    @Override
-    public long getItemId(int arg0) {
-        // TODO Auto-generated method stub
-        return arg0;
-    }
 
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -73,7 +48,7 @@ public class ListViewSavedStopAdapter extends BaseAdapter {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(View v) {
-                    deleteHist(listContact.get(position).getId());
+
                     //TODO 
                     //SavedStops.stopsList.remove(position);
 
@@ -107,15 +82,7 @@ public class ListViewSavedStopAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder{
-        TextView txtname;
-        String placeId;
-        long id;
-        ImageButton delete;
-    }
-    protected void deleteHist(long id){
-        (new StopHistoryBaseHelper(mContext)).deleteItem(id);
-    }
+
 
 }
 
