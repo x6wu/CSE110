@@ -184,84 +184,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         autocompleteFragmentDest.setHint("To");
 
         /*
-          Shuyuan Ma @Dec 6th
-          Origin search box selected listener
+         * Shuyuan Ma @Dec 7
+         * Restructured to reduce duplicate codes, now using helper method
          */
         autocompleteFragmentOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onPlaceSelected(Place place) {
-
-                //for zoom in
-                builder = new LatLngBounds.Builder();
-                if(mDestMarker != null) {
-                    builder.include(mDestMarker.getPosition());
-                }
-                if (mOriginMarker != null) {
-                    /*
-                      Shuyuan Ma @Dec 6th
-                      Clear the map, including polylines and all markers
-                      Reconstruct destination marker if it's not null
-                     */
-                    if (mDestMarker != null) {
-                        mMap.clear();
-                        //reconstruct the Dest marker
-                        mDestMarker = mMap.addMarker(new MarkerOptions().position(mDestPlace.getLatLng()).
-                                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                        mDestMarker.setTitle(mDestPlace.getName().toString());
-                    } else {
-                        mMap.clear();
-                    }
-                }
-
-                /**
-                 * Shuyuan Ma Dec 6th
-                 * Deep copy of origin place, for reconstruction of markers
-                 * See below in the clear button listener
-                 */
-                mOriginPlace = place;
-                mOriginStr = place.getAddress().toString();
-                Log.i(TAG, "origin seleted, Name: " + place.getName());
-                Log.i(TAG, "\t\tId: " + place.getId());
-                Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
-
-                mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
-                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker arg0) {
-                        if (arg0.equals(mDestMarker)){
-                            showMenu(mDestPlace);
-                            return true;
-                        }
-                        else if (arg0.equals(mOriginMarker)) {// if marker source is clicked
-                            showMenu(mOriginPlace);
-                            return true;
-
-                        }
-                        return false;
-                    }
-                });
-
-                //zoom
-                builder.include(mOriginMarker.getPosition());
-                bounds = builder.build();
-                /*
-                 * Shuyuan Ma Dec 6th
-                 * Camera animation updates
-                 */
-                //mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 18));
-                if (mDestMarker!= null) {
-                    int padding = 200; // offset from edges of the map in pixels
-                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                    mMap.animateCamera(cu);
-                }
+                fillInOriginSearchBox(place);
             }
             @Override
             public void onError(Status status) {
-                // TODO: Handle the error.
                 Log.i(TAG, "onError(). An error occurred: " + status);
             }
         });
@@ -279,13 +212,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 // .findViewById(R.id.place_autocomplete_search_input)).setText("");
                 autocompleteFragmentOrigin.setText("");
                 view.setVisibility(View.GONE);
-
                 /*
                   Shuyuan Ma Dec 6th
                   Clear map when clear button clicked
                   If destination marker is still selected, reconstruct mDestMarker
                  */
-
                 if (mDestMarker != null) {
                     mMap.clear();
                     //reconstruct the Dest marker
@@ -299,102 +230,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 mOriginPlace = null;
                 mOriginMarker = null;
                 mOriginStr="";
-
             }
         });
 
         /*
-          Shuyuan Ma @Dec. 6
-          Destination search box selected listener
+         * Shuyuan Ma @Dec 7
+         * Restructured to reduce duplicate codes, now using helper method
          */
         autocompleteFragmentDest.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onPlaceSelected(Place place) {
-
-                //zoom
-                builder = new LatLngBounds.Builder();
-                if(mOriginMarker != null)
-                    builder.include(mOriginMarker.getPosition());
-
-                if (mDestMarker != null) {
-                    /*
-                      Shuyuan Ma @Dec 6th
-                      Clear the map, including polylines and all markers
-                      Reconstruct origin marker if it's not null
-                     */
-                    if (mOriginMarker != null) {
-                        mMap.clear();
-                        //reconstruct the Origin marker
-                        mOriginMarker = mMap.addMarker(new MarkerOptions().position(mOriginPlace.getLatLng()).
-                                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                        mOriginMarker.setTitle(mOriginPlace.getName().toString());
-                    } else {
-                        mMap.clear();
-                    }
-                }
-
-                /**
-                 * Shuyuan Ma Dec 6th
-                 * Deep copy of origin place, for reconstruction of markers
-                 * See below in the clear button listener
-                 */
-                mDestPlace = place;
-                mDestStr = place.getAddress().toString();
-
-                Log.i(TAG, "destination seleted, Name: " + place.getName());
-                Log.i(TAG, "\t\tId: " + place.getId());
-                Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
-
-                //store destination into History
-                if ( History.stopsList == null) {
-                    History.stopsList = new ArrayList<>();
-                }
-                //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
-                Date date = new Date();
-                (new StopHistoryBaseHelper(getActivity().getApplicationContext()))
-                        .writeStopHistory( new StopHistory(place.getName().toString()
-                        , date.getTime(), place.getId()));
-
-                mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
-                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                //mDestMarker.setTitle(place.getName().toString());
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker arg0) {
-                        if (arg0.equals(mOriginMarker)){
-                            showMenu(mOriginPlace);
-                            return true;
-                        }
-                        else if (arg0.equals(mDestMarker)) {// if marker source is clicked
-                            showMenu(mDestPlace);
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-
-                //zoom
-                builder.include(mDestMarker.getPosition());
-                bounds = builder.build();
-                /*
-                 * Shuyuan Ma Dec 6th
-                 * Camera animation updates
-                 */
-
-                //mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 18));
-
-                if (mOriginMarker != null) {
-                    int padding = 200; // offset from edges of the map in pixels
-                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                    mMap.animateCamera(cu);
-                }
+                fillInDestSearchBox(place);
             }
             @Override
             public void onError(Status status) {
-                //TODO:handle Error
                 Log.e(TAG, status.getStatusMessage());
             }
         });
@@ -407,18 +257,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // example : way to access view from PlaceAutoCompleteFragment
-                // ((EditText) autocompleteFragment.getView()
-                // .findViewById(R.id.place_autocomplete_search_input)).setText("");
                 autocompleteFragmentDest.setText("");
                 view.setVisibility(View.GONE);
-
                 /**
                  * Shuyuan Ma Dec 6th
                  * Clear map when clear button clicked
                  * If origin marker is still selected, reconstruct mOriginMarker
                  */
-
                 if (mOriginMarker != null) {
                     mMap.clear();
                     //reconstruct the Origin marker
@@ -459,7 +304,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
                     //showRoutes(mOriginMarker, mDestMarker);
-
                 }
                 //navigation button callback to onFragmentInteraction
                 //MainActivity will handle the sendRequest() part
@@ -482,10 +326,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 showBottomSheetList(view);
             }
         });
-        fillInOriginSearchBox();
-        if(mDestPlace !=null){
-            fillInDestSearchBox(mDestPlace);
-        }
         /*routeBottomSheet=getView().findViewById(R.id.route_bottom_sheet);
         routeBottomSheetBehavior = BottomSheetBehavior.from(routeBottomSheet);
         routeBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -510,7 +350,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         SheetMenu.with(getContext()).setTitle(p.getName().toString()).setMenu(R.menu.sheet_menu)
             .setClick(new MenuItem.OnMenuItemClickListener() {
                 public final Place q = p;
-
                 @Override
                 public boolean onMenuItemClick(MenuItem item){
                     if  (item.getItemId() == R.id.seeAddrBtn) {
@@ -622,7 +461,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults){
@@ -740,26 +578,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         // TODO: implement this interface in case we need to communicate with the activity
         void onNavRequest(String origin, String dest);
     }
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onMyLocationButtonClick() {
-        fillInOriginSearchBox();
-        return false;
-    }
-
-    private void fillInOriginSearchBox(){
         PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            return false;
         }
         /*
          * Ruoyu Xu
          * Set text in origin textbox to current location
+         */
+
+        /*
+         * Shuyuan Ma @Dec 7
+         * Rewrite to fix buges
          */
         Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
         placeResult.addOnCompleteListener(
@@ -770,12 +603,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
                         Log.d(TAG, "got likely places");
                         Place mostLikelyPlace=likelyPlaces.get(0).getPlace();
-                        autocompleteFragmentOrigin.setText(mostLikelyPlace.getAddress().toString());
-
-                        mOriginMarker = mMap.addMarker(new MarkerOptions().position(mostLikelyPlace.getLatLng()).
-                                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                        mOriginMarker.setVisible(false);
-                        Log.i(TAG, "origin seleted" + mostLikelyPlace.getAddress().toString());
+                        fillInOriginSearchBox(mostLikelyPlace);
                         likelyPlaces.release();
                     }catch (Exception e){
                         Log.d(TAG,"exception when setting text in origin textbox to current location:"+e.getMessage());
@@ -783,7 +611,142 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 }
             }
         );
+        return true;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void fillInOriginSearchBox(Place place){
+        //clean map
+        if (mOriginMarker != null) {
+            if (mDestMarker != null) {
+                mMap.clear();
+                //reconstruct the Origin marker
+                mDestMarker = mMap.addMarker(new MarkerOptions().position(mDestPlace.getLatLng()).
+                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                mDestMarker.setTitle(mDestPlace.getName().toString());
+            } else {
+                mMap.clear();
+            }
+        }
+        //store place info to instance parameter
+        mOriginPlace = place.freeze();
+        mOriginStr = place.getAddress().toString();
+        autocompleteFragmentOrigin.setText(place.getName().toString());
+        //build marker
+        mOriginMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        //Log report
+        Log.i(TAG, "origin selected, Name: " + place.getName());
+        Log.i(TAG, "\t\tId: " + place.getId());
+        Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
+
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker arg0) {
+                if (arg0.equals(mOriginMarker)){
+                    showMenu(mOriginPlace);
+                    return true;
+                }
+                else if (arg0.equals(mDestMarker)) {// if marker source is clicked
+                    showMenu(mDestPlace);
+                    return true;
+                }
+                return false;
+            }
+        });
+        //builder to move the camera to appropriate mode
+        builder = new LatLngBounds.Builder();
+        builder.include(mOriginMarker.getPosition());
+        if (mDestMarker != null) {
+            builder.include(mDestMarker.getPosition());
+            bounds = builder.build();
+            int padding = 200; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+        } else {
+            bounds = builder.build();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 18));
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    protected void setmDestPlace(Place place){
+        try {
+            fillInDestSearchBox(place);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    /*
+      Shuyuan Ma @Dec 7th
+      Rewrite fillInDestSearchBox() to fix crashes
+     */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void fillInDestSearchBox(Place place){
+        //clean map
+        if (mDestMarker != null) {
+            if (mOriginMarker != null) {
+                mMap.clear();
+                //reconstruct the Origin marker
+                mOriginMarker = mMap.addMarker(new MarkerOptions().position(mOriginPlace.getLatLng()).
+                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                mOriginMarker.setTitle(mOriginPlace.getName().toString());
+            } else {
+                mMap.clear();
+            }
+        }
+        //store place info to instance parameter
+        mDestPlace = place.freeze();
+        mDestStr = place.getAddress().toString();
+        autocompleteFragmentDest.setText(place.getName().toString());
+        //build marker
+        mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        //Log report
+        Log.i(TAG, "destination selected, Name: " + place.getName());
+        Log.i(TAG, "\t\tId: " + place.getId());
+        Log.i(TAG, "\t\tAddress: "+ place.getAddress().toString());
+
+        //store destination into History
+        if ( History.stopsList == null) {
+            History.stopsList = new ArrayList<>();
+        }
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm");
+        Date date = new Date();
+        (new StopHistoryBaseHelper(getActivity().getApplicationContext()))
+                .writeStopHistory( new StopHistory(place.getName().toString()
+                        , date.getTime(), place.getId()));
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker arg0) {
+                if (arg0.equals(mOriginMarker)){
+                    showMenu(mOriginPlace);
+                    return true;
+                }
+                else if (arg0.equals(mDestMarker)) {// if marker source is clicked
+                    showMenu(mDestPlace);
+                    return true;
+                }
+                return false;
+            }
+        });
+        //builder to move the camera to appropriate mode
+        builder = new LatLngBounds.Builder();
+        builder.include(mDestMarker.getPosition());
+        if (mOriginMarker != null) {
+            builder.include(mOriginMarker.getPosition());
+            bounds = builder.build();
+            int padding = 200; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+        } else {
+            bounds = builder.build();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 18));
+        }
+    }
+
 
     @Override
     public void onPause(){
@@ -804,41 +767,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Log.d(TAG, "onDestroy called");
     }
 
-    protected void setmDestPlace(Place place){
-        PlaceDetectionClient mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
-        /*
-         * Ruoyu Xu
-         * Set text in destination textbox
-         */
-        this.mDestPlace =place;
-        try {
-            fillInDestSearchBox(place);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
-    private void fillInDestSearchBox(Place place){
-        builder = new LatLngBounds.Builder();
-        if(mOriginMarker != null)
-            builder.include(mOriginMarker.getPosition());
-        mDestStr =place.getId();
-        autocompleteFragmentDest.setText(place.getAddress().toString());
-        mDestMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng()).
-                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        mDestStr = place.getAddress().toString();
-        Log.i(TAG, "destination seleted: " + place.getAddress().toString());
-        builder.include(mDestMarker.getPosition());
-        bounds = builder.build();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        if (mOriginMarker != null) {
-            int padding = 200; // offset from edges of the map in pixels
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-            mMap.animateCamera(cu);
-        }
-        Log.i(TAG, "destination seleted" + mDestStr);
-    }
+
+
 
     /*
      * Ruoyu Xu

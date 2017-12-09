@@ -171,7 +171,7 @@ public class DirectionGenerator {
                     ((BusSegment) newSegment).setEndStop(jsonArrivalStop.getString("name"));
                     ((BusSegment) newSegment).setBusHeadsign(headsign);
                     ((BusSegment) newSegment).setNumStops(numStops);
-                    ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("name"));
+                    ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("short_name"));
                 }
                 newPath.getPathSegments().add(newSegment);
             }

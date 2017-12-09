@@ -1,7 +1,9 @@
 package com.teamruse.rarerare.tritontravel;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -361,22 +363,23 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Log.d(TAG, "replace to map frag");
         fragmentManager.beginTransaction().replace(R.id.fragment_container, mMapFragment).commit();
         fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
+
         (Places.getGeoDataClient(this,null)).getPlaceById(placeId)
                 .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                         if (task.isSuccessful()) {
                             PlaceBufferResponse places = task.getResult();
                             Place myPlace = places.get(0);
                             mMapFragment.setmDestPlace(myPlace);
-                            Log.i(TAG, "Place found: " + myPlace.getName());
+                            Log.i(TAG, "Place found: " + myPlace.getName().toString());
                             places.release();
                         } else {
                             Log.e(TAG, "Place not found.");
                         }
                     }
                 });
-        //mMapFragment.setmDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
         currFragTag="map";
     }
 }
