@@ -62,6 +62,7 @@ public class TagDialog extends AppCompatDialogFragment {
                             Log.i(TAG, "Saving Route, no dest or ori is available.");
                             Log.i(TAG, "The new tag for route is:" +tag);
                             ((MapFragment)getParentFragment()).writeRouteToDB();
+                            Toast.makeText(getContext(), "Route saved", Toast.LENGTH_LONG).show();
                         }
 
                     }

@@ -18,7 +18,8 @@
         <TextView
             android:id="@+id/RouteW"
             style="@style/AppTheme.BottomSheetListItem"
-            android:drawableLeft="@drawable/ic_walk"
+            android:drawableStart="@mipmap/ic_launcher"
+            android:background="@color/blue"
             android:text="" />
 
         <LinearLayout

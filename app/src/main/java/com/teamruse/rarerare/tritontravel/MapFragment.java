@@ -65,8 +65,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import butterknife.OnClick;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -774,7 +772,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
      */
     public void displayPath(List<Path> paths){
         mPaths = paths;
-        View view = getLayoutInflater().inflate(R.layout.fragment_list_bottom_sheet, null);
+        View view = getLayoutInflater().inflate(R.layout.query_result_bottom_sheet, null);
 
         Button saveRoutesButton = view.findViewById(R.id.saveRoutesButton);
         saveRoutesButton.setOnClickListener(new View.OnClickListener() {
