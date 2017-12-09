@@ -16,8 +16,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.InputType;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -26,19 +24,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import android.widget.TextView;
 
-
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
@@ -63,9 +56,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import java.util.ArrayList;
@@ -404,6 +395,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 ,mDestPlace.getId(),tag).toString());
     }
 
+    protected void writeRouteToDB(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        ((MainActivity)getActivity()).writeRouteToDB(user,new StopHistory(mOriginPlace.getName().toString()
+                + " -> " + mDestPlace.getName().toString()
+                ,mOriginPlace.getId() + " -> " +  mDestPlace.getId()
+                ,tag));
+    }
 
 
     public void openDialog( Place p) {
@@ -746,6 +744,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }
         });
         //builder to move the camera to appropriate mode
+        zoomToDestWithOrigin(place);
+    }
+
+    //Ruoyu Xu refactor Zijing's code
+    protected void zoomToDestWithOrigin(Place place){
         builder = new LatLngBounds.Builder();
         builder.include(mDestMarker.getPosition());
         if (mOriginMarker != null) {
@@ -759,7 +762,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 18));
         }
     }
-
 
     @Override
     public void onPause(){
@@ -808,6 +810,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     public void drawPolylines(PolylineOptions polylineOptions){
         mMap.addPolyline(polylineOptions);
+    }
+
+    //Ruoyu Xu
+    protected void goToTwoStops(String placeId1, String placeId2){
+
+
+        (Places.getGeoDataClient(getActivity(),null)).getPlaceById(placeId1)
+                .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            mOriginPlace = places.get(0);
+                            fillInOriginSearchBox(mOriginPlace);
+
+                            places.release();
+                        } else {
+                            Log.e(TAG, "Place not found.");
+                        }
+                    }
+                });
+        (Places.getGeoDataClient(getActivity(),null)).getPlaceById(placeId2)
+                .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            mDestPlace = places.get(0);
+                            fillInDestSearchBox(mDestPlace);
+
+                            places.release();
+                        } else {
+                            Log.e(TAG, "Place not found.");
+                        }
+                    }
+                });
+        
+
+
     }
 
 }

@@ -124,6 +124,7 @@ public class BottomSheetMenuFragment extends BottomSheetDialogFragment {
                             ,MapFragment.tag));
 
             Toast.makeText(getContext(),"Route Saved" , Toast.LENGTH_SHORT).show();*/
+            ((MapFragment)getParentFragment()).writeRouteToDB();
         }
 
 

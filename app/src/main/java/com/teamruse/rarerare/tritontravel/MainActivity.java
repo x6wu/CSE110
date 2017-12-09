@@ -334,7 +334,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Log.d(TAG, "onDestroy called");
     }
 
-    //For History
+    /* Ruoyu Xu
+     *
+     */
     protected void goToStop(String placeId){
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (mMapFragment==null){
@@ -374,4 +376,22 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .push()
                 .setValue(o);
     }
+    //Ruoyu Xu
+    protected void writeRouteToDB(FirebaseUser user, StopHistory o){
+        mDatabase.child("routes")
+                .child("route_id_" + user.getUid())
+                .push()
+                .setValue(o);
+        Log.d(TAG, "written route to db");
+    }
+    public MapFragment getMapFragment(){
+        return mMapFragment;
+    }
+    protected void goToRoute(String placeId1, String placeId2){
+        switchFrag(R.id.back);
+        mMapFragment.goToTwoStops(placeId1, placeId2);
+    }
+
+
+
 }
