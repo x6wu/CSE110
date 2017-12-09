@@ -36,7 +36,7 @@ public class SavedRoutes extends Fragment {
         listRoutes = routesList;
 
 
-        listRoutes.add(new StopHistory("ff","pp"));
+        //listRoutes.add(new StopHistory("ff","pp"));
         lv = (ListView) view.findViewById(R.id.savedRoutes);
         lv.setAdapter(new ListViewSavedAdapter(getActivity(), listRoutes));
 

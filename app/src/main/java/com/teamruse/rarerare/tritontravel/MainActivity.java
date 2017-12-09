@@ -40,7 +40,7 @@ import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKI
 
 public class MainActivity extends AppCompatActivity implements MapFragment.OnFragmentInteractionListener,
                    NavigationView.OnNavigationItemSelectedListener,
-                   DirectionGeneratorListener {
+                   DirectionGeneratorListener, TagDialog.TagDialogListener {
     private static String TAG = "Main_Activity";
     private MapFragment mMapFragment;
     private String currFragTag;
@@ -92,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         currFragTag="map";
 
 
+    }
+
+    public void applyTexts(String s){
+        MapFragment.tag = s;
     }
 
     protected void updateSignInUI() {

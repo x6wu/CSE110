@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import static com.teamruse.rarerare.tritontravel.History.stopsList;
+//import static com.teamruse.rarerare.tritontravel.History.stopsList;
 
 /**
  * Created by JingJing on 12/6/17.
@@ -93,7 +93,10 @@ public class ListViewSavedAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.placeId=listContact.get(position).getPlaceId();
-        holder.txtname.setText(listContact.get(position).getStopName());
+        if (!listContact.get(position).getTag().isEmpty())
+            holder.txtname.setText(listContact.get(position).getTag());
+        else
+            holder.txtname.setText(listContact.get(position).getStopName());
 
         holder.id=listContact.get(position).getId();
         return convertView;
