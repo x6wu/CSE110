@@ -111,6 +111,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
 
     public Button btnNavigation;
+    public Button btnMyLocation;
     public  GoogleMap mMap;
 
     private SupportPlaceAutocompleteFragment autocompleteFragmentOrigin;
@@ -124,7 +125,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private int mDefaultZoom = 15;
     private LatLngBounds.Builder builder;
     private LatLngBounds bounds;
-    private ArrayList<Polyline> mPolylines;
     private  FirebaseAuth mAuth;
 
     public String tag = "";
@@ -145,9 +145,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mAuth = FirebaseAuth.getInstance();
-        mPolylines = new ArrayList<>();
         mDatabase = ((MainActivity)getActivity()).getDatabase();
-
     }
 
     @Override
@@ -306,11 +304,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
                     mListener.onNavRequest(mOriginStr, mDestStr);
                 }
-
-
-
             }
         });
+        btnMyLocation = (Button) mapView.findViewById(R.id.my_location);
+        btnMyLocation.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View view) {
+                onMyLocationButtonClick();
+            }
+        });
+
     }
 
 
@@ -471,9 +475,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         try{
             if(mLocationPermissionGranted){
                 mMap.setMyLocationEnabled(true);
+                //To hide the default button
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
             }
             else{
                 mMap.setMyLocationEnabled(false);
+                //To hide the default button
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
@@ -498,7 +506,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                                     mDefaultZoom, mMap.getCameraPosition().tilt,
                                     mMap.getCameraPosition().bearing);
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                                //mMap.getUiSettings().setMyLocationButtonEnabled(true);
                             } catch (NullPointerException e){
                                 Log.d(TAG, "Current location is null. Using defaults.");
                                 Log.e(TAG, "Exception: " + task.getException());
@@ -506,7 +514,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                                         mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
                                         mMap.getCameraPosition().bearing);
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                                //mMap.getUiSettings().setMyLocationButtonEnabled(false);
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
@@ -515,7 +523,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                                     mDefaultLatLng, mDefaultZoom, mMap.getCameraPosition().tilt,
                                     mMap.getCameraPosition().bearing);
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            //mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
                 });
