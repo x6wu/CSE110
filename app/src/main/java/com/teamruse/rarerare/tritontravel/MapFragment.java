@@ -1,6 +1,7 @@
 package com.teamruse.rarerare.tritontravel;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,6 +75,7 @@ import java.util.List;
 
 import ru.whalemare.sheetmenu.SheetMenu;
 
+import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.SHUTTLE;
 import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKING;
 
 /**
@@ -296,7 +300,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     builder.include(mOriginMarker.getPosition());
                     builder.include(mDestMarker.getPosition());
                     bounds = builder.build();
-                    int padding = 200; // offset from edges of the map in pixels
+                    int padding = 280; // offset from edges of the map in pixels
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     mMap.animateCamera(cu);
                     //showRoutes(mOriginMarker, mDestMarker);
@@ -578,10 +582,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Log.i(TAG, "onDetach");
     }
 
+    /**
+     * Shuyuan Ma
+     * This listener will handle the communication of this fragment and the MainActivity
+     */
     public interface OnFragmentInteractionListener {
-        // TODO: implement this interface in case we need to communicate with the activity
         void onNavRequest(String origin, String dest);
     }
+
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onMyLocationButtonClick() {
@@ -674,7 +683,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         if (mDestMarker != null) {
             builder.include(mDestMarker.getPosition());
             bounds = builder.build();
-            int padding = 200; // offset from edges of the map in pixels
+            int padding = 280; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
             mMap.animateCamera(cu);
         } else {
@@ -756,7 +765,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         if (mOriginMarker != null) {
             builder.include(mOriginMarker.getPosition());
             bounds = builder.build();
-            int padding = 200; // offset from edges of the map in pixels
+            int padding = 280; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
             mMap.animateCamera(cu);
         } else {
@@ -789,8 +798,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
      * Shuyuan Ma @Dec 8
      * Display path information on a bottomSheet
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void displayPath(List<Path> paths){
         mPaths = paths;
+
         View view = getLayoutInflater().inflate(R.layout.query_result_bottom_sheet, null);
 
         Button saveRoutesButton = view.findViewById(R.id.saveRoutesButton);
@@ -808,7 +819,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             }
         });
 
-
         BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
 
         LinearLayout path_container = view.findViewById(R.id.path_container);
@@ -818,32 +828,54 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             results.add(new PathResult(path));
         }
         for(int i = 0; i<results.size(); i++) {
-            LinearLayout a = new LinearLayout(getContext());
-            a.setOrientation(LinearLayout.HORIZONTAL);
+            //for each path, generate a horizontal linear layout
+            LinearLayout line = new LinearLayout(getContext());
+            line.setOrientation(LinearLayout.HORIZONTAL);
             //Place the object in the center of its container in both the vertical and horizontal
             //axis, not changing its size.
-            a.setGravity(11);
+            line.setGravity(11);
+            line.setMinimumHeight(300);
+            line.setPadding(20,0,0,0);
+
+
+            LinearLayout.LayoutParams lytp = new LinearLayout.LayoutParams(-2,-2);
+            lytp.gravity = Gravity.CENTER_VERTICAL;
+
             ArrayList<String> segments = results.get(i).segments;
             for (int j = 0; j < segments.size(); j++) {
                 if (segments.get(j) == "Walking") {
                     ImageView img = new ImageView(getContext());
                     img.setImageResource(R.drawable.ic_walk);
-                    a.addView(img);
+                    img.setLayoutParams(lytp);
+                    line.addView(img);
                 } else {
                     ImageView img = new ImageView(getContext());
-                    img.setImageResource(R.drawable.ic_bus);
-                    a.addView(img);
+                    if(mPaths.get(i).getPathSegments().get(j).getTravelMode() == SHUTTLE) {
+                        img.setImageResource(R.drawable.ic_bus);
+                    } else {
+                        img.setImageResource(R.drawable.ic_mts);
+                        img.setScaleX((float)0.5);
+                        img.setScaleY((float)0.5);
+                    }
+                    img.setLayoutParams(lytp);
+                    line.addView(img);
                     TextView txt = new TextView(getContext());
                     txt.setText(segments.get(j));
-                    a.addView(txt);
+                    txt.setTextSize(28);
+                    txt.setTextColor(getContext().getColor(R.color.colorPrimaryDark));
+                    txt.setLayoutParams(lytp);
+                    line.addView(txt);
                 }
-                ImageView img = new ImageView(getContext());
-                img.setImageResource(R.drawable.ic_menu_send);
-                a.addView(img);
+                if(j<segments.size()-1) {
+                    ImageView img = new ImageView(getContext());
+                    img.setImageResource(R.drawable.arrow);
+                    img.setLayoutParams(lytp);
+                    line.addView(img);
+                }
             }
-            a.setClickable(true);
+            line.setClickable(true);
             //set onClickListener for each line of result
-            a.setOnClickListener(new View.OnClickListener() {
+            line.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int index = ((ViewGroup) view.getParent()).indexOfChild(view);
@@ -866,7 +898,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
                 }
             });
-            path_container.addView(a);
+            path_container.addView(line);
         }
 
         dialog.setContentView(view);

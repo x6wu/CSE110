@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private ArrayList<Path> shuttleRoutes;
     /*
      *Ruoyu Xu
-     * Test checking login in MainActivity
+     * Test checking Login in MainActivity
      *
      */
     private FirebaseAuth mAuth;
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     //check if user is signed in
     public boolean signedIn(){
         /*
-         * Ruoyu Xu check user login in MainActivity
+         * Ruoyu Xu check user Login in MainActivity
          *
          */
         if (mAuth==null){
@@ -266,8 +266,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Class destFragClass=null;
         switch (id){
             case R.id.login:
-                destFragTag="login";
-                destFragClass=login.class;
+                destFragTag="Login";
+                destFragClass=Login.class;
                 break;
             case R.id.history:
                 destFragTag="history";

@@ -28,13 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- For fragment test
-        <activity
-            android:name=".MapActivity"
-            android:label="map"
-            android:launchMode="singleTop">
-        </activity>
-        -->
     </application>
 
 </manifest>

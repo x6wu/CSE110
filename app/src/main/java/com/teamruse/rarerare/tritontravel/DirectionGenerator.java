@@ -34,7 +34,7 @@ public class DirectionGenerator {
     private LatLng mDest;
     private DirectionGeneratorListener listener;
     private static final String ApiUrl = "https://maps.googleapis.com/maps/api/directions/json?";
-    private static final String ApiKey = "AIzaSyDL3mGK2R6RvVHzHqhz7f2623iv6gGfU9w";
+    private static final String ApiKey = "AIzaSyDW5Ey3-PU1oYnLrxCo27RbFmKbRjX-wig";
 
     private static final String TAG = "Direction_Generator";
 
@@ -177,7 +177,7 @@ public class DirectionGenerator {
                         ((BusSegment) newSegment).setEndStop(jsonArrivalStop.getString("name"));
                         ((BusSegment) newSegment).setBusHeadsign(headsign);
                         ((BusSegment) newSegment).setNumStops(numStops);
-                        ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("name"));
+                        ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("short_name"));
                     }
                     newPath.getPathSegments().add(newSegment);
                 }

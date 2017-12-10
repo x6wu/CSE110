@@ -1,16 +1,12 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 /**
  * Created by Shuyuan Ma on 2017/12/8.
  */
 
-public class PathResult implements Parcelable {
+public class PathResult{
     /*
      * Shuyuan Ma @Dec 8th
      * Implement Parcelable for bottom sheet.
@@ -47,38 +43,4 @@ public class PathResult implements Parcelable {
             }
         }
     }
-
-    protected PathResult(Parcel in) {
-        //mStartLocation = in.readParcelable(LatLng.class.getClassLoader());
-        //mEndLocation = in.readParcelable(LatLng.class.getClassLoader());
-        mDuration = in.readString();
-        segments = in.createStringArrayList();
-    }
-
-    public static final Creator<PathResult> CREATOR = new Creator<PathResult>() {
-        @Override
-        public PathResult createFromParcel(Parcel in) {
-            return new PathResult(in);
-        }
-
-        @Override
-        public PathResult[] newArray(int size) {
-            return new PathResult[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        //parcel.writeParcelable(mStartLocation,i);
-        //parcel.writeParcelable(mEndLocation,i);
-        parcel.writeString(mDuration);
-        parcel.writeStringList(segments);
-    }
-
-
 }
