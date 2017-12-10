@@ -139,9 +139,11 @@ public class ShuttleGraph {
             Log.d("start", startLocation.toString());
             Log.d("node size", ""+MapUtils.distance(curr, startLocation));
             if(MapUtils.distance(curr, startLocation) <= 0.5){
+                sourceNodes.add(nodes.get(curr));
                 Log.d("node size", "test");
             }
             if(MapUtils.distance(curr, endLocation) <= 0.5){
+                destinationNodes.add(nodes.get(curr));
                 Log.d("node size", "test");
             }
         }

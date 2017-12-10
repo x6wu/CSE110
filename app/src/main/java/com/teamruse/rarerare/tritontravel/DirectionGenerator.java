@@ -45,8 +45,8 @@ public class DirectionGenerator {
     }
 
     public String buildUrl() {
-        String originUrl = mOrigin.toString().replaceAll(" ", "+");
-        String destUrl = mDest.toString().replaceAll(" ", "+");
+        String originUrl = (mOrigin.latitude + "," + mOrigin.longitude).replaceAll(" ", "+");
+        String destUrl = (mDest.latitude + "," + mDest.longitude).replaceAll(" ", "+");
         String URL = ApiUrl + "origin=" + originUrl + "&destination="
                 + destUrl + "&mode=transit&key=" + ApiKey;
         //String URL = ApiUrl + "origin=place_id:"+origin+"&destination=place_id"
