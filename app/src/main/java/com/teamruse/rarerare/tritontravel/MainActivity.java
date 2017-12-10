@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Toast.makeText(this, "Something goes wrong.\nWe couldn't find a route for you.", Toast.LENGTH_LONG).show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onGenerateSuccess(List<Path> paths) {
         mMapFragment.btnNavigation.setEnabled(true);
@@ -211,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         if (paths.isEmpty()){
             return;
         }
-
+        Log.i(TAG, "Size of paths, including shuttles: "+paths.size());
         //render and draw the first path's polyline
         ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
         for (int i = 0; i < recPathSegments.size(); ++i) {

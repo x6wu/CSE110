@@ -16,6 +16,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -173,6 +175,11 @@ public class ShuttleGraph {
                 }
             }
         }
+        Collections.sort(paths, new Comparator<Path>(){
+            public int compare(Path path1, Path path2){
+                return Integer.compare(path1.getPathSegments().size(), path2.getPathSegments().size());
+            }
+        });
         return paths;
     }
 

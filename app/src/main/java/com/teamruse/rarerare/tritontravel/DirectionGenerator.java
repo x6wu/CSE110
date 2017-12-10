@@ -154,7 +154,6 @@ public class DirectionGenerator {
                     } else if (jsonStep.getString("travel_mode").equals("TRANSIT")) {
                         travelMode = BUS;
                     } else {
-                        //TODO
                         break;
                     }
                     PathSegment newSegment = segmentFactory.getSegment(travelMode, stepStartLocation,
@@ -188,7 +187,7 @@ public class DirectionGenerator {
             Log.e(TAG, e.getMessage());
             listener.onGenerateFailure();
         }
-        Log.i(TAG, "Paths size:" + paths.size());
+        //Log.i(TAG, "Paths size:" + paths.size());
         listener.onGenerateSuccess(paths);
     }
 
