@@ -26,7 +26,6 @@ import java.util.ArrayList;
 public class SavedStops extends Fragment {
 
     private static final String TAG="SavedStops_tag";
-    //private ArrayList<StopHistory> stopsList;
     private FirebaseAuth mAuth;
     private ArrayList<StopHistory> savedStopList = new ArrayList<StopHistory>();
     private View view;

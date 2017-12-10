@@ -42,9 +42,6 @@ import java.util.ArrayList;
 public class Saved extends Fragment {
 
     View myView;
-    //public static ArrayList<StopHistory> stopsList;
-    //private ArrayList<StopHistory> listStops;
-    //private Fragment currFrag=this;
     TabLayout tabLayout;
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
@@ -57,18 +54,12 @@ public class Saved extends Fragment {
 
         myView = inflater.inflate(R.layout.saved, container, false);
         defineButtons(myView);
-        //tabLayout = (TabLayout) myView.findViewById(R.id.tabs);
 
         viewPager = (ViewPager) myView.findViewById(R.id.viewPager);
-        //viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
         viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout = (TabLayout) myView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        //tabLayout.addOnTabSelectedListener();
-
-
-
 
         return myView;
     }
@@ -77,8 +68,6 @@ public class Saved extends Fragment {
 
     public void defineButtons(View view) {
         view.findViewById(R.id.back).setOnClickListener(buttonClickListener);
-        //view.findViewById(R.id.clear).setOnClickListener(buttonClickListener);
-        //view.findViewById(R.id.delete).setOnClickListener(buttonClickListener);
     }
 
     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
@@ -87,50 +76,11 @@ public class Saved extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    //startActivity(new Intent(login.this, signup.class));
                     ((MainActivity)getActivity()).switchFrag(R.id.back);
                     break;
-
-
             }
         }
 
     };
-
-   /* public void clearHist() {
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-        alert.setMessage("Clear all history?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                stopsList.clear();
-                listStops = stopsList;
-                ListView lv = (ListView)myView.findViewById(R.id.stopListView);
-                lv.setAdapter(new ListViewStopAdapter(getActivity(), listStops));
-
-                Toast.makeText(getContext(),"Cleared", Toast.LENGTH_SHORT).show();
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(),"Nvm", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        //alert.show();
-
-        AlertDialog dialog = alert.create();
-        dialog.show();
-
-        Button b = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-        if(b != null) {
-            b.setTextColor(Color.parseColor("#064264"));
-
-        }
-
-    }*/
 
 }

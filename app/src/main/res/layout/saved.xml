@@ -64,19 +64,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/saved_title"
             app:layout_constraintVertical_bias="0.067">
-
-            <!--  <android.support.design.widget.TabItem
-                android:id="@+id/stopTab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stops" />
-
-
-            <android.support.design.widget.TabItem
-                android:id="@+id/routesTab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Routes" />-->
         </android.support.design.widget.TabLayout>
 
         <android.support.v4.view.ViewPager

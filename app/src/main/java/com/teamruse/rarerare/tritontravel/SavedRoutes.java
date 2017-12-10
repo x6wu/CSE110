@@ -43,23 +43,6 @@ public class SavedRoutes extends Fragment {
             routesList = new ArrayList<>();
         }
 
-
-
-
-        //listRoutes.add(new StopHistory("ff","pp"));
-
-
-
-        /*lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String placeId = ((StopHistory) lv.getAdapter().getItem(position)).getPlaceId();
-                ((MainActivity) getActivity()).goToStop(placeId);
-
-
-            }
-        });*/
-
         lv = (ListView) view.findViewById(R.id.savedRoutes);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("routes").child("route_id_" + mAuth.getUid());
         ref.addListenerForSingleValueEvent(
@@ -117,8 +100,7 @@ public class SavedRoutes extends Fragment {
     }
     @Override
     public void onResume() {
-
         super.onResume();
-        Log.d(TAG, "resume");
+        Log.d(TAG, "onResume");
     }
 }
