@@ -824,7 +824,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         LinearLayout path_container = view.findViewById(R.id.path_container);
 
         ArrayList<PathResult> results = new ArrayList<>();
-        for(int i = 0; i<3; i++) {
+        for(int i = 0; i<3 && i<results.size(); i++) {
             results.add(new PathResult(paths.get(i)));
         }
         for(int i = 0; i<results.size(); i++) {
