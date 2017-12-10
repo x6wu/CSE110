@@ -43,7 +43,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         String title = null;
         if (position == 0)
         {
-            title = "Stops";
+            title = "Locations";
         }
         else if (position == 1)
         {

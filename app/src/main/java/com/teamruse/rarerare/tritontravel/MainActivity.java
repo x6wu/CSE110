@@ -35,13 +35,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -189,8 +184,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     @Override
     public void onNavRequest(String origin, String dest) {
         new DirectionGenerator(this, origin, dest).generate();
-        LatLng startLocation = mMapFragment.originMarker.getPosition();
-        LatLng endLocation = mMapFragment.destMarker.getPosition();
+        LatLng startLocation = mMapFragment.mOriginMarker.getPosition();
+        LatLng endLocation = mMapFragment.mDestMarker.getPosition();
         shuttleGraph = new ShuttleGraph();
         shuttleGraph.loadFromFile(getApplicationContext());
         shuttleRoutes = shuttleGraph.generateShuttleRoutes(startLocation, endLocation);

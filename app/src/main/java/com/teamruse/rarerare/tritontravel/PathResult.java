@@ -34,11 +34,12 @@ public class PathResult implements Parcelable {
             PathSegment currSegment = recPathSegments.get(i);
             switch (currSegment.getTravelMode()) {
                 case BUS:
-                    segments.add("Bus");
-                    //segments.add(currSegment.getBusName());
+                    BusSegment currbusSegment = (BusSegment)currSegment;
+                    segments.add(currbusSegment.getBusName());
                     break;
                 case SHUTTLE:
-                    segments.add("Shuttle");
+                    ShuttleSegment currshuttleSegment = (ShuttleSegment)currSegment;
+                    segments.add(currshuttleSegment.getShuttleHeadsign());
                     break;
                 case WALKING:
                     segments.add("Walking");

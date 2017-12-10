@@ -58,12 +58,22 @@
         android:minWidth="70dp">
 
         <Button
+            android:id="@+id/my_location"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/my_location"
+            app:layout_constraintBottom_toTopOf="@id/search_button"
+            app:layout_constraintStart_toStartOf="@id/search_button"
+            app:layout_constraintEnd_toEndOf="@id/search_button"/>
+
+        <Button
             android:id="@+id/search_button"
-            android:layout_width="70dp"
-            android:layout_height="75dp"
-            android:layout_marginBottom="20dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="15dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/searchbtn"
+            android:background="@drawable/searchbtn_hd"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
     </android.support.constraint.ConstraintLayout>
