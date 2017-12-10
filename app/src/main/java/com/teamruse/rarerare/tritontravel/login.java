@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+
 //import java.util.concurrent.Executor;
 
 
@@ -147,7 +148,9 @@ public class login extends Fragment {
                             mDatabase.child("users").child("user_id_" + user.getUid()).child("UID").setValue(user.getUid());
                             mDatabase.child("users").child("user_id_" + user.getUid()).child("name").setValue(user.getDisplayName());
                             mDatabase.child("users").child("user_id_" + user.getUid()).child("email").setValue(user.getEmail());
+
                             updateUI(user);
+
                             ((MainActivity)getActivity()).switchFrag(R.id.prof);
                             Toast.makeText(getContext(), "Signed in", Toast.LENGTH_SHORT).show();
                         } else {
@@ -206,9 +209,4 @@ public class login extends Fragment {
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
     }
-
-
-
-
-
 }

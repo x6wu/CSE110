@@ -1,5 +1,6 @@
 package com.teamruse.rarerare.tritontravel;
 
+
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,9 +9,10 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import android.content.Intent;
+
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,19 +21,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-
 import com.google.android.gms.common.SignInButton;
-
-//import java.util.concurrent.Executor;
-
+import com.squareup.picasso.Picasso;
 
 public class Profile extends Fragment {
     View myView;
@@ -45,8 +41,6 @@ public class Profile extends Fragment {
     private Fragment thisFrag=this;
     GoogleSignInAccount acct;
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +50,9 @@ public class Profile extends Fragment {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this.getActivity(), gso);
         defineButtons(myView);
         mAuth = FirebaseAuth.getInstance();
-
         return myView;
     }
 
@@ -73,7 +65,6 @@ public class Profile extends Fragment {
     private void signOut() {
         // Firebase sign out
         mAuth.signOut();
-
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(this.getActivity(),
                 new OnCompleteListener<Void>() {
@@ -104,15 +95,16 @@ public class Profile extends Fragment {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
         ((MainActivity)getActivity()).updateSignInUI();
-
         acct = GoogleSignIn.getLastSignedInAccount(getActivity());
         if (acct != null) {
             TextView name = (TextView) myView.findViewById(R.id.username);
             name.setText(acct.getDisplayName());
             TextView email = (TextView) myView.findViewById(R.id.useremail);
             email.setText(acct.getEmail());
+            //render the profilephoto
+            ImageView profile_photo = (ImageView) myView.findViewById(R.id.face);
+            Picasso.with(this.getActivity()).load(acct.getPhotoUrl()).into(profile_photo);
         }
     }
 
@@ -169,18 +161,13 @@ public class Profile extends Fragment {
 
     public void defineButtons(View view) {
         view.findViewById(R.id.back).setOnClickListener(buttonClickListener);
-
         //googleButton = view.findViewById(R.id.login);
         //googleButton.setOnClickListener(buttonClickListener);
-
         view.findViewById(R.id.sign_out).setOnClickListener(buttonClickListener);
-
         //googleButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
 
-
     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
-
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onClick(View v){
@@ -194,23 +181,16 @@ public class Profile extends Fragment {
             else if(v.getId() == R.id.sign_out){
                 signOut();
             }
-
-
         }
     };
     public void onResume(){
         super.onResume();
         Log.d(TAG, "resume profrag frag");
     }
+
     @Override
     public void onDestroy() {
-
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
     }
-
-
-
-
-
 }

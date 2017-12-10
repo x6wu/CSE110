@@ -23,16 +23,15 @@ public class StopHistory {
     private String stopName;
     private String stopTimeStr;
     private String placeId;
-
-
+    private String tag;
 
     private long timeStamp;
 
 
     public StopHistory() {
         stopName = "";
-        stopName = "";
         placeId="";
+        tag="";
 
     }
 
@@ -43,32 +42,34 @@ public class StopHistory {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm:ss aa");
         Date date = new Date(timeStamp);
         stopTimeStr=dateFormat.format(date);
+        this.tag="";
 
     }
 
-    public StopHistory(Place p) {
-        this.stopName = p.getName().toString();
-        this.placeId=p.getId();
 
-    }
-
-    public StopHistory(String name, String placeId) {
+    public StopHistory(String name, String placeId, String inputTag) {
         this.stopName = name;
         //this.timeStamp = time;
         this.placeId=placeId;
         //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd | hh:mm:ss aa");
         //Date date = new Date(timeStamp);
         //stopTimeStr=dateFormat.format(date);
+        this.tag = inputTag;
 
     }
+    public void setTag(String inputTag) {
+        tag = inputTag;
+    }
 
-    public void setStopName (String name) {
+    public void setStopName(String name) {
         stopName = name;
     }
 
-    public void setStopTimeStr (String time) {
+    public void setStopTimeStr(String time) {
         stopTimeStr = time;
     }
+
+    public String getTag() {return tag;}
 
     public String getStopName() {
         return stopName;
@@ -87,9 +88,6 @@ public class StopHistory {
 
     public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
-
     }
-
-
-
 }
+

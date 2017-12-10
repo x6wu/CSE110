@@ -11,7 +11,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Created by rarerare on 11/30/17.
+ * Created by Ruoyu Xu on 11/30/17.
  */
 
 public class StopHistoryBaseHelper extends SQLiteOpenHelper {
@@ -60,6 +60,7 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
         long newRowId = db.replace(TABLE_NAME, null, values);
 
         Log.d(TAG, "written, id="+String.valueOf(newRowId));
+        db.close();
     }
     protected ArrayList<StopHistory> getStopHistoryList(){
         SQLiteDatabase db = getReadableDatabase();
@@ -96,12 +97,14 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
                             +cur.getString(cur.getColumnIndexOrThrow(COL_NAME_NAME)));
             histList.add(sh);
         }
+        db.close();
         return histList;
     }
 
     protected void deleteTable(){
         SQLiteDatabase db=getWritableDatabase();
         db.delete(TABLE_NAME, null,null);
+        db.close();
     }
     protected void deleteItem(long id){
         String selection = COL_NAME_ID + "=?";
@@ -110,5 +113,6 @@ public class StopHistoryBaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = { String.valueOf(id) };
         SQLiteDatabase db=getWritableDatabase();
         db.delete(TABLE_NAME, selection,selectionArgs);
+        db.close();
     }
 }

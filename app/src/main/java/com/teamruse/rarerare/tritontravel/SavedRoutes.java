@@ -9,6 +9,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 /**
@@ -17,9 +25,11 @@ import java.util.ArrayList;
 
 public class SavedRoutes extends Fragment {
     private static final String TAG="SavedRoutes_tag";
-    ListView lv;
-    public static ArrayList<StopHistory> routesList;
-    private ArrayList<StopHistory> listRoutes;
+    private FirebaseAuth mAuth;
+    private View view;
+    private ListView lv;
+    private  ArrayList<StopHistory> routesList;
+
 
     public SavedRoutes() {
 
@@ -27,18 +37,17 @@ public class SavedRoutes extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.saved_routes, container, false);
-
+        view = inflater.inflate(R.layout.saved_routes, container, false);
+        mAuth = FirebaseAuth.getInstance();
         if (routesList == null) {
             routesList = new ArrayList<>();
         }
 
-        listRoutes = routesList;
 
 
-        listRoutes.add(new StopHistory("ff","pp"));
-        lv = (ListView) view.findViewById(R.id.savedRoutes);
-        lv.setAdapter(new ListViewSavedAdapter(getActivity(), listRoutes));
+
+        //listRoutes.add(new StopHistory("ff","pp"));
+
 
 
         /*lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -51,7 +60,59 @@ public class SavedRoutes extends Fragment {
             }
         });*/
 
+        lv = (ListView) view.findViewById(R.id.savedRoutes);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("routes").child("route_id_" + mAuth.getUid());
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        Log.d(TAG, "onDataChange called.");
+                        for(DataSnapshot shot : snapshot.getChildren()) {
+                            Log.d(TAG, "a shot");
+                            StopHistoryWithKey data =null;
+                            try {
+                                data = shot.getValue(StopHistoryWithKey.class);
+                            }catch (DatabaseException e){
+                                Log.e(TAG, e.getMessage());
+                            }
+                            if (data!=null){
+                                Log.d(TAG,  "retrieved data (StopHistory):" +
+                                        "\n\tplaceId: " + data.getPlaceId()
+                                        +"\n\tstopName: "+ data.getStopName());
+                                data.setKey(shot.getKey());
+
+                                routesList.add(data);
+                            }
+
+                        }
+                        //update list and update UI render
+
+                        //lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), listStops));
+                        Log.d("SavedStops","calling adapter, size of savedStopList:"+routesList.size());
+                        lv.setAdapter(new ListViewSavedRouteAdapter(getContext(), routesList));
+
+                        Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
+                        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                StopHistory route=(StopHistory) lv.getAdapter().getItem(position);
+                                String[] originDestName=route.getStopName().split(" -> ");
+                                String[] originDestId=route.getPlaceId().split(" -> ");
+                                Log.d(TAG,"/"+originDestId[0]+"/"+originDestId[1]+"/");
+
+                                ((MainActivity)getActivity()).goToRoute(originDestId[0], originDestId[1]);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
         Log.d(TAG, "onCreateView");
+
+        lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), routesList));
         return view;
     }
     @Override

@@ -49,11 +49,6 @@ public class BusSegment extends PathSegment {
         this.mEndStop = endStop;
     }
 
-
-    public String getBusName() {
-        return mBusName;
-    }
-
     public String getStartStop() {
         return mStartStop;
     }
@@ -73,9 +68,4 @@ public class BusSegment extends PathSegment {
     public int getNumStops() {
         return mNumStops;
     }
-
-
-
-
-
 }

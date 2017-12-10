@@ -1,23 +1,24 @@
 package com.teamruse.rarerare.tritontravel;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +34,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +52,13 @@ import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKI
 
 public class MainActivity extends AppCompatActivity implements MapFragment.OnFragmentInteractionListener,
                    NavigationView.OnNavigationItemSelectedListener,
-                   DirectionGeneratorListener {
+                   DirectionGeneratorListener, TagDialog.TagDialogListener {
     private static String TAG = "Main_Activity";
     private MapFragment mMapFragment;
     private String currFragTag;
-
-
-
+    private DatabaseReference mDatabase;
+    private ShuttleGraph shuttleGraph;
+    private ArrayList<Path> shuttleRoutes;
     /*
      *Ruoyu Xu
      * Test checking login in MainActivity
@@ -58,8 +68,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private GoogleSignInClient mGoogleSignInClient;
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
-    private ShuttleGraph shuttleGraph;
-    private ArrayList<Path> shuttleRoutes;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         setContentView(R.layout.activity_main);
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        //mNavigationView.inflateMenu(R.menu.activity_main_drawer);
         updateSignInUI();
 
 
@@ -96,8 +106,13 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
 
+        //Ruoyu Xu use only one db ref in the activity
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
+    }
 
+    public void applyTexts(String s){
+        mMapFragment.tag = s;
     }
 
     protected void updateSignInUI() {
@@ -107,10 +122,12 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             mNavigationView.getMenu().findItem(R.id.prof).setVisible(true);
             View hView =  mNavigationView.getHeaderView(0);
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-                TextView name = (TextView) hView.findViewById(R.id.welcome);
-
-                name.setText("Welcome, " + acct.getGivenName() + "!");
-
+            //render the username
+            TextView name = (TextView) hView.findViewById(R.id.welcome);
+            name.setText("Welcome, " + acct.getGivenName() + "!");
+            //render the profilephoto
+            ImageView nav_photo = (ImageView) hView.findViewById(R.id.nav_photo);
+            Picasso.with(this).load(acct.getPhotoUrl()).into(nav_photo);
         }
         else {
             mNavigationView.getMenu().findItem(R.id.login).setVisible(true);
@@ -120,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
             TextView name = (TextView) hView.findViewById(R.id.welcome);
             name.setText("Welcome!");
+            ImageView nav_photo = (ImageView) hView.findViewById(R.id.nav_photo);
+            nav_photo.setImageResource(R.drawable.face);
         }
     }
 
@@ -160,33 +179,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        /*FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (id == R.id.login) {
-            // Handle the camera action
-            //fragmentManager.beginTransaction().replace(R.id.content_frame, new login())
-            //        .commit();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new login())
-                    .commit();
-        } else if (id == R.id.history) {
-            // Handle the camera action
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new History())
-                    .commit();
-        /*
-        } else if (id == R.id.pt) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Peaktime())
-                    .commit();
-        *//*
-        } else if (id == R.id.fb) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Feedback())
-                    .commit();
-
-        } else if (id == R.id.faq) {
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, new Faq())
-                    .commit();
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);*/
         switchFrag(id);
         return true;
     }
@@ -211,14 +204,20 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     }
 
     @Override
-    public void onGenerateSuccess(List<Path> paths) {
-        paths.addAll(shuttleRoutes);
+    public void onGenerateFailure() {
         mMapFragment.btnNavigation.setEnabled(true);
+        Toast.makeText(this, "Something goes wrong.\nWe couldn't find a route for you.", Toast.LENGTH_LONG).show();
+    }
 
+    @Override
+    public void onGenerateSuccess(List<Path> paths) {
+        mMapFragment.btnNavigation.setEnabled(true);
+        paths.addAll(shuttleRoutes);
         if (paths.isEmpty()){
             return;
         }
 
+        //render and draw the first path's polyline
         ArrayList<PathSegment> recPathSegments = paths.get(0).getPathSegments();
         for (int i = 0; i < recPathSegments.size(); ++i) {
             PathSegment currSegment = recPathSegments.get(i);
@@ -235,11 +234,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
             }
             mMapFragment.drawPolylines(polylineOptions);
         }
-
         mMapFragment.displayPath(paths);
     }
 
-    //TODO
     //check if user is signed in
     public boolean signedIn(){
         /*
@@ -353,6 +350,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Log.d(TAG, "onDestroy called");
     }
 
+    /* Ruoyu Xu
+     *
+     */
     protected void goToStop(String placeId){
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (mMapFragment==null){
@@ -363,22 +363,63 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         Log.d(TAG, "replace to map frag");
         fragmentManager.beginTransaction().replace(R.id.fragment_container, mMapFragment).commit();
         fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("map")).commit();
+
         (Places.getGeoDataClient(this,null)).getPlaceById(placeId)
                 .addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
                         if (task.isSuccessful()) {
                             PlaceBufferResponse places = task.getResult();
                             Place myPlace = places.get(0);
                             mMapFragment.setmDestPlace(myPlace);
-                            Log.i(TAG, "Place found: " + myPlace.getName());
+                            Log.i(TAG, "Place found: " + myPlace.getName().toString());
                             places.release();
                         } else {
                             Log.e(TAG, "Place not found.");
                         }
                     }
                 });
-        //mMapFragment.setmDestPlace((Places.getGeoDataClient(this,null)).getPlaceById(placeId).getResult().get(0));
         currFragTag="map";
+    }
+    public DatabaseReference getDatabase() {
+        return mDatabase;
+    }
+
+    //Ruoyu Xu refactored Austin Moss-Ennis's code in MapFragment @Dec 8
+    protected void writeStopToDB(FirebaseUser user, StopHistory o) {
+        //Copied from Austin Moss-Ennis's code in MapFragment
+        mDatabase.child("stops")
+                .child("stop_id_" + user.getUid())
+                .child(o.getPlaceId())
+                .setValue(o);
+    }
+
+    protected void writeRouteToDB(FirebaseUser user, StopHistory o){
+        mDatabase.child("routes")
+                .child("route_id_" + user.getUid())
+                .child(o.getPlaceId())
+                .setValue(o);
+        Log.d(TAG, "written route to db");
+    }
+
+    //Ruoyu Xu
+    protected void goToRoute(String placeId1, String placeId2){
+        switchFrag(R.id.back);
+        mMapFragment.goToTwoStops(placeId1, placeId2);
+    }
+    //Ruoyu Xu
+    protected void deleteStop(String key){
+        mDatabase.child("stops")
+                .child("stop_id_" + mAuth.getUid()).child(key).removeValue();
+
+
+    }
+
+    //Ruoyu Xu
+    protected void deleteRoute(String key){
+        mDatabase.child("routes")
+                .child("route_id_" + mAuth.getUid()).child(key).removeValue();
+        Log.d(TAG, "delete route");
     }
 }

@@ -11,8 +11,14 @@
     <item
         android:id="@+id/saveStop"
         android:icon="@drawable/ic_save"
-        android:title="Save"
+        android:title="Save Location"
         />
+
+    <item
+        android:id="@+id/seeAddrBtn"
+        android:icon="@drawable/ic_addr"
+        android:title="See Full Address" />
+
 
     <!--
     <item
@@ -21,9 +27,4 @@
         android:title="Bus Schedule"
         />
     -->
-
-
-
-
-
 </menu>

@@ -1,5 +1,4 @@
 package com.teamruse.rarerare.tritontravel;
-
 import java.util.List;
 
 /**
@@ -8,5 +7,6 @@ import java.util.List;
 
 public interface DirectionGeneratorListener {
     void onGenerateStart();
+    void onGenerateFailure();
     void onGenerateSuccess(List<Path> paths);
 }

@@ -8,7 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -19,7 +26,11 @@ import java.util.ArrayList;
 public class SavedStops extends Fragment {
 
     private static final String TAG="SavedStops_tag";
-    private ArrayList<StopHistory> stopsList;
+    //private ArrayList<StopHistory> stopsList;
+    private FirebaseAuth mAuth;
+    private ArrayList<StopHistory> savedStopList = new ArrayList<StopHistory>();
+    private View view;
+
     //private ArrayList<StopHistory> listStops;
     public SavedStops() {
 
@@ -27,19 +38,57 @@ public class SavedStops extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.saved_stops, container, false);
+        view = inflater.inflate(R.layout.saved_stops, container, false);
+        mAuth = FirebaseAuth.getInstance();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("stops").child("stop_id_" + mAuth.getUid());
+        ref.addListenerForSingleValueEvent(
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    Log.d(TAG, "onDataChange called.");
+                    for(DataSnapshot shot : snapshot.getChildren()) {
+                        StopHistoryWithKey data =null;
+                        try {
+                            data = shot.getValue(StopHistoryWithKey.class);
+                        }catch (DatabaseException e){
+                            Log.e(TAG, e.getMessage());
+                        }
+                        if (data!=null){
+                            Log.d(TAG,  "retrieved data (StopHistory):" +
+                                    "\n\tplaceId: " + data.getPlaceId()
+                                    +"\n\tstopName: "+ data.getStopName());
+                            data.setKey(shot.getKey());
+                            savedStopList.add(data);
+                        }
 
-        if (stopsList == null) {
-            stopsList = new ArrayList<>();
-        }
+                    }
+                    //update list and update UI render
+                    final ListView lv = (ListView) view.findViewById(R.id.savedStops);
+                    //lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), listStops));
+                    Log.d("SavedStops","calling adapter, size of savedStopList:"+savedStopList.size());
+                    lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), savedStopList));
 
+                    Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String placeId = ((StopHistory) lv.getAdapter().getItem(position)).getPlaceId();
+                            ((MainActivity) getActivity()).goToStop(placeId);
+                        }
+                    });
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //handle databaseError
+                }
+            });
 
-        stopsList.add(new StopHistory("ss","tt"));
 
         final ListView lv = (ListView) view.findViewById(R.id.savedStops);
-        //lv.setAdapter(new ListViewSavedAdapter(getActivity(), listStops));
-        lv.setAdapter(new ListViewSavedAdapter(getContext(), stopsList));
+        //lv.setAdapter(new ListViewSavedStopAdapter(getActivity(), listStops));
+        Log.d("SavedStops","calling adapter, size of savedStopList:"+savedStopList.size());
+        lv.setAdapter(new ListViewSavedStopAdapter(getContext(), savedStopList));
 
         Log.d(TAG, "log an item:"+lv.getAdapter().getItem(0));
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -47,8 +96,6 @@ public class SavedStops extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String placeId = ((StopHistory) lv.getAdapter().getItem(position)).getPlaceId();
                 ((MainActivity) getActivity()).goToStop(placeId);
-
-
             }
         });
 
