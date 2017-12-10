@@ -65,6 +65,10 @@ public class BusSegment extends PathSegment {
         return mBusHeadsign;
     }
 
+    public String getBusName() {
+        return mBusName;
+    }
+
     public int getNumStops() {
         return mNumStops;
     }

@@ -107,81 +107,87 @@ public class DirectionGenerator {
         }
         List<Path> paths = new ArrayList<>();
         JSONObject jsonObject = new JSONObject(data);
-        //json array that contains all routs
-        JSONArray jsonArray = jsonObject.getJSONArray("routes");
-        for (int i = 0; i < jsonArray.length(); ++i) {
-            //retrieve each route
-            JSONObject jsonRoute = jsonArray.getJSONObject(i);
-            JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
-            JSONObject jsonLeg = jsonLegs.getJSONObject(0);
-            JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
-            JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
-            //JSONObject jsonDepartureTime = jsonLeg.getJSONObject("departure_time");
-            //JSONObject jsonArrivalTime = jsonLeg.getJSONObject("arrival_time");
-            JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
-            JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
-            JSONArray jsonStepsArray = jsonLeg.getJSONArray("steps");
-            LatLng startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
-            LatLng endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
-            String duration = jsonDuration.getString("text");
-            String distance = jsonDistance.getString("text");
-            Path newPath = new Path(startLocation, endLocation, duration, distance);
-            //newPath.setArrivalTime(jsonArrivalTime.getString("text"));
-            //newPath.setDepartureTime(jsonDepartureTime.getString("text"));
-            Log.d(TAG, "number of steps " + jsonStepsArray.length());
-            for (int j = 0; j < jsonStepsArray.length(); ++j) {
-                //retrieve each step
-                JSONObject jsonStep = jsonStepsArray.getJSONObject(j);
-                JSONObject jsonStepDistance = jsonStep.getJSONObject("distance");
-                JSONObject jsonStepDuration = jsonStep.getJSONObject("duration");
-                JSONObject jsonStepStartLocation = jsonStep.getJSONObject("start_location");
-                JSONObject jsonStepEndLocation = jsonStep.getJSONObject("end_location");
-                JSONObject jsonStepPolyline = jsonStep.getJSONObject("polyline");
-                LatLng stepStartLocation = new LatLng(jsonStepStartLocation.getDouble("lat"),
-                        jsonStepStartLocation.getDouble("lng"));
-                LatLng stepEndLocation = new LatLng(jsonStepEndLocation.getDouble("lat"),
-                        jsonStepEndLocation.getDouble("lng"));
-                String stepDuration = jsonStepDuration.getString("text");
-                String stepDistance = jsonStepDistance.getString("text");
-                String stepPolyline = jsonStepPolyline.getString("points");
-                Log.d(TAG, stepPolyline);
-                SegmentFactory.TravelMode travelMode;
-                if (jsonStep.getString("travel_mode").equals("WALKING")) {
-                    travelMode = WALKING;
-                } else if(jsonStep.getString("travel_mode").equals("TRANSIT")){
-                    travelMode = BUS;
-                }
-                else{
-                    //TODO
-                    break;
-                }
-                PathSegment newSegment = segmentFactory.getSegment(travelMode, stepStartLocation,
-                        stepEndLocation, stepDuration, stepDistance);
-                newSegment.setEncodedPolyline(stepPolyline);
-                newSegment.setPolyLine(decodePolyline(stepPolyline));
-                Log.d(TAG, "num of points: " + newSegment.getPolyLine().size());
-                if (travelMode == BUS) {
-                    JSONObject jsonTransitDetails = jsonStep.getJSONObject("transit_details");
-                    JSONObject jsonArrivalStop = jsonTransitDetails.getJSONObject("arrival_stop");
-                    JSONObject jsonDepartureStop = jsonTransitDetails.getJSONObject("departure_stop");
-                    JSONObject jsonTransitDepartureTime = jsonTransitDetails.getJSONObject("departure_time");
-                    JSONObject jsonTransitArrivalTime = jsonTransitDetails.getJSONObject("arrival_time");
-                    JSONObject jsonTransitLine = jsonTransitDetails.getJSONObject("line");
-                    String headsign = jsonTransitDetails.getString("headsign");
-                    int numStops = jsonTransitDetails.getInt("num_stops");
-                    ((BusSegment) newSegment).setDepartureTime(jsonTransitDepartureTime.getString("text"));
-                    ((BusSegment) newSegment).setArrivalTime(jsonTransitArrivalTime.getString("text"));
-                    ((BusSegment) newSegment).setStartStop(jsonDepartureStop.getString("name"));
-                    ((BusSegment) newSegment).setEndStop(jsonArrivalStop.getString("name"));
-                    ((BusSegment) newSegment).setBusHeadsign(headsign);
-                    ((BusSegment) newSegment).setNumStops(numStops);
-                    ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("name"));
-                }
-                newPath.getPathSegments().add(newSegment);
-            }
-            paths.add(newPath);
-        }
+        try {
+            //json array that contains all routs
+            JSONArray jsonArray = jsonObject.getJSONArray("routes");
+            for (int i = 0; i < jsonArray.length(); ++i) {
+                //retrieve each route
+                JSONObject jsonRoute = jsonArray.getJSONObject(i);
+                JSONArray jsonLegs = jsonRoute.getJSONArray("legs");
+                JSONObject jsonLeg = jsonLegs.getJSONObject(0);
+                JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
+                JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
+                //JSONObject jsonDepartureTime = jsonLeg.getJSONObject("departure_time");
+                //JSONObject jsonArrivalTime = jsonLeg.getJSONObject("arrival_time");
+                JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
+                JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
+                JSONArray jsonStepsArray = jsonLeg.getJSONArray("steps");
+                LatLng startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
+                LatLng endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
+                String duration = jsonDuration.getString("text");
+                String distance = jsonDistance.getString("text");
+                Path newPath = new Path(startLocation, endLocation, duration, distance);
+                //newPath.setArrivalTime(jsonArrivalTime.getString("text"));
+                //newPath.setDepartureTime(jsonDepartureTime.getString("text"));
+                Log.d(TAG, "number of steps " + jsonStepsArray.length());
 
+                for (int j = 0; j < jsonStepsArray.length(); ++j) {
+                    //retrieve each step
+                    JSONObject jsonStep = jsonStepsArray.getJSONObject(j);
+                    JSONObject jsonStepDistance = jsonStep.getJSONObject("distance");
+                    JSONObject jsonStepDuration = jsonStep.getJSONObject("duration");
+                    JSONObject jsonStepStartLocation = jsonStep.getJSONObject("start_location");
+                    JSONObject jsonStepEndLocation = jsonStep.getJSONObject("end_location");
+                    JSONObject jsonStepPolyline = jsonStep.getJSONObject("polyline");
+                    LatLng stepStartLocation = new LatLng(jsonStepStartLocation.getDouble("lat"),
+                            jsonStepStartLocation.getDouble("lng"));
+                    LatLng stepEndLocation = new LatLng(jsonStepEndLocation.getDouble("lat"),
+                            jsonStepEndLocation.getDouble("lng"));
+                    String stepDuration = jsonStepDuration.getString("text");
+                    String stepDistance = jsonStepDistance.getString("text");
+                    String stepPolyline = jsonStepPolyline.getString("points");
+                    Log.d(TAG, stepPolyline);
+                    SegmentFactory.TravelMode travelMode;
+                    if (jsonStep.getString("travel_mode").equals("WALKING")) {
+                        travelMode = WALKING;
+                    } else if (jsonStep.getString("travel_mode").equals("TRANSIT")) {
+                        travelMode = BUS;
+                    } else {
+                        //TODO
+                        break;
+                    }
+                    PathSegment newSegment = segmentFactory.getSegment(travelMode, stepStartLocation,
+                            stepEndLocation, stepDuration, stepDistance);
+                    newSegment.setEncodedPolyline(stepPolyline);
+                    newSegment.setPolyLine(decodePolyline(stepPolyline));
+                    Log.d(TAG, "num of points: " + newSegment.getPolyLine().size());
+                    if (travelMode == BUS) {
+                        JSONObject jsonTransitDetails = jsonStep.getJSONObject("transit_details");
+                        JSONObject jsonArrivalStop = jsonTransitDetails.getJSONObject("arrival_stop");
+                        JSONObject jsonDepartureStop = jsonTransitDetails.getJSONObject("departure_stop");
+                        JSONObject jsonTransitDepartureTime = jsonTransitDetails.getJSONObject("departure_time");
+                        JSONObject jsonTransitArrivalTime = jsonTransitDetails.getJSONObject("arrival_time");
+                        JSONObject jsonTransitLine = jsonTransitDetails.getJSONObject("line");
+                        String headsign = jsonTransitDetails.getString("headsign");
+                        int numStops = jsonTransitDetails.getInt("num_stops");
+                        ((BusSegment) newSegment).setDepartureTime(jsonTransitDepartureTime.getString("text"));
+                        ((BusSegment) newSegment).setArrivalTime(jsonTransitArrivalTime.getString("text"));
+                        ((BusSegment) newSegment).setStartStop(jsonDepartureStop.getString("name"));
+                        ((BusSegment) newSegment).setEndStop(jsonArrivalStop.getString("name"));
+                        ((BusSegment) newSegment).setBusHeadsign(headsign);
+                        ((BusSegment) newSegment).setNumStops(numStops);
+                        ((BusSegment) newSegment).setBusName(jsonTransitLine.getString("name"));
+                    }
+                    newPath.getPathSegments().add(newSegment);
+                }
+                paths.add(newPath);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Json parsing failed.");
+            Log.e(TAG, e.getMessage());
+            listener.onGenerateFailure();
+        }
+        Log.i(TAG, "Paths size:" + paths.size());
         listener.onGenerateSuccess(paths);
     }
 
