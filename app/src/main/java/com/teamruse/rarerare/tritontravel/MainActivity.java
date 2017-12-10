@@ -183,9 +183,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     //This used to be SendRequest()
     @Override
     public void onNavRequest(String origin, String dest) {
-        new DirectionGenerator(this, origin, dest).generate();
         LatLng startLocation = mMapFragment.mOriginMarker.getPosition();
         LatLng endLocation = mMapFragment.mDestMarker.getPosition();
+        new DirectionGenerator(this, startLocation, endLocation).generate();
         shuttleGraph = new ShuttleGraph();
         shuttleGraph.loadFromFile(getApplicationContext());
         shuttleRoutes = shuttleGraph.generateShuttleRoutes(startLocation, endLocation);
