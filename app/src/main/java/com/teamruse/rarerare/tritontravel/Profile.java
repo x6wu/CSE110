@@ -81,10 +81,10 @@ public class Profile extends Fragment {
 
     private void updateUI(FirebaseUser user) {
         /*if (user != null) {
-            //myView.findViewById(R.id.login).setVisibility(View.GONE);
+            //myView.findViewById(R.id.Login).setVisibility(View.GONE);
             myView.findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
         } else {
-            //myView.findViewById(R.id.login).setVisibility(View.VISIBLE);
+            //myView.findViewById(R.id.Login).setVisibility(View.VISIBLE);
             myView.findViewById(R.id.sign_out).setVisibility(View.GONE);
         }*/
        // ((MainActivity)getActivity()).updateSignInUI();
@@ -174,8 +174,8 @@ public class Profile extends Fragment {
             if (v.getId() == R.id.back) {
                 ((MainActivity)getActivity()).switchFrag(R.id.back);
             }
-            /*else if (v.getId() == R.id.login) {
-                Log.d("loginFrag", "login()");
+            /*else if (v.getId() == R.id.Login) {
+                Log.d("loginFrag", "Login()");
                 signIn();
             }*/
             else if(v.getId() == R.id.sign_out){

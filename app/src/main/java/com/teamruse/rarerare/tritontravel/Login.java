@@ -40,7 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 //import java.util.concurrent.Executor;
 
 
-public class login extends Fragment {
+public class Login extends Fragment {
     View myView;
     SignInButton googleButton;
    GoogleSignInClient mGoogleSignInClient;
@@ -95,10 +95,10 @@ public class login extends Fragment {
 
     private void updateUI(FirebaseUser user) {
         /*if (user != null) {
-            myView.findViewById(R.id.login).setVisibility(View.GONE);
+            myView.findViewById(R.id.Login).setVisibility(View.GONE);
             //myView.findViewById(R.id.sign_out).setVisibility(View.VISIBLE);
         } else {
-            myView.findViewById(R.id.login).setVisibility(View.VISIBLE);
+            myView.findViewById(R.id.Login).setVisibility(View.VISIBLE);
             //myView.findViewById(R.id.sign_out).setVisibility(View.GONE);
         }*/
         ((MainActivity)getActivity()).updateSignInUI();
@@ -189,7 +189,7 @@ public class login extends Fragment {
                     ((MainActivity)getActivity()).switchFrag(R.id.back);
                 }
                 else if (v.getId() == R.id.login) {
-                    Log.d("loginFrag", "login()");
+                    Log.d("loginFrag", "Login()");
                     signIn();
                 }
                 /*else if(v.getId() == R.id.sign_out){
@@ -201,7 +201,7 @@ public class login extends Fragment {
     };
     public void onResume(){
         super.onResume();
-        Log.d(TAG, "resume login frag");
+        Log.d(TAG, "resume Login frag");
     }
     @Override
     public void onDestroy() {

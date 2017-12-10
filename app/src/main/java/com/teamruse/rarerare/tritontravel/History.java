@@ -89,12 +89,12 @@ public class History extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back:
-                    //startActivity(new Intent(login.this, signup.class));
+                    //startActivity(new Intent(Login.this, signup.class));
                     ((MainActivity)getActivity()).switchFrag(R.id.back);
                     break;
 
                 case R.id.clear:
-                    //startActivity(new Intent(login.this, signup.class));
+                    //startActivity(new Intent(Login.this, signup.class));
                     clearHist();
                     break;
 
