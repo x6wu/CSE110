@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import org.json.JSONArray;
@@ -29,23 +30,23 @@ import static com.teamruse.rarerare.tritontravel.SegmentFactory.TravelMode.WALKI
 //based on the tutorial from
 //https://github.com/hiepxuan2008/GoogleMapDirectionSimple/blob/master/app/src/main/java/Modules/DirectionFinder.java
 public class DirectionGenerator {
-    private String origin;
-    private String dest;
+    private LatLng mOrigin;
+    private LatLng mDest;
     private DirectionGeneratorListener listener;
     private static final String ApiUrl = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String ApiKey = "AIzaSyDL3mGK2R6RvVHzHqhz7f2623iv6gGfU9w";
 
     private static final String TAG = "Direction_Generator";
 
-    public DirectionGenerator(DirectionGeneratorListener listener, String origin, String dest) {
+    public DirectionGenerator(DirectionGeneratorListener listener, LatLng origin, LatLng dest) {
         this.listener = listener;
-        this.origin = origin;
-        this.dest = dest;
+        this.mOrigin = origin;
+        this.mDest = dest;
     }
 
     public String buildUrl() {
-        String originUrl = origin.replaceAll(" ", "+");
-        String destUrl = dest.replaceAll(" ", "+");
+        String originUrl = mOrigin.toString().replaceAll(" ", "+");
+        String destUrl = mDest.toString().replaceAll(" ", "+");
         String URL = ApiUrl + "origin=" + originUrl + "&destination="
                 + destUrl + "&mode=transit&key=" + ApiKey;
         //String URL = ApiUrl + "origin=place_id:"+origin+"&destination=place_id"
