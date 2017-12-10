@@ -54,6 +54,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:11.6.0'
     compile 'com.android.support:multidex:1.0.2'
     compile 'com.github.whalemare:sheetmenu:1.0'
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     testCompile 'junit:junit:4.12'
     apply plugin: 'com.google.gms.google-services'
     compile 'com.android.support:design:26.1.0'

@@ -1,0 +1,127 @@
+(A) City Shuttle (Arriba/Nobel):Gilman & Myers (Eastbound/Med School side):448
+(A) City Shuttle (Arriba/Nobel):Regents & Nobel:415
+(A) City Shuttle (Arriba/Nobel):Arriba & Regents:416
+(A) City Shuttle (Arriba/Nobel):Lebon & Palmilla:417
+(A) City Shuttle (Arriba/Nobel):Nobel & Lebon:418
+(C) Coaster:Thornton Hospital:772
+(C) Coaster:Rupertus Lane Airport Shuttle stop:673
+(C) Coaster:SVCC:770
+(EC) East Campus Connector:Moore's Cancer Center Outbound:636
+(EC) East Campus Connector:P785 OUTBOUND:637
+(EC) East Campus Connector:P782 Outbound:644
+(EC) East Campus Connector:Towne Centre Dr.:638
+(EC) East Campus Connector:Chancellor's Park:639
+(EC) East Campus Connector:P782 Inbound:645
+(EC) East Campus Connector:P785 INBOUND:640
+(EC) East Campus Connector:Athena Parking:641
+(EC) East Campus Connector:ECOB Relocation:646
+(EC) East Campus Connector:Thornton Hospital:774
+(H) Hillcrest/Campus A.M./P704:Thornton Hospital:775
+(H) Hillcrest/Campus A.M./P704:Athena Parking:733
+(H) Hillcrest/Campus A.M./P704:P 704 Regents Parking:732
+(H) Hillcrest/Campus A.M./P704:Gilman & Mandeville Lane (Center Hall side):449
+(H) Hillcrest/Campus A.M./P704:Old Town Transit Ctr (to Hillcrest):367
+(H) Hillcrest/Campus A.M./P704:Hillcrest:368
+(H) Hillcrest/Campus A.M./P704:Gilman & Myers (Eastbound/Med School side):437
+(H) Hillcrest/Campus P.M/P704:Thornton Hospital:776
+(H) Hillcrest/Campus P.M/P704:Athena Parking:734
+(H) Hillcrest/Campus P.M/P704:P 704 Regents Parking:735
+(H) Hillcrest/Campus P.M/P704:Gilman & Mandeville Lane (Center Hall side):450
+(H) Hillcrest/Campus P.M/P704:Hillcrest:372
+(H) Hillcrest/Campus P.M/P704:Old Town Transit Ctr (to Campus):373
+(H) Hillcrest/Campus P.M/P704:Gilman & Myers (Eastbound/Med School side):439
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Torrey Pines Center:294
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:North Point (Clockwise):295
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Hopkins Structure (Clockwise):411
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Warren Apartments (Clockwise):297
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Lot P510/Canyonview (Eastbound):298
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Gilman & Myers (Westbound/Price Center side):440
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Gilman & Mandeville Lane (Center Hall side):301
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Gilman & Osler (Clockwise):302
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Che Cafe (Clockwise):303
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Revelle Parking (Clockwise):304
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Pacific Hall (Northbound):305
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Muir Apartments (Clockwise):306
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Peterson Hall (Clockwise):307
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Pangea Parking Structure (Clockwise):308
+(L) Clockwise Campus Loop - Peterson Hall to Torrey Pines Center:Eleanor Roosevelt College (Clockwise):309
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Torrey Pines Center:278
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Eleanor Roosevelt College (Counterclockwise):384
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Pangea Parking Structure (Counterclockwise):280
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Peterson Hall (Counterclockwise):281
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Muir Apartments (Counterclockwise):385
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Pacific Hall (Counterclockwise):283
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Revelle Parking (Eastbound):284
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Che Cafe (Counterclockwise):386
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Gilman & Osler (Med School side):286
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Gilman & Mandeville Ln. (SOM side):410
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Gilman & Myers (Eastbound/Med School side):441
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Lot P510/Canyonview (Westbound):290
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Warren Apartments (Counterclockwise):291
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:Hopkins Structure (Counterclockwise):292
+(L) Counter Campus Loop - Torrey Pines Center to Peterson Hall:North Point (Counterclockwise):293
+(L) Evening / Weekend Clockwise Campus Loop:North Point (Clockwise):295
+(L) Evening / Weekend Clockwise Campus Loop:Hopkins Structure (Clockwise):411
+(L) Evening / Weekend Clockwise Campus Loop:Warren Apartments (Clockwise):297
+(L) Evening / Weekend Clockwise Campus Loop:Lot P510/Canyonview (Eastbound):298
+(L) Evening / Weekend Clockwise Campus Loop:Gilman & Myers (Westbound/Price Center side):440
+(L) Evening / Weekend Clockwise Campus Loop:Gilman & Mandeville Lane (Center Hall side):301
+(L) Evening / Weekend Clockwise Campus Loop:Gilman & Osler (Clockwise):302
+(L) Evening / Weekend Clockwise Campus Loop:Che Cafe (Clockwise):303
+(L) Evening / Weekend Clockwise Campus Loop:Revelle Parking (Clockwise):304
+(L) Evening / Weekend Clockwise Campus Loop:Pacific Hall (Northbound):305
+(L) Evening / Weekend Clockwise Campus Loop:Muir Apartments (Clockwise):306
+(L) Evening / Weekend Clockwise Campus Loop:Peterson Hall (Clockwise):307
+(L) Evening / Weekend Clockwise Campus Loop:Pangea Parking Structure (Clockwise):308
+(L) Evening / Weekend Clockwise Campus Loop:Eleanor Roosevelt College (Clockwise):309
+(L) Evening / Weekend Counter Clockwise Campus Loop:Eleanor Roosevelt College (Counterclockwise):384
+(L) Evening / Weekend Counter Clockwise Campus Loop:Pangea Parking Structure (Counterclockwise):280
+(L) Evening / Weekend Counter Clockwise Campus Loop:Peterson Hall (Counterclockwise):281
+(L) Evening / Weekend Counter Clockwise Campus Loop:Muir Apartments (Counterclockwise):385
+(L) Evening / Weekend Counter Clockwise Campus Loop:Pacific Hall (Counterclockwise):283
+(L) Evening / Weekend Counter Clockwise Campus Loop:Revelle Parking (Eastbound):284
+(L) Evening / Weekend Counter Clockwise Campus Loop:Che Cafe (Counterclockwise):386
+(L) Evening / Weekend Counter Clockwise Campus Loop:Gilman & Osler (Med School side):286
+(L) Evening / Weekend Counter Clockwise Campus Loop:Gilman & Mandeville Ln. (SOM side):410
+(L) Evening / Weekend Counter Clockwise Campus Loop:Gilman & Myers (Eastbound/Med School side):441
+(L) Evening / Weekend Counter Clockwise Campus Loop:Lot P510/Canyonview (Westbound):290
+(L) Evening / Weekend Counter Clockwise Campus Loop:Warren Apartments (Counterclockwise):291
+(L) Evening / Weekend Counter Clockwise Campus Loop:Hopkins Structure (Counterclockwise):292
+(L) Evening / Weekend Counter Clockwise Campus Loop:North Point (Counterclockwise):293
+(N) North Mesa:Rupertus:682
+(N) North Mesa:Lot P703 - Regents Parking:669
+(N) North Mesa:Mesa Nueva:695
+(P) Regents:Lot P703 - Regents Parking:553
+(P) Regents:Rupertus:557
+(P) Regents:Moore's Cancer Center Outbound:556
+(S) SIO Loop:Mandeville Auditorium:419
+(S) SIO Loop:Gilman & Osler (Clockwise):420
+(S) SIO Loop:Revelle Parking (Clockwise):421
+(S) SIO Loop:La Jolla Shores @ Inyaha Ln.:422
+(S) SIO Loop:Coast Apts. - MTS:745
+(S) SIO Loop:Southwest Fisheries - MTS:424
+(S) SIO Loop:IGPP - MTS:425
+(S) SIO Loop:Vaughan Hall - MTS:426
+(S) SIO Loop:SIO Forum - P003:427
+(S) SIO Loop:Vaughan Hall - MTS Inbound:428
+(S) SIO Loop:IGPP - MTS Inbound:429
+(S) SIO Loop:Nierenberg Hall - Inbound:430
+(S) SIO Loop:Birch - Inbound:431
+(S) SIO Loop:Coast Apts. - Inbound:432
+(S) SIO Loop:Expedition Way - Inbound:433
+(S) SIO Loop:Revelle Parking (Eastbound):434
+(S) SIO Loop:Gilman & Osler (Med School side):435
+(SC) South Campus Efective 11/1/17:South Mesa:742
+(SC) South Campus Efective 11/1/17:Gilman & Mandeville:711
+(SC) South Campus Efective 11/1/17:Gilman & Osler (York Hall side):712
+(SC) South Campus Efective 11/1/17:Revelle Outbound:686
+(SC) South Campus Efective 11/1/17:Pacific Hall (Counterclockwise):740
+(SC) South Campus Efective 11/1/17:Coast Apts. - MTS:745
+(SC) South Campus Efective 11/1/17:Nierenberg Hall-Inbound:713
+(SC) South Campus Efective 11/1/17:Coast apts.:777
+(SC) South Campus Efective 11/1/17:Pacific Hall:741
+(SC) South Campus Efective 11/1/17:Revelle-Inbound:690
+(SC) South Campus Efective 11/1/17:Gilman/Scholars:714
+(SC) South Campus Efective 11/1/17:Gilman & Mandeville Lane (Med School side):715
+(SC) South Campus Efective 11/1/17:Lot P703 - Regents Parking:694
+(SC) South Campus Efective 11/1/17:Central Mesa:743

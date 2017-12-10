@@ -1,0 +1,98 @@
+278:Torrey Pines Center:32.889935,-117.243181
+280:Pangea Parking Structure (Counterclockwise):32.884308,-117.242317
+281:Peterson Hall (Counterclockwise):32.8804,-117.240751
+283:Pacific Hall (Counterclockwise):32.875156,-117.243285
+284:Revelle Parking (Eastbound):32.872309,-117.24144
+286:Gilman & Osler (Med School side):32.874352,-117.238254
+290:Lot P510/Canyonview (Westbound):32.880686,-117.230687
+291:Warren Apartments (Counterclockwise):32.882069,-117.23324
+292:Hopkins Structure (Counterclockwise):32.884428,-117.238548
+293:North Point (Counterclockwise):32.888844,-117.240347
+294:Torrey Pines Center:32.889935,-117.243181
+295:North Point (Clockwise):32.888766,-117.240336
+297:Warren Apartments (Clockwise):32.881689,-117.233019
+298:Lot P510/Canyonview (Eastbound):32.880884,-117.230061
+301:Gilman & Mandeville Lane (Center Hall side):32.877079,-117.238133
+302:Gilman & Osler (Clockwise):32.874271,-117.238369
+303:Che Cafe (Clockwise):32.873049,-117.239416
+304:Revelle Parking (Clockwise):32.872622,-117.241432
+305:Pacific Hall (Northbound):32.875908,-117.243036
+306:Muir Apartments (Clockwise):32.877812,-117.243598
+307:Peterson Hall (Clockwise):32.880245,-117.240622
+308:Pangea Parking Structure (Clockwise):32.884299,-117.242328
+309:Eleanor Roosevelt College (Clockwise):32.886532,-117.242382
+367:Old Town Transit Ctr (to Hillcrest):32.755092,-117.199081
+368:Hillcrest:32.754466,-117.167088
+372:Hillcrest:32.754466,-117.167088
+373:Old Town Transit Ctr (to Campus):32.755143,-117.199116
+384:Eleanor Roosevelt College (Counterclockwise):32.886521,-117.242427
+385:Muir Apartments (Counterclockwise):32.87788,-117.243664
+386:Che Cafe (Counterclockwise):32.873066,-117.239286
+410:Gilman & Mandeville Ln. (SOM side):32.876926,-117.237993
+411:Hopkins Structure (Clockwise):32.883772,-117.238621
+415:Regents & Nobel:32.867229,-117.219363
+416:Arriba & Regents:32.86145,-117.223397
+417:Lebon & Palmilla:32.865101,-117.225048
+418:Nobel & Lebon:32.868526,-117.225291
+419:Mandeville Auditorium:32.878244,-117.23929
+420:Gilman & Osler (Clockwise):32.874271,-117.238369
+421:Revelle Parking (Clockwise):32.872622,-117.241432
+422:La Jolla Shores @ Inyaha Ln.:32.873983,-117.245042
+424:Southwest Fisheries - MTS:32.86959,-117.251673
+425:IGPP - MTS :32.867639,-117.25208
+426:Vaughan Hall - MTS :32.865278,-117.252274
+427:SIO Forum - P003:32.864102,-117.253797
+428:Vaughan Hall - MTS Inbound:32.86571,-117.252123
+429:IGPP - MTS Inbound:32.86872,-117.251726
+430:Nierenberg Hall - Inbound:32.86922,-117.251024
+431:Birch - Inbound:32.866256,-117.250316
+432:Coast Apts. - Inbound:32.869009,-117.246818
+433:Expedition Way - Inbound:32.870946,-117.243674
+434:Revelle Parking (Eastbound):32.872309,-117.24144
+435:Gilman & Osler (Med School side):32.874352,-117.238254
+437:Gilman & Myers (Eastbound/Med School side):32.876963,-117.234987
+439:Gilman & Myers (Eastbound/Med School side):32.876963,-117.234987
+440:Gilman & Myers (Westbound/Price Center side):32.877127,-117.23581
+441:Gilman & Myers (Eastbound/Med School side):32.876963,-117.234987
+448:Gilman & Myers (Eastbound/Med School side):32.876963,-117.234987
+449:Gilman & Mandeville Lane (Center Hall side):32.877079,-117.238133
+450:Gilman & Mandeville Lane (Center Hall side):32.877079,-117.238133
+553:Lot P703 - Regents Parking:32.879817,-117.21993
+556:Moore's Cancer Center Outbound:32.879068,-117.222206
+557:Repertus:32.87847,-117.235065
+636:Moore's Cancer Center Outbound:32.879068,-117.222206
+637:P785 OUTBOUND:32.878612,-117.219969
+638:Towne Centre Dr.:32.882074,-117.209734
+639:Chancellor's Park:32.875789,-117.209991
+640:P785 INBOUND:32.878638,-117.219969
+641:Athena Parking:32.879034,-117.222201
+644:P782 Outbound:32.876854,-117.218932
+645:P782 Inbound:32.876873,-117.218933
+646:ECOB Relocation:32.876762,-117.227882
+669:Lot P703 - Regents Parking:32.879817,-117.21993
+673:Rupertus Lane Airport Shuttle stop:32.878403,-117.235488
+682:Repertus:32.87847,-117.235065
+686:Revelle Outbound:32.872622,-117.241513
+690:Revelle-Inbound:32.87255,-117.24144
+694:Lot P703 - Regents Parking:32.87981,-117.21993
+695:Mesa Nueva:32.875703,-117.223654
+711:Gilman & Mandeville:32.877099,-117.238095
+712:Gilman & Osler (York Hall side):32.87446,-117.238562
+713:Nierenberg Hall-Inbound:32.86931,-117.251158
+714:Gilman/Scholars:32.874674,-117.238446
+715:Gilman & Mandeville Lane (Med School side):32.876897,-117.238013
+732:P 704 Regents Parking:32.879317,-117.219868
+733:Athena Parking:32.879034,-117.222201
+734:Athena Parking:32.879034,-117.222201
+735:P 704 Regents Parking:32.879317,-117.219868
+740:Pacific Hall (Counterclockwise):32.875156,-117.243285
+741:Pacific Hall:32.875197,-117.243355
+742:South Mesa:32.871942,-117.223035
+743:Central Mesa:32.872639,-117.221296
+745:Coast Apts. - MTS:32.869492,-117.248512
+770:SVCC:32.902108,-117.225209
+772:Thornton Hospital:32.879735,-117.22388
+774:Thornton Hospital:32.879735,-117.22388
+775:Thornton Hospital:32.87954888,-117.2237563
+776:Thornton Hospital:32.87954888,-117.2237563
+777:Coast apts.:32.86940292,-117.248508

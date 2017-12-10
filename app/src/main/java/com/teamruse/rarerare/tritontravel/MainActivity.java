@@ -1,5 +1,7 @@
 package com.teamruse.rarerare.tritontravel;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -25,6 +27,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     private GoogleSignInClient mGoogleSignInClient;
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
+    private ShuttleGraph shuttleGraph;
+    private ArrayList<Path> shuttleRoutes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                 .commit();*/
         manager.beginTransaction().add(R.id.fragment_container, mMapFragment, "map").commit();
         currFragTag="map";
+
 
 
     }
@@ -190,7 +196,11 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     @Override
     public void onNavRequest(String origin, String dest) {
         new DirectionGenerator(this, origin, dest).generate();
-
+        LatLng startLocation = mMapFragment.originMarker.getPosition();
+        LatLng endLocation = mMapFragment.destMarker.getPosition();
+        shuttleGraph = new ShuttleGraph();
+        shuttleGraph.loadFromFile(getApplicationContext());
+        shuttleRoutes = shuttleGraph.generateShuttleRoutes(startLocation, endLocation);
         Log.i(TAG, "sendRequest() called");
         Log.i(TAG, "mOrigin:" + origin + " mDest:" + dest);
     }
@@ -202,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
 
     @Override
     public void onGenerateSuccess(List<Path> paths) {
+        paths.addAll(shuttleRoutes);
         mMapFragment.btnNavigation.setEnabled(true);
 
         if (paths.isEmpty()){

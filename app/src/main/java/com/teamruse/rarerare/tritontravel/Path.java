@@ -26,7 +26,7 @@ public class Path {
         mEndLocation = endLocation;
         mDuration = duration;
         mDistance = distance;
-        mPathSegments = new ArrayList<PathSegment>();
+        mPathSegments = new ArrayList<>();
     }
 
     public void setStartLocation(LatLng startLocation) {

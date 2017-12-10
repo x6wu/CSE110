@@ -19,6 +19,7 @@ public abstract class PathSegment {
 
     public PathSegment(LatLng startLocation, LatLng endLocation, String duration, String distance,
                        SegmentFactory.TravelMode travelMode){
+        mPolyLine = new ArrayList<>();
         mStartLocation = startLocation;
         mEndLocation = endLocation;
         mDistance = distance;

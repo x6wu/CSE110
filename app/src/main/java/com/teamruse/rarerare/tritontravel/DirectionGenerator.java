@@ -70,7 +70,7 @@ public class DirectionGenerator {
 
                 String inputLine;
                 StringBuilder builder = new StringBuilder();
-                builder.ensureCapacity(1048576);
+                //builder.ensureCapacity(1048576);
                 while ((inputLine = in.readLine()) != null) {
                     builder.append(inputLine + "\n");
                 }
@@ -148,8 +148,12 @@ public class DirectionGenerator {
                 SegmentFactory.TravelMode travelMode;
                 if (jsonStep.getString("travel_mode").equals("WALKING")) {
                     travelMode = WALKING;
-                } else {
+                } else if(jsonStep.getString("travel_mode").equals("TRANSIT")){
                     travelMode = BUS;
+                }
+                else{
+                    //TODO
+                    break;
                 }
                 PathSegment newSegment = segmentFactory.getSegment(travelMode, stepStartLocation,
                         stepEndLocation, stepDuration, stepDistance);
