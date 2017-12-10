@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Created by Shuyuan Ma on 2017/12/8.
  */
 
-public class pathResult implements Parcelable {
+public class PathResult implements Parcelable {
     /*
      * Shuyuan Ma @Dec 8th
      * Implement Parcelable for bottom sheet.
@@ -23,7 +23,7 @@ public class pathResult implements Parcelable {
     public String mDuration;
     public ArrayList<String> segments;
 
-    public pathResult(Path path) {
+    public PathResult(Path path) {
         //mStartLocation = path.getStartLocation();
         //mEndLocation = path.getEndLocation();
         mDuration = path.getDuration();
@@ -47,22 +47,22 @@ public class pathResult implements Parcelable {
         }
     }
 
-    protected pathResult(Parcel in) {
+    protected PathResult(Parcel in) {
         //mStartLocation = in.readParcelable(LatLng.class.getClassLoader());
         //mEndLocation = in.readParcelable(LatLng.class.getClassLoader());
         mDuration = in.readString();
         segments = in.createStringArrayList();
     }
 
-    public static final Creator<pathResult> CREATOR = new Creator<pathResult>() {
+    public static final Creator<PathResult> CREATOR = new Creator<PathResult>() {
         @Override
-        public pathResult createFromParcel(Parcel in) {
-            return new pathResult(in);
+        public PathResult createFromParcel(Parcel in) {
+            return new PathResult(in);
         }
 
         @Override
-        public pathResult[] newArray(int size) {
-            return new pathResult[size];
+        public PathResult[] newArray(int size) {
+            return new PathResult[size];
         }
     };
 
