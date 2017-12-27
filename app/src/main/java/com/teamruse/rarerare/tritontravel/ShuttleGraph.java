@@ -16,6 +16,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -135,36 +137,30 @@ public class ShuttleGraph {
         ArrayList<Node> sourceNodes = new ArrayList<>();
         ArrayList<Node> destinationNodes = new ArrayList<>();
         for(LatLng curr:nodes.keySet()){
-            Log.d("curr", curr.toString());
-            Log.d("start", startLocation.toString());
-            Log.d("node size", ""+MapUtils.distance(curr, startLocation));
             if(MapUtils.distance(curr, startLocation) <= 0.5){
                 sourceNodes.add(nodes.get(curr));
-                Log.d("node size", "test");
             }
             if(MapUtils.distance(curr, endLocation) <= 0.5){
                 destinationNodes.add(nodes.get(curr));
-                Log.d("node size", "test");
             }
         }
-        Log.d("node size", sourceNodes.size()+"");
-        Log.d("node size", destinationNodes.size()+"");
         for(int i = 0; i < sourceNodes.size(); ++i){
             DFS(sourceNodes.get(i));
             for(int j = 0; j < destinationNodes.size(); ++j){
                 if(destinationNodes.get(j).visited) {
-                    Path newPath = new Path(startLocation, endLocation, "", "");
+                    Path newPath = new Path(startLocation, endLocation, "", String.format("%.2f",
+                            MapUtils.distance(startLocation, endLocation)) + " mi");
                     ArrayList<PathSegment> segments = newPath.getPathSegments();
                     if(outputPath(sourceNodes.get(i), destinationNodes.get(j)) != null) {
-                        if(outputPath(sourceNodes.get(i), destinationNodes.get(j)).size() == 0){
-                            Log.d("size 0", sourceNodes.get(i).getName());
-                            Log.d("size 0", destinationNodes.get(j).getName());
-                        }
                         segments.addAll(outputPath(sourceNodes.get(i), destinationNodes.get(j)));
                         WalkingSegment walkingSegment1 = new WalkingSegment(startLocation, segments.get(0).getStartLocation(),
-                                "", "", SegmentFactory.TravelMode.WALKING);
+                                "", String.format("%.2f",
+                                MapUtils.distance(startLocation, segments.get(0).getStartLocation())) + " mi",
+                                SegmentFactory.TravelMode.WALKING);
                         WalkingSegment walkingSegment2 = new WalkingSegment(segments.get(segments.size() - 1).getEndLocation(),
-                                endLocation, "", "", SegmentFactory.TravelMode.WALKING);
+                                endLocation, "", String.format("%.2f",
+                                MapUtils.distance(segments.get(segments.size() - 1).getEndLocation(), endLocation)) + " mi",
+                                SegmentFactory.TravelMode.WALKING);
                         segments.add(0, walkingSegment1);
                         segments.add(walkingSegment2);
                         newPath.setPathSegments(segments);
@@ -173,6 +169,12 @@ public class ShuttleGraph {
                 }
             }
         }
+        Log.d("shuttle routes", paths.size()+"");
+        Collections.sort(paths, new Comparator<Path>(){
+            public int compare(Path path1, Path path2){
+                return Integer.compare(path1.getPathSegments().size(), path2.getPathSegments().size());
+            }
+        });
         return paths;
     }
 
@@ -203,7 +205,6 @@ public class ShuttleGraph {
             return null;
         }
         else{
-            //TODO
             Deque<Pair<String, Node>> connections = new ArrayDeque<>();
             ArrayList<ShuttleSegment> shuttleSegments = new ArrayList<>();
             Node curr = to;
@@ -211,7 +212,6 @@ public class ShuttleGraph {
                 connections.push(curr.prev);
                 curr = curr.prev.getSecond();
             }
-            Log.d("size zero", connections.size()+"");
             while(!connections.isEmpty()){
                 Pair<String, Node> top = connections.peek();
                 LatLng startLocation = top.getSecond().getLatLng();
@@ -255,7 +255,9 @@ public class ShuttleGraph {
             else{
                 ShuttleSegment compressedSegment = new ShuttleSegment
                         (shuttleSegments.get(startIndex).getStartLocation(), shuttleSegments.get(endIndex-1).getEndLocation(),
-                                "", "", SegmentFactory.TravelMode.SHUTTLE);
+                                "", String.format("%.2f", MapUtils.distance(shuttleSegments.get(startIndex).getStartLocation(),
+                                shuttleSegments.get(endIndex-1).getEndLocation())) + " mi",
+                                SegmentFactory.TravelMode.SHUTTLE);
                 compressedSegment.setStartStop(shuttleSegments.get(startIndex).getStartStop());
                 compressedSegment.setEndStop(shuttleSegments.get(endIndex-1).getEndStop());
                 compressedSegment.setShuttleHeadsign(shuttleSegments.get(startIndex).getShuttleHeadsign());
@@ -267,7 +269,9 @@ public class ShuttleGraph {
             }
             if(endIndex >= shuttleSegments.size()){
                 ShuttleSegment compressedSegment = new ShuttleSegment(shuttleSegments.get(startIndex).getStartLocation(),
-                        shuttleSegments.get(shuttleSegments.size()-1).getEndLocation(), "", "",
+                        shuttleSegments.get(shuttleSegments.size()-1).getEndLocation(), "",
+                        String.format("%.2f", MapUtils.distance(shuttleSegments.get(startIndex).getStartLocation(),
+                                shuttleSegments.get(shuttleSegments.size()-1).getEndLocation())) + " mi",
                         SegmentFactory.TravelMode.SHUTTLE);
                 compressedSegment.setStartStop(shuttleSegments.get(startIndex).getStartStop());
                 compressedSegment.setEndStop(shuttleSegments.get(shuttleSegments.size()-1).getEndStop());
@@ -276,7 +280,6 @@ public class ShuttleGraph {
                 compressedShuttleSegments.add(compressedSegment);
             }
         }
-        Log.d("compressed", ""+compressedShuttleSegments.size());
         return compressedShuttleSegments;
     }
     public void clear(){

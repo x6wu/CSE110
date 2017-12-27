@@ -93,4 +93,9 @@ public class Path {
         return mPathSegments;
     }
 
+    public int compareTo(Path other){
+        return this.getPathSegments().size()-other.getPathSegments().size();
+    }
+
+
 }

@@ -884,7 +884,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     for (int i = 0; i < recPathSegments.size(); ++i) {
                         PathSegment currSegment = recPathSegments.get(i);
                         Log.d("travel mode", currSegment.getTravelMode().toString());
-                        Log.d("polyline", currSegment.getEncodedPolyLine());
+                        //Log.d("polyline", currSegment.getEncodedPolyLine());
                         PolylineOptions polylineOptions = new PolylineOptions()
                                 .addAll(currSegment.getPolyLine())
                                 .color(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.blue));
