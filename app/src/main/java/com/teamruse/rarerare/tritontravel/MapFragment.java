@@ -824,55 +824,57 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         LinearLayout path_container = view.findViewById(R.id.path_container);
 
         ArrayList<PathResult> results = new ArrayList<>();
-        for (Path path: paths) {
-            results.add(new PathResult(path));
+        for(int i = 0; i<3; i++) {
+            results.add(new PathResult(paths.get(i)));
+            if(i == paths.size()-1) {
+                break;
+            }
         }
         for(int i = 0; i<results.size(); i++) {
             //for each path, generate a horizontal linear layout
             LinearLayout line = new LinearLayout(getContext());
-            line.setOrientation(LinearLayout.HORIZONTAL);
+            line.setOrientation(LinearLayout.VERTICAL);
             //Place the object in the center of its container in both the vertical and horizontal
             //axis, not changing its size.
-            line.setGravity(11);
-            line.setMinimumHeight(300);
-            line.setPadding(20,0,0,0);
-
+            //line.setGravity(11);
+            line.setPadding(50,10,10,10);
 
             LinearLayout.LayoutParams lytp = new LinearLayout.LayoutParams(-2,-2);
             lytp.gravity = Gravity.CENTER_VERTICAL;
+            line.setLayoutParams(lytp);
 
             ArrayList<String> segments = results.get(i).segments;
             for (int j = 0; j < segments.size(); j++) {
                 if (segments.get(j) == "Walking") {
+                    /*
                     ImageView img = new ImageView(getContext());
                     img.setImageResource(R.drawable.ic_walk);
                     img.setLayoutParams(lytp);
                     line.addView(img);
+                    */
                 } else {
-                    ImageView img = new ImageView(getContext());
-                    if(mPaths.get(i).getPathSegments().get(j).getTravelMode() == SHUTTLE) {
-                        img.setImageResource(R.drawable.ic_bus);
-                    } else {
-                        img.setImageResource(R.drawable.ic_mts);
-                        img.setScaleX((float)0.5);
-                        img.setScaleY((float)0.5);
-                    }
-                    img.setLayoutParams(lytp);
-                    line.addView(img);
                     TextView txt = new TextView(getContext());
+                    if(mPaths.get(i).getPathSegments().get(j).getTravelMode() == SHUTTLE) {
+                        txt.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_bus, 0, 0, 0);
+                    } else {
+                        txt.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_mts, 0, 0, 0);
+                    }
                     txt.setText(segments.get(j));
-                    txt.setTextSize(28);
+                    txt.setTextSize(26);
                     txt.setTextColor(getContext().getColor(R.color.colorPrimaryDark));
                     txt.setLayoutParams(lytp);
                     line.addView(txt);
                 }
+                /*
                 if(j<segments.size()-1) {
                     ImageView img = new ImageView(getContext());
                     img.setImageResource(R.drawable.arrow);
                     img.setLayoutParams(lytp);
                     line.addView(img);
                 }
+                */
             }
+            /*
             line.setClickable(true);
             //set onClickListener for each line of result
             line.setOnClickListener(new View.OnClickListener() {
@@ -898,7 +900,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
                 }
             });
+            */
             path_container.addView(line);
+            ImageView seperator = new ImageView(getContext());
+            seperator.setImageResource(R.drawable.line);
+            path_container.addView(seperator);
         }
 
         dialog.setContentView(view);

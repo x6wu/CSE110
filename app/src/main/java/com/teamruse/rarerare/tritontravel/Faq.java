@@ -27,13 +27,14 @@ public class Faq extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        groups = new String[] { "How to auto-center current location?", "How to save stops/routes?", "How to log out?", "Where to see bus schedule?" };
+        groups = new String[] { "How to auto-center current location?", "How to save locations/routes?", "How to log out?" };
 
         children = new String [][] {
-                { "Press the small button on the map." },
-                { "Double tap the stops/routes you want to save. See Your Places from the side menu after you log in." },
-                { "Press Log out button on your profile page from side menu." },
-                { "Tap the stop and you will see the bus schedule of that stop. " }
+                { "Press the yellow button on right bottom corner of the map." },
+                { "You need to log in to save locations & routes. Simply Tap the marker and press Save Location. " +
+                        "For routes, click the blue navigation button and tap Save Route at bottom. " +
+                        "Then you can view your saved info from the side menu." },
+                { "Press Log out button in your profile page from side menu." }
         };
     }
 

@@ -169,7 +169,6 @@ public class ShuttleGraph {
                 }
             }
         }
-        Log.d("shuttle routes", paths.size()+"");
         Collections.sort(paths, new Comparator<Path>(){
             public int compare(Path path1, Path path2){
                 return Integer.compare(path1.getPathSegments().size(), path2.getPathSegments().size());
