@@ -1,7 +1,7 @@
 # TritonTravel
 
 
-Students new to UC San Diego often find it hard to navigate such a large campus: Most transit apps do not include UCSD shuttle lines and the live shuttle map provided by the Transportation Services office is counterintuitive, outdated and provides little information. TritonTravel integrates live information provided Google Maps with campus shuttle lines to offer our users more option. Start to navigate both on and off campus with TritonTravel!
+Students new to UC San Diego often find it hard to navigate such a large campus: Most transit apps do not include UCSD shuttle lines and the live shuttle map provided by the Transportation Services office is counterintuitive, outdated, and provides little information. TritonTravel integrates live information provided by Google Maps with campus shuttle lines to offer our users more options. Start to navigate both on and off campus with TritonTravel!
 
 ### System Requirements
 TritonTravel requires a minimum SDK version of 21, internet connection while using the app, and enabled location service.
